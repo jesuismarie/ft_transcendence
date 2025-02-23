@@ -17,10 +17,9 @@ body {
 	text-align: center;
 }
 
-body h1{
-	color: #fff;
-	padding: 10px 0;
-}
+/*----------------------------------------*/
+/*----------------- Form -----------------*/
+/*----------------------------------------*/
 
 .container {
 	background-color: #fff;
@@ -114,12 +113,12 @@ form {
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
-	padding: 0 50px;
+	padding: 0 10%;
 	height: 100%;
 	text-align: center;
 }
 
-form h2 {
+form h1 {
 	font-weight: 600;
 	margin-bottom: 10px;
 }
