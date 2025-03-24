@@ -2,23 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap'); */
+
+@import url('https://fonts.googleapis.com/css2?family=Tektur:wght@400;700&display=swap');
 
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Tektur', sans-serif;
+	/* font-family: 'Audiowide', sans-serif; */
 }
 
 body {
 	height: 100vh;
-	background: linear-gradient(to right, #9163cb, #dec9e9);
+	background: url(../../../images/background2.jpg);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	text-align: center;
+}
+
+/*----------------------------------------*/
+/*------------- Welcome Page -------------*/
+/*----------------------------------------*/
+
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.3);
+	z-index: -1;
+}
+
+@layer utilities {
+	.neon-text {
+		color: #DCDCDD;
+		@apply text-[#DCDCDD] font-bold text-3xl;
+		text-shadow: 0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90;
+		animation: neonGlow 1.5s infinite alternate;
+	}
+}
+
+@keyframes neonGlow {
+	0% { text-shadow: 0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90; }
+	50% { text-shadow: 0 0 10px #DCDCDD, 0 0 20px #B8B8B9, 0 0 30px #8F8F90; }
+	100% { text-shadow: 0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90; }
+}
+
+.wipe-text {
+	display: flex;
+	gap: 0;
+	overflow: hidden;
+	font-size: 100px;
+	user-select: none;
+}
+
+.wipe-text span {
+	display: inline-block;
+	opacity: 0;
+	transition: opacity 0.5s ease-out;
+}
+
+.login-div {
+	height: 200px;
+	width: 70%;
+	margin: auto;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.login-div button {
+	height: 70px;
+	width: 150px;
+	font-size: large;
+	border: none;
+	text-align: center;
+	font-weight: 800;
+	border-radius: 60px;
+	box-shadow: 0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90;
+}
+
+.login-div button:hover {
+	height: 70px;
+	width: 150px;
+	font-size: large;
+	border: none;
+	text-align: center;
+	font-weight: 800;
+	border-radius: 60px;
+	color: #50a39a;
+	text-shadow: 0px 0px 10px rgba(80, 163, 154, 0.85);
+	box-shadow: 0 0 10px #DCDCDD, 0 0 20px #B8B8B9, 0 0 30px #8F8F90;;
+}
+
+@media (max-width: 768px) {
+	.wipe-text {
+		font-size: 4rem; /* 64px */
+	}
+
+	.login-div {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.login-div button {
+		width: 100%;
+		max-width: 200px;
+	}
+}
+
+@media (max-width: 480px) {
+	.wipe-text {
+		font-size: 2.5rem; /* 40px */
+	}
+
+	.login-div button {
+		font-size: 1rem; /* 16px */
+	}
 }
 
 /*----------------------------------------*/
@@ -246,41 +354,7 @@ form button:hover {
 }
 
 @media screen and (max-width: 768px) {
-	.container {
-		flex-direction: column;
-		width: 70%;
-		/* height: auto; */
-	}
-
-	.form-container {
-		width: 100%;
-		height: 100%;
-	}
-
-	.toggle-container {
-		width: 100%;
-		height: auto;
-		position: relative;
-		padding: 20px;
-	}
-
-	.toggle-panel {
-		position: relative;
-		transform: none;
-		opacity: 1;
-		z-index: 1;
-	}
-
-	.toggle-container button {
-		width: 100%;
-	}
-
-	.container.active .sign-in {
-	/* .container.active .sign-up { */
-		transform: none;
-		opacity: 1;
-		z-index: 2;
-	}
+	
 }
 
 /*----------------------------------------*/
