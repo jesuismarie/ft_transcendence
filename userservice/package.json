@@ -1,7 +1,18 @@
 {
+  "name": "userservice",
+  "version": "1.0.0",
+  "description": "12",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "fastify": "^5.2.1",
     "tsc": "^2.0.4",
     "typescript": "^5.8.2"
-  }
+  },
+  "devDependencies": {}
 }
