@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	const button = document.getElementById("to-sign-in");
 	if (button) {
 		button.addEventListener("click", () => {
-			window.location.href = "login.html";
+			window.location.href = "./public/login.html";
 		});
 	}
 });
