@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-	const elements: NodeListOf<HTMLElement> = document.querySelectorAll("[data-text-trigger='scroll']");
+	const elements: NodeListOf<HTMLElement> = document.querySelectorAll(".wipe-text");
 
 	elements.forEach((el) => {
 		const text = el.textContent?.trim() || "";
@@ -32,7 +32,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	const button = document.getElementById("to-sign-in");
 	if (button) {
 		button.addEventListener("click", () => {
-			window.location.href = "./public/login.html";
+			window.location.href = "./public/templates/signin.html";
+		});
+	}
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+	const button = document.getElementById("to-sign-up");
+	if (button) {
+		button.addEventListener("click", () => {
+			window.location.href = "./public/templates/signup.html";
 		});
 	}
 });
