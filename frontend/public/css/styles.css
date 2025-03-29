@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	* {
+		@apply m-0 p-0 box-border;
+	}
+
+	body {
+		@apply h-screen bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat;
+	}
+
+	.bg-container {
+		@apply h-screen flex flex-col justify-center items-center text-center font-tektur;
+	}
+
+	.overlay {
+		@apply absolute inset-0 bg-black/30 -z-[1];
+	}
+}
+
+/* @layer utilities {
+	.neon-text {
+		color: #DCDCDD;
+		@apply text-[#DCDCDD] font-bold text-3xl;
+		text-shadow: 0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90;
+		animation: neonGlow 1.5s infinite alternate;
+	}
+}
+
+@keyframes neonGlow {
+	0% { text-shadow: 0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90; }
+	50% { text-shadow: 0 0 10px #DCDCDD, 0 0 20px #B8B8B9, 0 0 30px #8F8F90; }
+	100% { text-shadow: 0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90; }
+} */
