@@ -109,6 +109,7 @@
     "yaml": "^2.7.0"
   },
   "scripts": {
+    "tailwind": "tailwindcss -i ./public/css/styles.css -o ./dist/output.css --minify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
