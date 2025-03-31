@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 		});
 		}, { threshold: 0.5 });
-	
 		observer.observe(el);
 	});
 });
