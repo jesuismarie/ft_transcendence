@@ -6,20 +6,20 @@
 	<link rel="icon" type="image/png" href="./public/images/pong_logo.png">
 	<link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./dist/output.css">
-	<!-- <link rel="stylesheet" href="./public/css/style.css"> -->
 	<title>Welcome to Pong!</title>
 </head>
-<body>
-	<div class="bg-container">
-		<div class="overlay"></div>
+<body class="w-[100dvw] h-[100dvh] inset-0 bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat">
+	<div class="w-[100dvw] h-[100dvh] absolute inset-0 bg-black/30 -z-[1]"></div>
+	<div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center" id="wrapper">
 		<h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[100px] font-bold select-none text-[#DCDCDD] animate-neonGlow">
 			WELCOME TO PONG!
 		</h1>
-		<div class="login-div w-[70%] h-[200px] flex justify-evenly items-center">
+		<div class="max-sm:flex-col login-div w-[70%] h-[200px] flex justify-evenly items-center">
 			<button id="to-sign-in">Sign In</button>
 			<button id="to-sign-up">Sign up</button>
 		</div>
 	</div>
 	<script src="./dist/main.js"></script>
+	<script src="./dist/animation/animation.js"></script>
 </body>
 </html>

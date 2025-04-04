@@ -4,19 +4,7 @@
 
 @layer base {
 	* {
-		@apply m-0 p-0 box-border;
-	}
-
-	body {
-		@apply h-screen bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat;
-	}
-
-	.bg-container {
-		@apply h-screen flex flex-col justify-center items-center text-center font-tektur;
-	}
-
-	.overlay {
-		@apply absolute inset-0 bg-black/30 -z-[1];
+		@apply m-0 p-0 box-border font-tektur;
 	}
 
 	.wipe-text span {
@@ -24,38 +12,18 @@
 	}
 
 	.login-div button {
-		@apply h-[70px] w-[150px] text-lg font-[800] text-center border-none rounded-[60px] shadow-[0_0_5px_#DCDCDD,0_0_10px_#B8B8B9,0_0_15px_#8F8F90] bg-[#DCDCDD] hover:text-[#50a39a] hover:shadow-[0_0_10px_#DCDCDD,0_0_20px_#B8B8B9,0_0_30px_#8F8F90];
-	}
-
-	.login-container {
-		@apply bg-white rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.2)] overflow-hidden relative w-[400px] max-w-full h-[500px];
-	}
-
-	.custom-icon {
-		@apply w-[23px] h-[20px];
-	}
-	
-	.form-container {
-		@apply absolute top-0 h-full w-full;
-	}
-	
-	form {
-		@apply bg-white flex items-center justify-center flex-col px-[10%] h-full text-center;
+		@apply h-[70px] w-[150px] text-lg font-[800] text-center border-none rounded-[60px] shadow-[0_0_5px_#DCDCDD,0_0_10px_#B8B8B9,0_0_15px_#8F8F90] bg-[#DCDCDD] hover:text-[#50A39A] hover:shadow-[0_0_10px_#DCDCDD,0_0_20px_#B8B8B9,0_0_30px_#8F8F90];
 	}
 
 	form h1 {
-		@apply font-semibold mb-[10px];
+		@apply font-semibold mb-[5px];
 	}
 	
 	form input {
-		@apply bg-[#f0f0f0] border-none p-[10px] my-[8px] w-full rounded-[5px];
+		@apply bg-[#f0f0f0] border-none p-[10px] my-[5px] w-full rounded-[5px];
 	}
 	
 	form button {
-		@apply bg-[#6a11cb] border-none text-white p-[10px_20px] rounded-[20px] mt-[20px] text-[12px] cursor-pointer transition-colors duration-300 ease-in-out hover:bg-[#2575fc];
-	}
-	
-	.social-icons a {
-		@apply border border-[#ddd] rounded-[50%] inline-flex items-center justify-center w-[40px] h-[40px] m-[5px] no-underline text-[#333] hover:border-[#2575fc] hover:text-[#2575fc];
+		@apply bg-[#50A39A] border-none text-white p-[10px_20px] rounded-[20px] mt-[10px] text-[12px] cursor-pointer transition-colors duration-300 ease-in-out hover:shadow-[0_0_5px_#DCDCDD,0_0_15px_#30BDAC,0_0_20px_#50A39A];
 	}
 }
