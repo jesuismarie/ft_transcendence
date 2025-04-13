@@ -3,6 +3,7 @@ const initialContent = mainWrapper?.innerHTML;
 
 function loadSignInForm() {
 	if (!mainWrapper) return;
+	location.hash = "#signin";
 	mainWrapper.innerHTML = `
 		<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
 			<div class="w-[400px] h-[500px]">
@@ -17,7 +18,7 @@ function loadSignInForm() {
 						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
 					</a>
 					<span>or use your username password</span>
-					<input type="username" name="username" placeholder="Usename" required/>
+					<input type="username" name="username" placeholder="Username" required/>
 					<input type="password" name="password" placeholder="Password" required/>
 					<a href="#">Forgot your password?</a>
 					<button type="submit">Sign In</button>
@@ -28,6 +29,7 @@ function loadSignInForm() {
 
 function loadSignUpForm() {
 	if (!mainWrapper) return;
+	location.hash = "#signup";
 	mainWrapper.innerHTML = `
 		<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
 			<div class="w-[400px] h-[500px]">
@@ -55,6 +57,24 @@ function loadSignUpForm() {
 
 function returnToMainPage() {
 	if (mainWrapper && initialContent) {
+		location.hash = "#";
 		mainWrapper.innerHTML = initialContent;
 	}
 }
+
+function handleRouting() {
+	switch (location.hash) {
+		case "#signin":
+			loadSignInForm();
+			break;
+		case "#signup":
+			loadSignUpForm();
+			break;
+		default:
+			returnToMainPage();
+			break;
+	}
+}
+
+window.addEventListener("DOMContentLoaded", handleRouting);
+window.addEventListener("hashchange", handleRouting);
