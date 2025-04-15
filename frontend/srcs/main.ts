@@ -25,6 +25,7 @@ function loadSignInForm() {
 				</form>
 			</div>
 		</div>`;
+	document.title = "Sign In";
 }
 
 function loadSignUpForm() {
@@ -53,12 +54,14 @@ function loadSignUpForm() {
 				</form>
 			</div>
 		</div>`;
+	document.title = "Sign Up";
 }
 
 function returnToMainPage() {
 	if (mainWrapper && initialContent) {
 		location.hash = "#";
 		mainWrapper.innerHTML = initialContent;
+		document.title = "Welcome to Pong!";
 	}
 }
 
