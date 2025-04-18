@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/png" href="../images/pong_logo.png">
+	<link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../../dist/output.css">
+	<title>Pong Profile</title>
+</head>
+<body class="w-[100dvw] h-[100dvh] inset-0 bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat">
+	<div class="w-[100dvw] h-[100dvh] absolute inset-0 bg-black/30 -z-[1]"></div>
+	<div id="wrapper">
+		<div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center">
+			<h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[3rem] sm:text-[4rem] md:text-[5rem] font-bold select-none text-primary animate-neonGlow">
+				Pong Profile!
+			</h1>
+			<div class="w-[80vw] h-[80vh] bg-white flex flex-col justify-center items-center text-center border rounded-[20px] shadow-div-glow p-2">
+				<!-- Navigation Menu -->
+				<div class="w-full h-14 flex justify-end items-center px-4 sm:px-6 lg:px-8">
+					<nav class="max-w-7xl flex justify-between h-14 items-center space-x-4">
+						<a href="#" class="hover:text-hover">Dashboard</a>
+						<a href="#" class="hover:text-hover">Tournaments</a>
+					</nav>
+					<button onclick="returnToMainPage()" class="w-[20px] h-[20px] mx-4 rounded-full">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+							<path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/>
+						</svg>
+					</button>
+				</div>
+				<div class="w-full h-full overflow-y-auto grid grid-cols-1 lg:grid-cols-4 gap-8 px-4 sm:px-6 lg:px-8">
+					<!-- Profile Information -->
+					<div class="lg:col-span-1 space-y-6">
+						<div class="rounded-md border border-hover">
+							<div class="bg-hover h-24"></div>
+							<div class="px-4 pb-6 relative">
+								<div class="flex justify-center -mt-12">
+									<div class="relative">
+										<img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="../images/background1.jpg" alt="User avatar">
+										<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-primary hover:shadow-neon focus:outline-none">
+											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+											</svg>
+										</button>
+										<input type="file" id="avatar-input" class="hidden" accept="image/*">
+									</div>
+								</div>
+								<div class="text-center mt-4">
+									<h2 id="tournment-name" class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-gray-900">TournamentPlayer123</h2>
+									<div class="flex items-center justify-center mt-2">
+										<!-- Online Status -->
+									</div>
+								</div>
+								<div class="mt-6 grid grid-cols-2 gap-4 text-center">
+									<p class="text-gray-600">Wins</p>
+									<!-- Wins Count -->
+									<p class="text-gray-600">Losses</p>
+									<!-- Losses Count -->
+								</div>
+								<button id="edit-profile-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-primary py-2 px-4 rounded-[20px]">
+									Edit Profile
+								</button>
+							</div>
+						</div>
+						<div class="px-4 py-3 rounded-md border border-hover">
+							<h3 class="text-lg border-b border-primary">Friends</h3>
+							<div class="divide-y divide-gray-200">
+								<!-- Friends list -->
+							</div>
+							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
+						</div>
+					</div>
+					<div class="lg:col-span-3 space-y-6 rounded-md border border-hover">
+						<!-- Update Tournment Name -->
+						<div class="px-5 py-4 border-b border-hover">
+							<h3 class="text-lg leading-6 font-medium sm:px-6 border-b border-primary">Tournament Display Name</h3>
+							<div class="px-4 py-5 sm:p-6">
+								<div class="flex flex-col sm:flex-row gap-4">
+									<input type="text" id="tournament-name" name="tournament-name" value="TournamentPlayer123" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:border-hover sm:text-sm">
+									<button id="update-tour-name-btn" class="bg-hover hover:shadow-neon text-primary py-2 px-4 rounded-md">
+										Update
+									</button>
+								</div>
+								<p id="name-error" class="mt-2 text-sm text-red hidden">Display name is already taken.</p>
+							</div>
+						</div>
+						<!-- Match History -->
+						<div class="rounded-mg px-5 py-4 border-b border-hover">
+							<h3 class="text-lg leading-6 font-medium border-b border-primary">Match History</h3>
+							<div class="divide-y divide-gray-200">
+								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50">
+									<div class="flex flex-col sm:flex-row sm:justify-between">
+										<div class="flex items-center">
+											<!-- Who vs who -->
+											<!-- Win or Lose -->
+										</div>
+										<div class="mt-2 sm:mt-0 text-sm text-gray-500">
+											<!-- Count -->
+											<!-- Date -->
+										</div>
+									</div>
+									<p class="mt-2 text-sm text-gray-500"><!-- Tournament Name --></p>
+								</div>
+							</div>
+							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Matches</button>
+						</div>
+
+						<!-- Upcoming Tournaments -->
+						<div class="rounded-mg px-5 py-4 border-b border-hover">
+							<h3 class="text-lg leading-6 font-medium border-b border-primary">Upcoming Tournaments</h3>
+							<div class="divide-y divide-gray-200">
+								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50 cursor-pointer">
+									<div class="flex flex-col sm:flex-row sm:justify-between">
+										<div>
+											<!-- Tournment Name -->
+											<!-- Date -->
+										</div>
+										<span class=" mt-2 sm:mt-0 px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full"><!--Registered--></span>
+									</div>
+								</div>
+							</div>
+							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">Browse Tournments</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="../../dist/animation/animation.js"></script>
+</body>
+</html>
+
+<!-- <div class="w-full h-full flex flex-col justify-center items-center text-center">
+	<h2 class="text-[40px] font-bold text-[#DCDCDD]">Username: {{username}}</h2>
+	<h2 class="text-[40px] font-bold text-[#DCDCDD]">Score: {{score}}</h2>
+	<h2 class="text-[40px] font-bold text-[#DCDCDD]">Rank: {{rank}}</h2>
+</div> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/png" href="./public/images/pong_logo.png">
+	<link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../../dist/output.css">
+	<title>Pong Profile</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#DCDCDD',
+						secondary: '#10B981',
+						dark: '#1F2937',
+						light: '#F9FAFB'
+					}
+				}
+			}
+		}
+	</script>
+</head>
+<body class="inset-0 bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat">
+	Edit Profile Modal 
+	<div id="edit-profile-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+		<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+			<div class="fixed inset-0 transition-opacity" aria-hidden="true">
+				<div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+			</div>
+			<span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+			<div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+				<div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+					<h3 class="text-lg leading-6 font-medium text-gray-900">Edit Profile</h3>
+					<div class="mt-4">
+						<div class="mb-4">
+							<label for="edit-username" class="block text-sm font-medium text-gray-700">Username</label>
+							<input type="text" id="edit-username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+						</div>
+						<div class="mb-4">
+							<label for="edit-email" class="block text-sm font-medium text-gray-700">Email</label>
+							<input type="email" id="edit-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+						</div>
+						<div>
+							<label for="edit-bio" class="block text-sm font-medium text-gray-700">Bio</label>
+							<textarea id="edit-bio" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+					<button id="save-profile-btn" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm">
+						Save
+					</button>
+					<button id="cancel-edit-btn" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+						Cancel
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="../../dist/animation/animation.js"></script>
+	<script>
+		// TypeScript-like functionality in JavaScript
+		document.addEventListener('DOMContentLoaded', () => {
+			// DOM Elements
+			const editProfileBtn = document.getElementById('edit-profile-btn');
+			const editProfileModal = document.getElementById('edit-profile-modal');
+			const cancelEditBtn = document.getElementById('cancel-edit-btn');
+			const saveProfileBtn = document.getElementById('save-profile-btn');
+			const avatarUploadBtn = document.getElementById('avatar-upload-btn');
+			const avatarInput = document.getElementById('avatar-input');
+			const avatarImage = document.getElementById('avatar-image');
+			const updateNameBtn = document.getElementById('update-tour-name-btn');
+			const tournamentNameInput = document.getElementById('tournament-name');
+			const nameError = document.getElementById('name-error');
+			const displayName = document.getElementById('tournment-name');
+			const winsCount = document.getElementById('wins-count');
+			const lossesCount = document.getElementById('losses-count');
+
+			// Event Listeners
+			editProfileBtn.addEventListener('click', openEditModal);
+			cancelEditBtn.addEventListener('click', closeEditModal);
+			saveProfileBtn.addEventListener('click', saveProfile);
+			avatarUploadBtn.addEventListener('click', () => avatarInput.click());
+			avatarInput.addEventListener('change', handleAvatarUpload);
+			updateNameBtn.addEventListener('click', updateDisplayName);
+
+			// Functions
+			function openEditModal() {
+				editProfileModal.classList.remove('hidden');
+			}
+
+			function closeEditModal() {
+				editProfileModal.classList.add('hidden');
+			}
+
+			function saveProfile() {
+				// In a real app, you would save to a server here
+				closeEditModal();
+			}
+
+			function handleAvatarUpload(event) {
+				const file = event.target.files[0];
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = (e) => {
+						avatarImage.src = e.target.result;
+					};
+					reader.readAsDataURL(file);
+				}
+			}
+
+			function updateDisplayName() {
+				const newName = tournamentNameInput.value.trim();
+				if (newName.length < 3) {
+					nameError.textContent = "Display name must be at least 3 characters";
+					nameError.classList.remove('hidden');
+					return;
+				}
+
+				// Simulate checking if name is available
+				const isAvailable = Math.random() > 0.3; // 70% chance of success for demo
+
+				if (isAvailable) {
+					displayName.textContent = newName;
+					nameError.classList.add('hidden');
+					// Show success message (in a real app)
+					alert("Display name updated successfully!");
+				} else {
+					nameError.textContent = "Display name is already taken";
+					nameError.classList.remove('hidden');
+				}
+			}
+
+			// Simulate loading user data
+			function loadUserData() {
+				// In a real app, you would fetch this from an API
+				setTimeout(() => {
+					document.getElementById('edit-username').value = "TournamentPlayer123";
+					document.getElementById('edit-email').value = "player@example.com";
+					document.getElementById('edit-bio').value = "Competitive tournament player specializing in 1v1 matches.";
+				}, 300);
+			}
+
+			loadUserData();
+		});
+	</script>
+</body>
+</html> -->
