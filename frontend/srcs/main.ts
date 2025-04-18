@@ -7,14 +7,14 @@ function loadSignInForm() {
 	mainWrapper.innerHTML = `
 		<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
 			<div class="w-[400px] h-[500px]">
-				<button id="back" onclick="returnToMainPage()" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-[0_0_5px_#DCDCDD,0_0_15px_#30BDAC,0_0_20px_#50A39A]">
+				<button onclick="returnToMainPage()" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-neon">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
 						<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
 					</svg>
 				</button>
-				<form id="loginForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
+				<form id="loginForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-div-glow">
 					<h1>Sign In</h1>
-					<a href="#" class="w-[30px] h-[30px] grid place-items-center p-1 rounded-full hover:shadow-[0_0_5px_#DCDCDD,0_0_15px_#30BDAC,0_0_20px_#50A39A]">
+					<a href="#" class="w-[30px] h-[30px] grid place-items-center p-1 rounded-full hover:shadow-neon">
 						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
 					</a>
 					<span>or use your username password</span>
@@ -34,14 +34,14 @@ function loadSignUpForm() {
 	mainWrapper.innerHTML = `
 		<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
 			<div class="w-[400px] h-[500px]">
-				<button id="back" onclick="returnToMainPage()" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-[0_0_5px_#DCDCDD,0_0_15px_#30BDAC,0_0_20px_#50A39A]">
+				<button onclick="returnToMainPage()" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-neon">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
 						<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
 					</svg>
 				</button>
-				<form id="registrationForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
+				<form id="registrationForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-div-glow">
 					<h1>Create Account</h1>
-					<a href="#" class="w-[30px] h-[30px] grid place-items-center p-1 rounded-full hover:shadow-[0_0_5px_#DCDCDD,0_0_15px_#30BDAC,0_0_20px_#50A39A]">
+					<a href="#" class="w-[30px] h-[30px] grid place-items-center p-1 rounded-full hover:shadow-neon">
 						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
 					</a>
 					<span>or use your email for registration</span>

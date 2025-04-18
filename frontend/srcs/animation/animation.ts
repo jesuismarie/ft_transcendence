@@ -1,11 +1,8 @@
-document.addEventListener("DOMContentLoaded", () => {
-	const elements: NodeListOf<HTMLElement> = document.querySelectorAll(".wipe-text");
-
-	elements.forEach((el) => {
+function initWipeText() {
+	document.querySelectorAll(".wipe-text").forEach((el) => {
 		const text = el.textContent?.trim() || "";
 		el.innerHTML = "";
-		el.style.display = "flex";
-
+		(el as HTMLElement).style.display = "flex";
 		text.split("").forEach((char, index) => {
 		const span = document.createElement("span");
 		span.textContent = char === " " ? "\u00A0" : char;
@@ -25,4 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}, { threshold: 0.5 });
 		observer.observe(el);
 	});
-});
+};
+
+window.onload = initWipeText;
+document.addEventListener("DOMContentLoaded", initWipeText);
