@@ -19,8 +19,7 @@
 				<!-- Navigation Menu -->
 				<div class="w-full h-14 flex justify-end items-center px-4 sm:px-6 lg:px-8">
 					<nav class="max-w-7xl flex justify-between h-14 items-center space-x-4">
-						<a href="#" class="hover:text-hover">Dashboard</a>
-						<a href="#" class="hover:text-hover">Tournaments</a>
+						<button id="view-tournent1" class="hover:text-hover">Tournaments</a>
 					</nav>
 					<button onclick="returnToMainPage()" class="w-[20px] h-[20px] mx-4 rounded-full">
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -47,7 +46,9 @@
 									</div>
 								</div>
 								<div class="text-center mt-4">
-									<h2 id="tournment-name" class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-gray-900">TournamentPlayer123</h2>
+									<h2 id="tournment-name" class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-gray-900">
+										<!-- Player Username -->
+									</h2>
 									<div class="flex items-center justify-center mt-2">
 										<!-- Online Status -->
 									</div>
@@ -58,36 +59,39 @@
 									<p class="text-gray-600">Losses</p>
 									<!-- Losses Count -->
 								</div>
-								<button id="edit-profile-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-primary py-2 px-4 rounded-[20px]">
-									Edit Profile
-								</button>
+								<button id="edit-profile-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
 							</div>
 						</div>
 						<div class="px-4 py-3 rounded-md border border-hover">
-							<h3 class="text-lg border-b border-primary">Friends</h3>
+							<h3 class="text-lg border-b border-primary">
+								Friends
+							</h3>
 							<div class="divide-y divide-gray-200">
-								<!-- Friends list -->
+								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50">
+									<!-- Friends list -->
+								</div>
 							</div>
 							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
 						</div>
 					</div>
 					<div class="lg:col-span-3 space-y-6 rounded-md border border-hover">
-						<!-- Update Tournment Name -->
+						<!-- Search People -->
 						<div class="px-5 py-4 border-b border-hover">
-							<h3 class="text-lg leading-6 font-medium sm:px-6 border-b border-primary">Tournament Display Name</h3>
+							<h3 class="text-lg leading-6 font-medium sm:px-6 border-b border-primary">
+								Search
+							</h3>
 							<div class="px-4 py-5 sm:p-6">
 								<div class="flex flex-col sm:flex-row gap-4">
-									<input type="text" id="tournament-name" name="tournament-name" value="TournamentPlayer123" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:border-hover sm:text-sm">
-									<button id="update-tour-name-btn" class="bg-hover hover:shadow-neon text-primary py-2 px-4 rounded-md">
-										Update
-									</button>
+									<input type="text" id="search-people" name="tournament-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:border-hover sm:text-sm">
+									<button id="update-tour-name-btn" class="bg-hover hover:shadow-neon text-primary py-2 px-4 rounded-md">Search</button>
 								</div>
-								<p id="name-error" class="mt-2 text-sm text-red hidden">Display name is already taken.</p>
 							</div>
 						</div>
 						<!-- Match History -->
 						<div class="rounded-mg px-5 py-4 border-b border-hover">
-							<h3 class="text-lg leading-6 font-medium border-b border-primary">Match History</h3>
+							<h3 class="text-lg leading-6 font-medium border-b border-primary">
+								Match History
+							</h3>
 							<div class="divide-y divide-gray-200">
 								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50">
 									<div class="flex flex-col sm:flex-row sm:justify-between">
@@ -108,7 +112,9 @@
 
 						<!-- Upcoming Tournaments -->
 						<div class="rounded-mg px-5 py-4 border-b border-hover">
-							<h3 class="text-lg leading-6 font-medium border-b border-primary">Upcoming Tournaments</h3>
+							<h3 class="text-lg leading-6 font-medium border-b border-primary">
+								Upcoming Tournaments
+							</h3>
 							<div class="divide-y divide-gray-200">
 								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50 cursor-pointer">
 									<div class="flex flex-col sm:flex-row sm:justify-between">
@@ -120,7 +126,7 @@
 									</div>
 								</div>
 							</div>
-							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">Browse Tournments</button>
+							<button id="view-tournent2" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">Browse Tournments</button>
 						</div>
 					</div>
 				</div>
@@ -131,38 +137,7 @@
 </body>
 </html>
 
-<!-- <div class="w-full h-full flex flex-col justify-center items-center text-center">
-	<h2 class="text-[40px] font-bold text-[#DCDCDD]">Username: {{username}}</h2>
-	<h2 class="text-[40px] font-bold text-[#DCDCDD]">Score: {{score}}</h2>
-	<h2 class="text-[40px] font-bold text-[#DCDCDD]">Rank: {{rank}}</h2>
-</div> -->
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="icon" type="image/png" href="./public/images/pong_logo.png">
-	<link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="../../dist/output.css">
-	<title>Pong Profile</title>
-	<script src="https://cdn.tailwindcss.com"></script>
-	<script>
-		tailwind.config = {
-			theme: {
-				extend: {
-					colors: {
-						primary: '#DCDCDD',
-						secondary: '#10B981',
-						dark: '#1F2937',
-						light: '#F9FAFB'
-					}
-				}
-			}
-		}
-	</script>
-</head>
-<body class="inset-0 bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat">
+<!-- <body class="inset-0 bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat">
 	Edit Profile Modal 
 	<div id="edit-profile-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
 		<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
