@@ -10,18 +10,208 @@
 </head>
 <body class="w-[100dvw] h-[100dvh] inset-0 bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat">
 	<div class="w-[100dvw] h-[100dvh] absolute inset-0 bg-black/40 -z-[1]"></div>
-	<div id="wrapper">
+	<div id="wrapper"></div>
+
+	<!-- Home Page -->
+	<template id="home-template">
 		<div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center">
 			<h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[4rem] sm:text-[6rem] md:text-[8rem] font-bold select-none text-primary animate-neonGlow">
 				WELCOME TO PONG!
 			</h1>
-			<div class="max-sm:flex-col login-div w-[70%] h-[200px] flex justify-evenly items-center">
+			<div class="max-sm:flex-col login-div w-[70%] h-52 flex justify-evenly items-center">
 				<button id="to-sign-in" onclick="loadSignInForm()">Sign In</button>
 				<button id="to-sign-up" onclick="loadSignUpForm()">Sign up</button>
+				<button onclick="loadProfilePage()">Temprory Profile</button>
 			</div>
 		</div>
-	</div>
+	</template>
+
+	<!-- Sign-In Page -->
+	<template id="signin-template">
+		<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
+			<div class="w-[400px] h-[500px]">
+				<button onclick="loadHomePage()" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-neon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+						<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+					</svg>
+				</button>
+				<form id="loginForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-div-glow">
+					<h1>Sign In</h1>
+					<a href="#" class="w-9 h-9 grid place-items-center p-1 border border-gray-300 rounded-full hover:shadow-neon">
+						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
+					</a>
+					<span>or use your username password</span>
+					<input type="username" name="username" placeholder="Username" required/>
+					<input type="password" name="password" placeholder="Password" required/>
+					<a href="#">Forgot your password?</a>
+					<button type="submit">Sign In</button>
+				</form>
+			</div>
+		</div>
+	</template>
+
+	<!-- Sign-Up Page -->
+	<template id="signup-template">
+		<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
+			<div class="w-[400px] h-[500px]">
+				<button onclick="loadHomePage()" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-neon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+						<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+					</svg>
+				</button>
+				<form id="registrationForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-div-glow">
+					<h1>Create Account</h1>
+					<a href="#" class="w-9 h-9 grid place-items-center p-1 border border-gray-300 rounded-full hover:shadow-neon">
+						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
+					</a>
+					<span>or use your email for registration</span>
+					<input type="text" name="name" placeholder="Name" required/>
+					<input type="text" name="surname" placeholder="Surname" required/>
+					<input type="text" name="username" placeholder="Username" required/>
+					<input type="email" name="email" placeholder="Email" required/>
+					<input type="password" name="password" placeholder="Password" required/>
+					<button type="submit">Sign Up</button>
+				</form>
+			</div>
+		</div>
+	</template>
+
+	<!-- Game Page -->
+	<template id="game-template">
+		<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
+			<canvas class="bg-black border-5 border-solid border-white" id="pongCanvas"></canvas>
+		</div>
+	</template>
+
+	<!-- Profile Page -->
+	<template id="profile-template">
+		<div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center">
+			<h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[3rem] sm:text-[4rem] md:text-[5rem] font-bold select-none text-primary animate-neonGlow">
+				Pong Profile!
+			</h1>
+			<div class="w-[80vw] h-[80vh] bg-white flex flex-col justify-center items-center text-center border rounded-[20px] shadow-div-glow p-2">
+				<!-- Navigation Menu -->
+				<div class="w-full h-14 flex justify-end items-center px-4 sm:px-6 lg:px-8">
+					<nav class="max-w-7xl flex justify-between h-14 items-center space-x-4">
+						<button id="view-tournent1" class="hover:text-hover">Tournaments</a>
+					</nav>
+					<button class="w-[20px] h-[20px] mx-4 rounded-full">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+							<path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/>
+						</svg>
+					</button>
+				</div>
+				<div class="w-full h-full overflow-y-auto grid grid-cols-1 lg:grid-cols-4 gap-8 px-4 sm:px-6 lg:px-8">
+					<!-- Profile Information -->
+					<div class="lg:col-span-1 space-y-6">
+						<div class="rounded-md border border-hover">
+							<div class="bg-hover h-24"></div>
+							<div class="px-4 pb-6 relative">
+								<div class="flex justify-center -mt-12">
+									<div class="relative">
+										<img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="./public/images/background1.jpg" alt="User avatar">
+										<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-primary hover:shadow-neon focus:outline-none">
+											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+											</svg>
+										</button>
+										<input type="file" id="avatar-input" class="hidden" accept="image/*">
+									</div>
+								</div>
+								<div class="text-center mt-4">
+									<h2 id="tournment-name" class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-gray-900">
+										<!-- Player Username -->
+									</h2>
+									<div class="flex items-center justify-center mt-2">
+										<!-- Online Status -->
+									</div>
+								</div>
+								<div class="mt-6 grid grid-cols-2 gap-4 text-center">
+									<p class="text-gray-600">Wins</p>
+									<!-- Wins Count -->
+									<p class="text-gray-600">Losses</p>
+									<!-- Losses Count -->
+								</div>
+								<button onclick="loadGamePage()" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
+								<button id="edit-profile-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
+							</div>
+						</div>
+						<div class="px-4 py-3 rounded-md border border-hover">
+							<h3 class="text-lg border-b border-primary">
+								Friends
+							</h3>
+							<div class="divide-y divide-gray-200">
+								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50">
+									<!-- Friends list -->
+								</div>
+							</div>
+							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
+						</div>
+					</div>
+					<div class="lg:col-span-3 space-y-6 rounded-md border border-hover">
+						<!-- Search People -->
+						<div class="px-5 py-4 border-b border-hover">
+							<h3 class="text-lg leading-6 font-medium sm:px-6 border-b border-primary">
+								Search
+							</h3>
+							<div class="px-4 py-5 sm:p-6">
+								<div class="flex flex-col sm:flex-row gap-4">
+									<input type="text" id="search-people" name="tournament-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:border-hover sm:text-sm">
+									<button id="update-tour-name-btn" class="bg-hover hover:shadow-neon text-primary py-2 px-4 rounded-md">Search</button>
+								</div>
+							</div>
+						</div>
+						<!-- Match History -->
+						<div class="rounded-mg px-5 py-4 border-b border-hover">
+							<h3 class="text-lg leading-6 font-medium border-b border-primary">
+								Match History
+							</h3>
+							<div class="divide-y divide-gray-200">
+								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50">
+									<div class="flex flex-col sm:flex-row sm:justify-between">
+										<div class="flex items-center">
+											<!-- Who vs who -->
+											<!-- Win or Lose -->
+										</div>
+										<div class="mt-2 sm:mt-0 text-sm text-gray-500">
+											<!-- Count -->
+											<!-- Date -->
+										</div>
+									</div>
+									<p class="mt-2 text-sm text-gray-500"><!-- Tournament Name --></p>
+								</div>
+							</div>
+							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Matches</button>
+						</div>
+
+						<!-- Upcoming Tournaments -->
+						<div class="rounded-mg px-5 py-4 border-b border-hover">
+							<h3 class="text-lg leading-6 font-medium border-b border-primary">
+								Upcoming Tournaments
+							</h3>
+							<div class="divide-y divide-gray-200">
+								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50 cursor-pointer">
+									<div class="flex flex-col sm:flex-row sm:justify-between">
+										<div>
+											<!-- Tournment Name -->
+											<!-- Date -->
+										</div>
+										<span class=" mt-2 sm:mt-0 px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full"><!--Registered--></span>
+									</div>
+								</div>
+							</div>
+							<button id="view-tournent2" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">Browse Tournments</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+
 	<script src="./dist/main.js"></script>
+	<script src="./dist/game/pong.js"></script>
+	<script src="./dist/profile/login.js"></script>
 	<script src="./dist/animation/animation.js"></script>
 </body>
 </html>
