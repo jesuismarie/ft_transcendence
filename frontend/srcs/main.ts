@@ -28,11 +28,7 @@ function loadSignUpForm() {
 
 function loadGamePage() {
 	loadTemplate("game-template", "Pong Game");
-	const template = document.getElementById('game-template');
-	if (mainWrapper && template) {
-		mainWrapper.innerHTML = template.innerHTML;
-		initializePongGame();
-	}
+	initializePongGame();
 }
 
 function loadProfilePage() {

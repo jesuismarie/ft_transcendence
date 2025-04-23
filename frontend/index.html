@@ -146,7 +146,7 @@
 									<!-- Friends list -->
 								</div>
 							</div>
-							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
+							<button id="friend-list-btn" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
 						</div>
 					</div>
 					<div class="lg:col-span-3 space-y-6 rounded-md border border-hover">
@@ -182,7 +182,7 @@
 									<p class="mt-2 text-sm text-gray-500"><!-- Tournament Name --></p>
 								</div>
 							</div>
-							<button class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Matches</button>
+							<button id="match-list-btn" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Matches</button>
 						</div>
 
 						<!-- Upcoming Tournaments -->
@@ -207,11 +207,81 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Edit Profile Modal -->
+		<div id="edit-profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+				<div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+					<h3 class="text-lg font-medium">Edit Profile</h3>
+					<div class="mt-4 space-y-4">
+						<label for="edit-username" class="block text-sm font-medium">Username</label>
+						<input type="text" id="edit-username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+						<label for="edit-email" class="block text-sm font-medium">Email</label>
+						<input type="email" id="edit-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+						<button id="change-password-btn" class="mt-4 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Change Password</button>
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex flex-row-reverse gap-3">
+					<button id="save-profile-btn" type="button" class="bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Save</button>
+					<button id="close-edit-modal" type="button" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- View Friends List -->
+		<div id="friends-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+				<div class="px-4 pt-5 pb-4 sm:p-6">
+					<h3 class="text-lg border-b border-primary pb-2">All Friends</h3>
+					<div class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
+						<!-- Friend list items -->
+						<!-- <div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
+							<div class="w-10 h-10 rounded-full bg-gray-300"></div>
+							<span>Friend 1</span>
+						</div>
+						<div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
+							<div class="w-10 h-10 rounded-full bg-gray-300"></div>
+							<span>Friend 2</span>
+						</div> -->
+						<!-- More friends... -->
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
+					<button id="close-friends-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- View Match History -->
+		<div id="match-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+				<div class="px-4 pt-5 pb-4 sm:p-6">
+					<h3 class="text-lg border-b border-primary pb-2">All Matches</h3>
+					<div class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
+						<!-- Match History -->
+						<!-- <div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
+							<div class="w-10 h-10 rounded-full bg-gray-300"></div>
+							<span>Match 1</span>
+						</div>
+						<div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
+							<div class="w-10 h-10 rounded-full bg-gray-300"></div>
+							<span>Match 2</span>
+						</div> -->
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
+					<button id="close-match-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- View Upcoming Tournment -->
 	</template>
 
 	<script src="./dist/main.js"></script>
 	<script src="./dist/game/pong.js"></script>
 	<script src="./dist/profile/login.js"></script>
+	<script src="./dist/profile/profile.js"></script>
 	<script src="./dist/animation/animation.js"></script>
 </body>
 </html>
