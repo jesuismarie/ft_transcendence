@@ -1,32 +1,18 @@
 interface Friend {
 	id: number;
 	name: string;
+	avatar?: string;
 }
 
 const friends: Friend[] = [
-	{ id: 1, name: "Alice" },
-	{ id: 2, name: "Bob" },
-	{ id: 3, name: "Charlie" },
-	{ id: 4, name: "Diana" },
-	{ id: 5, name: "Edward" },
+	{ id: 1, name: "Alice", avatar: "https://example.com/avatar1.png" },
+	{ id: 2, name: "Bob", avatar: "https://example.com/avatar2.png" },
+	{ id: 3, name: "Charlie", avatar: "https://example.com/avatar3.png" },
+	{ id: 4, name: "Diana", avatar: "https://example.com/avatar4.png" },
+	{ id: 5, name: "Edward", avatar: "https://example.com/avatar5.png" },
 ];
 
 function viewFriends() {
-	const profileTemplate = document.getElementById("profile-template") as HTMLTemplateElement | null;
-
-	if (!profileTemplate) {
-		console.error("Profile template not found.");
-		return;
-	}
-
-	const wrapper = document.getElementById("wrapper");
-	if (!wrapper) {
-		console.error("Wrapper element not found.");
-		return;
-	}
-	wrapper.innerHTML = "";
-	wrapper.appendChild(profileTemplate.content.cloneNode(true));
-
 	const previewContainer = document.getElementById("friends-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("friend-modal-list") as HTMLElement | null;
 	const viewAllBtn = document.getElementById("friend-list-btn") as HTMLElement | null;
@@ -60,7 +46,6 @@ function viewFriends() {
 
 	if (friends.length === 0) {
 		previewContainer.innerHTML = `<p class="text-gray-500 p-4">No friends yet.</p>`;
-		modalListContainer.innerHTML = `<p class="text-gray-500 p-4">You don’t have any friends added.</p>`;
 		return;
 	}
 	if (friends.length > 3) {
@@ -74,5 +59,4 @@ function viewFriends() {
 	closeModalBtn.addEventListener("click", () => {
 		modal.classList.add("hidden");
 	});
-	console.log(wrapper.innerHTML);
 }

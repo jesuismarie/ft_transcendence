@@ -12,6 +12,12 @@ function hideModal(modalId: string) {
 	}
 }
 
+function initProfileData() {
+	initWipeText();
+	viewFriends();
+	viewMatches();
+}
+
 window.addEventListener("DOMContentLoaded", () => {
 	document.getElementById("edit-profile-btn")?.addEventListener("click", () => {
 		showModal("edit-profile-modal");

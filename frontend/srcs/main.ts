@@ -34,8 +34,7 @@ function loadGamePage() {
 
 function loadProfilePage() {
 	loadTemplate("profile-template", "Pong Profile");
-	initWipeText();
-	viewFriends();
+	initProfileData();
 }
 
 const routes: { [key: string]: () => void } = {

@@ -164,20 +164,7 @@
 							<h3 class="text-lg leading-6 font-medium border-b border-primary">
 								Match History
 							</h3>
-							<div class="divide-y divide-gray-200">
-								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50">
-									<div class="flex flex-col sm:flex-row sm:justify-between">
-										<div class="flex items-center">
-											<!-- Who vs who -->
-											<!-- Win or Lose -->
-										</div>
-										<div class="mt-2 sm:mt-0 text-sm text-gray-500">
-											<!-- Count -->
-											<!-- Date -->
-										</div>
-									</div>
-									<p class="mt-2 text-sm text-gray-500"><!-- Tournament Name --></p>
-								</div>
+							<div id="matches-preview" class="divide-y divide-gray-200">
 							</div>
 							<button id="match-list-btn" class="hidden px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Matches</button>
 						</div>
@@ -240,24 +227,15 @@
 		</div>
 
 		<!-- View Match History -->
-		<div id="match-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+		<div id="matches-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 				<div class="px-4 pt-5 pb-4 sm:p-6">
 					<h3 class="text-lg border-b border-primary pb-2">All Matches</h3>
-					<div class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
-						<!-- Match History -->
-						<!-- <div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
-							<div class="w-10 h-10 rounded-full bg-gray-300"></div>
-							<span>Match 1</span>
-						</div>
-						<div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
-							<div class="w-10 h-10 rounded-full bg-gray-300"></div>
-							<span>Match 2</span>
-						</div> -->
+					<div id="match-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
 					</div>
 				</div>
 				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
-					<button id="close-match-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
+					<button id="close-matches-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
 				</div>
 			</div>
 		</div>
@@ -269,6 +247,7 @@
 	<script src="./dist/game/pong.js" defer></script>
 	<script src="./dist/profile/profile.js" defer></script>
 	<script src="./dist/profile/friends.js" defer></script>
+	<script src="./dist/profile/matches.js" defer></script>
 	<script src="./dist/animation/animation.js" defer></script>
 </body>
 </html>
