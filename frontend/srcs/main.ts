@@ -17,6 +17,7 @@ function loadTemplate(templateId: string, title: string) {
 
 function loadHomePage() {
 	loadTemplate("home-template", "Welcome to Pong!");
+	initWipeText();
 }
 
 function loadSignInForm() {
@@ -33,6 +34,8 @@ function loadGamePage() {
 
 function loadProfilePage() {
 	loadTemplate("profile-template", "Pong Profile");
+	initWipeText();
+	viewFriends();
 }
 
 const routes: { [key: string]: () => void } = {

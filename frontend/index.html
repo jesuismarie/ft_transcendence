@@ -141,12 +141,9 @@
 							<h3 class="text-lg border-b border-primary">
 								Friends
 							</h3>
-							<div class="divide-y divide-gray-200">
-								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50">
-									<!-- Friends list -->
-								</div>
+							<div id="friends-preview" class="divide-y divide-gray-200">
 							</div>
-							<button id="friend-list-btn" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
+							<button id="friend-list-btn" class="hidden px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
 						</div>
 					</div>
 					<div class="lg:col-span-3 space-y-6 rounded-md border border-hover">
@@ -182,7 +179,7 @@
 									<p class="mt-2 text-sm text-gray-500"><!-- Tournament Name --></p>
 								</div>
 							</div>
-							<button id="match-list-btn" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Matches</button>
+							<button id="match-list-btn" class="hidden px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Matches</button>
 						</div>
 
 						<!-- Upcoming Tournaments -->
@@ -233,17 +230,7 @@
 			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 				<div class="px-4 pt-5 pb-4 sm:p-6">
 					<h3 class="text-lg border-b border-primary pb-2">All Friends</h3>
-					<div class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
-						<!-- Friend list items -->
-						<!-- <div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
-							<div class="w-10 h-10 rounded-full bg-gray-300"></div>
-							<span>Friend 1</span>
-						</div>
-						<div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
-							<div class="w-10 h-10 rounded-full bg-gray-300"></div>
-							<span>Friend 2</span>
-						</div> -->
-						<!-- More friends... -->
+					<div id="friend-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
 					</div>
 				</div>
 				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
@@ -278,10 +265,10 @@
 		<!-- View Upcoming Tournment -->
 	</template>
 
-	<script src="./dist/main.js"></script>
-	<script src="./dist/game/pong.js"></script>
-	<script src="./dist/profile/login.js"></script>
-	<script src="./dist/profile/profile.js"></script>
-	<script src="./dist/animation/animation.js"></script>
+	<script src="./dist/main.js" defer></script>
+	<script src="./dist/game/pong.js" defer></script>
+	<script src="./dist/profile/profile.js" defer></script>
+	<script src="./dist/profile/friends.js" defer></script>
+	<script src="./dist/animation/animation.js" defer></script>
 </body>
 </html>

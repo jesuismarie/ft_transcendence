@@ -23,6 +23,3 @@ function initWipeText() {
 		observer.observe(el);
 	});
 };
-
-window.onload = initWipeText;
-document.addEventListener("DOMContentLoaded", initWipeText);
