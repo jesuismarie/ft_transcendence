@@ -4,7 +4,7 @@ function initializePongGame() {
 		console.error('Canvas element not found');
 		return;
 	}
-	const ctx = canvas.getContext('2d')!;
+	const ctx = canvas.getContext('2d')!; // ! Es inchi hamar a
 	const ASPECT_RATIO = 16 / 9;
 
 	let ballRadius: number;
@@ -18,6 +18,9 @@ function initializePongGame() {
 	let ballSpeedY: number;
 	let leftPaddleY: number;
 	let rightPaddleY: number;
+	let leftPaddlescore: number = 0;
+	let rightPaddlescore: number = 0;
+	let initializeBallSide: "left" | "right" = "left";
 
 	const activeKeys = {
 		w: false,
@@ -28,12 +31,14 @@ function initializePongGame() {
 
 	const setupGame = () => {
 		resizeCanvas();
-		initializeBall();
+		initializeBall(initializeBallSide);
 		initializePaddles();
+		handleScore();
+
 	};
 
 	const resizeCanvas = () => {
-		const isWideScreen = window.innerWidth / window.innerHeight > ASPECT_RATIO;
+		const isWideScreen = (window.innerWidth / window.innerHeight) > ASPECT_RATIO;
 		
 		if (isWideScreen) {
 			canvas.height = Math.min(window.innerHeight * 0.8, 700);
@@ -49,13 +54,13 @@ function initializePongGame() {
 		paddleSpeed = canvas.height * 0.02;
 	};
 
-	const initializeBall = () => {
+	const initializeBall = (side: "left" | "right") => {
 		ballX = canvas.width / 2;
 		ballY = canvas.height / 2;
 		
 		const baseSpeed = canvas.width * 0.005;
-		ballSpeedX = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
-		ballSpeedY = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
+		ballSpeedX = baseSpeed * (side == "right" ? 1 : -1);
+		ballSpeedY = baseSpeed * (side == "right" ? 1 : -1);
 	};
 
 	const initializePaddles = () => {
@@ -80,6 +85,7 @@ function initializePongGame() {
 		movePaddles();
 		moveBall();
 		checkCollisions();
+		checkWinner();
 	};
 
 	const movePaddles = () => {
@@ -109,6 +115,15 @@ function initializePongGame() {
 		checkScoreCondition();
 	};
 
+	const checkWinner = () => {
+		if (leftPaddlescore == 10 || rightPaddlescore == 10) {
+			alert(`Game Over! ${leftPaddlescore == 10 ? 'Left' : 'Right'} player wins!`);
+			leftPaddlescore = 0;
+			rightPaddlescore = 0;
+			resetRound();
+		}
+	};
+
 	const checkWallCollision = () => {
 		if (ballY - ballRadius < 0 || ballY + ballRadius > canvas.height) {
 			ballSpeedY = -ballSpeedY;
@@ -136,13 +151,23 @@ function initializePongGame() {
 	};
 
 	const checkScoreCondition = () => {
-		if (ballX - ballRadius < 0 || ballX + ballRadius > canvas.width) {
+		if (ballX - ballRadius < 0)
+		{
+			rightPaddlescore++;
+			initializeBallSide = "right"
+			resetRound();
+			return ;
+		}
+		if (ballX + ballRadius > canvas.width)
+		{
+			leftPaddlescore++;
+			initializeBallSide = "left"
 			resetRound();
 		}
 	};
 
 	const resetRound = () => {
-		initializeBall();
+		initializeBall(initializeBallSide);
 		initializePaddles();
 	};
 
@@ -180,19 +205,36 @@ function initializePongGame() {
 		ctx.fill();
 		ctx.closePath();
 	};
-
+	
 	const gameLoop = () => {
 		updateGameState();
 		renderGame();
-		requestAnimationFrame(gameLoop);
+		handleScore();
+		
+		setTimeout(() => {
+			requestAnimationFrame(gameLoop); // Adds ~10ms delay
+		}, 10); // 10ms sleep
 	};
 
+	const handleScore = () => {
+		ctx.font = `${canvas.width * 0.04}px Arial`;
+		ctx.fillStyle = '#fff';
+		ctx.textAlign = "center";
+		ctx.fillText("Score", (canvas.width / 2), canvas.height * 0.055);
+		ctx.fillText(`${leftPaddlescore} | ${rightPaddlescore}`, (canvas.width / 2), canvas.height * 0.12);
+	}
 	document.addEventListener('keydown', handleKeyDown);
 	document.addEventListener('keyup', handleKeyUp);
 	document.addEventListener('keydown', gameLoop, { once: true });
 
 	setupGame();
 	renderGame();
+
+	// let height: TextMetrics = ctx.measureText("Press any key to start");
+	// console.log(height);
+	// height = ctx.measureText("Press any key to start");
+	// ctx.textAlign = "center";
+	// console.log(`window.innerHeight: ${window.innerHeight}, window.innerWidth: ${window.innerWidth}`);	
 }
 
 // function handleResize() {
