@@ -14,32 +14,26 @@ function hideModal(modalId: string) {
 
 function initProfileData() {
 	initWipeText();
+	editProfile();
 	viewFriends();
+	searchUsers();
 	viewMatches();
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-	document.getElementById("edit-profile-btn")?.addEventListener("click", () => {
+function editProfile() {
+	const editProfileBtn = document.getElementById("edit-profile-btn") as HTMLButtonElement | null;
+	const closeEditModalBtn = document.getElementById("close-edit-modal") as HTMLButtonElement | null;
+
+	if (!editProfileBtn || !closeEditModalBtn) {
+		console.error("One or more required elements are missing in the DOM.");
+		return;
+	}
+
+	editProfileBtn.addEventListener("click", () => {
 		showModal("edit-profile-modal");
 	});
 
-	document.getElementById("friend-list-btn")?.addEventListener("click", () => {
-		showModal("friends-modal");
-	});
-
-	document.getElementById("match-list-btn")?.addEventListener("click", () => {
-		showModal("match-modal");
-	});
-
-	document.getElementById("close-edit-modal")?.addEventListener("click", () => {
+	closeEditModalBtn.addEventListener("click", () => {
 		hideModal("edit-profile-modal");
 	});
-
-	document.getElementById("close-friends-modal")?.addEventListener("click", () => {
-		hideModal("friends-modal");
-	});
-
-	document.getElementById("close-match-modal")?.addEventListener("click", () => {
-		hideModal("match-modal");
-	});
-});
+}
