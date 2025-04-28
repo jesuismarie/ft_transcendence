@@ -10,16 +10,20 @@ const friends: Friend[] = [
 	{ id: 3, name: "Charlie", avatar: "https://example.com/avatar3.png" },
 	{ id: 4, name: "Diana", avatar: "https://example.com/avatar4.png" },
 	{ id: 5, name: "Edward", avatar: "https://example.com/avatar5.png" },
+	{ id: 6, name: "Fiona", avatar: "https://example.com/avatar6.png" },
+	{ id: 7, name: "George", avatar: "https://example.com/avatar7.png" },
+	{ id: 8, name: "Hannah", avatar: "https://example.com/avatar8.png" },
+	{ id: 9, name: "Ian", avatar: "https://example.com/avatar9.png" },
+	{ id: 10, name: "Judy", avatar: "https://example.com/avatar10.png" },
 ];
 
 function viewFriends() {
 	const previewContainer = document.getElementById("friends-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("friend-modal-list") as HTMLElement | null;
 	const viewAllBtn = document.getElementById("friend-list-btn") as HTMLElement | null;
-	const modal = document.getElementById("friends-modal") as HTMLElement | null;
 	const closeModalBtn = document.getElementById("close-friends-modal") as HTMLElement | null;
 
-	if (!previewContainer || !modalListContainer || !viewAllBtn || !modal || !closeModalBtn) {
+	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
@@ -34,7 +38,7 @@ function viewFriends() {
 	};
 
 	previewContainer.innerHTML = "";
-	const previewFriends = friends.slice(0, 3);
+	const previewFriends = friends.slice(0, 5);
 	previewFriends.forEach(friend => {
 		previewContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
 	});
@@ -44,19 +48,19 @@ function viewFriends() {
 		modalListContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
 	});
 
-	if (friends.length === 0) {
+	if (friends.length == 0) {
 		previewContainer.innerHTML = `<p class="text-gray-500 p-4">No friends yet.</p>`;
 		return;
 	}
-	if (friends.length > 3) {
+	if (friends.length > 5) {
 		viewAllBtn.classList.remove("hidden");
 	}
 
 	viewAllBtn.addEventListener("click", () => {
-		modal.classList.remove("hidden");
+		showModal("friends-modal");
 	});
 
 	closeModalBtn.addEventListener("click", () => {
-		modal.classList.add("hidden");
+		hideModal("friends-modal");
 	});
 }

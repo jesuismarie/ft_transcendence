@@ -14,16 +14,20 @@ const matches: Match[] = [
 	{ id: 3, player1: "Edward", player2: "Alice", date: "2023-10-03", win: true, pl_1_score: 6, pl_2_score: 5 },
 	{ id: 4, player1: "Bob", player2: "Charlie", date: "2023-10-04", win: false, pl_1_score: 3, pl_2_score: 7 },
 	{ id: 5, player1: "Diana", player2: "Edward", date: "2023-10-05", win: true, pl_1_score: 8, pl_2_score: 6 },
+	{ id: 6, player1: "Alice", player2: "Charlie", date: "2023-10-06", win: false, pl_1_score: 4, pl_2_score: 5 },
+	{ id: 7, player1: "Bob", player2: "Diana", date: "2023-10-07", win: true, pl_1_score: 7, pl_2_score: 4 },
+	{ id: 8, player1: "Edward", player2: "Alice", date: "2023-10-08", win: false, pl_1_score: 3, pl_2_score: 6 },
+	{ id: 9, player1: "Charlie", player2: "Bob", date: "2023-10-09", win: true, pl_1_score: 5, pl_2_score: 4 },
+	{ id: 10, player1: "Diana", player2: "Edward", date: "2023-10-10", win: false, pl_1_score: 2, pl_2_score: 3 },
 ];
 
 function viewMatches() {
 	const previewContainer = document.getElementById("matches-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("match-modal-list") as HTMLElement | null;
 	const viewAllBtn = document.getElementById("match-list-btn") as HTMLButtonElement | null;
-	const modal = document.getElementById("matches-modal") as HTMLElement | null;
 	const closeModalBtn = document.getElementById("close-matches-modal") as HTMLButtonElement | null;
 
-	if (!previewContainer || !modalListContainer || !viewAllBtn || !modal || !closeModalBtn) {
+	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
@@ -52,7 +56,7 @@ function viewMatches() {
 	};
 
 	previewContainer.innerHTML = "";
-	const previewMatches = matches.slice(0, 3);
+	const previewMatches = matches.slice(0, 5);
 	previewMatches.forEach(match => {
 		previewContainer.insertAdjacentHTML("beforeend", renderMatchItem(match));
 	});
@@ -62,19 +66,19 @@ function viewMatches() {
 		modalListContainer.insertAdjacentHTML("beforeend", renderMatchItem(match));
 	});
 
-	if (matches.length === 0) {
+	if (matches.length == 0) {
 		previewContainer.innerHTML = `<p class="text-gray-500 p-4">No matches yet.</p>`;
 		return;
 	}
-	if (matches.length > 3) {
+	if (matches.length > 5) {
 		viewAllBtn.classList.remove("hidden");
 	}
 
 	viewAllBtn.addEventListener("click", () => {
-		modal.classList.remove("hidden");
+		showModal("matches-modal");
 	});
 
 	closeModalBtn.addEventListener("click", () => {
-		modal.classList.add("hidden");
+		hideModal("matches-modal");
 	});
 }
