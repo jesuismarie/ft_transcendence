@@ -4,6 +4,7 @@ function initializePongGame() {
 		console.error('Canvas element not found');
 		return;
 	}
+	
 	const ctx = canvas.getContext('2d')!; // ! Es inchi hamar a
 	const ASPECT_RATIO = 16 / 9;
 
@@ -41,7 +42,7 @@ function initializePongGame() {
 		const isWideScreen = (window.innerWidth / window.innerHeight) > ASPECT_RATIO;
 		
 		if (isWideScreen) {
-			canvas.height = Math.min(window.innerHeight * 0.8, 700);
+			canvas.height = Math.min((window.innerHeight - 100) * 0.8, 700);
 			canvas.width = canvas.height * ASPECT_RATIO;
 		} else {
 			canvas.width = Math.min(window.innerWidth * 0.8, 1000);
@@ -217,12 +218,15 @@ function initializePongGame() {
 	};
 
 	const handleScore = () => {
-		ctx.font = `${canvas.width * 0.04}px Arial`;
-		ctx.fillStyle = '#fff';
-		ctx.textAlign = "center";
-		ctx.fillText("Score", (canvas.width / 2), canvas.height * 0.055);
-		ctx.fillText(`${leftPaddlescore} | ${rightPaddlescore}`, (canvas.width / 2), canvas.height * 0.12);
-	}
+		const player1ScoreElement = document.getElementById('player1-score');
+		const player2ScoreElement = document.getElementById('player2-score');
+
+		if (player1ScoreElement && player2ScoreElement) {
+			player1ScoreElement.textContent = leftPaddlescore.toString();
+			player2ScoreElement.textContent = rightPaddlescore.toString();
+		}
+	};
+
 	document.addEventListener('keydown', handleKeyDown);
 	document.addEventListener('keyup', handleKeyUp);
 	document.addEventListener('keydown', gameLoop, { once: true });
