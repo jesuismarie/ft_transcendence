@@ -1,23 +1,23 @@
 interface Friend {
 	id: number;
-	name: string;
+	username: string;
 	avatar?: string;
 }
 
 const friends: Friend[] = [
-	{ id: 1, name: "Alice", avatar: "https://example.com/avatar1.png" },
-	{ id: 2, name: "Bob", avatar: "https://example.com/avatar2.png" },
-	{ id: 3, name: "Charlie", avatar: "https://example.com/avatar3.png" },
-	{ id: 4, name: "Diana", avatar: "https://example.com/avatar4.png" },
-	{ id: 5, name: "Edward", avatar: "https://example.com/avatar5.png" },
-	{ id: 6, name: "Fiona", avatar: "https://example.com/avatar6.png" },
-	{ id: 7, name: "George", avatar: "https://example.com/avatar7.png" },
-	{ id: 8, name: "Hannah", avatar: "https://example.com/avatar8.png" },
-	{ id: 9, name: "Ian", avatar: "https://example.com/avatar9.png" },
-	{ id: 10, name: "Judy", avatar: "https://example.com/avatar10.png" },
+	{ id: 1, username: "Alice", avatar: "https://example.com/avatar1.png" },
+	{ id: 2, username: "Bob", avatar: "https://example.com/avatar2.png" },
+	{ id: 3, username: "Charlie", avatar: "https://example.com/avatar3.png" },
+	{ id: 4, username: "Diana", avatar: "https://example.com/avatar4.png" },
+	{ id: 5, username: "Edward", avatar: "https://example.com/avatar5.png" },
+	{ id: 6, username: "Fiona", avatar: "https://example.com/avatar6.png" },
+	{ id: 7, username: "George", avatar: "https://example.com/avatar7.png" },
+	{ id: 8, username: "Hannah", avatar: "https://example.com/avatar8.png" },
+	{ id: 9, username: "Ian", avatar: "https://example.com/avatar9.png" },
+	{ id: 10, username: "Judy", avatar: "https://example.com/avatar10.png" },
 ];
 
-function viewFriends() {
+function viewFriends(username: string | null = null) {
 	const previewContainer = document.getElementById("friends-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("friend-modal-list") as HTMLElement | null;
 	const viewAllBtn = document.getElementById("friend-list-btn") as HTMLElement | null;
@@ -29,10 +29,11 @@ function viewFriends() {
 	}
 
 	const renderFriendItem = (friend: Friend): string => {
+		const targetHash = friend.username === currentUser ? "#profile" : `#profile/${friend.username}`;
 		return `
-			<div class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3">
-				<div class="w-10 h-10 rounded-full bg-gray-300"></div>
-				<span>${friend.name}</span>
+			<div onclick="location.hash = '${targetHash}';" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
+				<img src="${friend.avatar}" alt="${friend.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
+				<span>${friend.username}</span>
 			</div>
 		`;
 	};

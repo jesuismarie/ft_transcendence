@@ -12,28 +12,28 @@ function hideModal(modalId: string) {
 	}
 }
 
-function initProfileData() {
+function initPersonaleData(username: string | null = null) {
 	initWipeText();
-	editProfile();
-	viewFriends();
 	searchUsers();
-	viewMatches();
-}
+	viewFriends(username);
+	viewMatches(username);
 
-function editProfile() {
 	const editProfileBtn = document.getElementById("edit-profile-btn") as HTMLButtonElement | null;
-	const closeEditModalBtn = document.getElementById("close-edit-modal") as HTMLButtonElement | null;
+	const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLElement | null;
 
-	if (!editProfileBtn || !closeEditModalBtn) {
-		console.error("One or more required elements are missing in the DOM.");
-		return;
+	if (username === currentUser) {
+		editProfileBtn?.classList.remove("hidden");
+		editProfile();
+	} else {
+		editProfileBtn?.classList.add("hidden");
 	}
 
-	editProfileBtn.addEventListener("click", () => {
-		showModal("edit-profile-modal");
-	});
-
-	closeEditModalBtn.addEventListener("click", () => {
-		hideModal("edit-profile-modal");
-	});
+	if (username === currentUser) {
+		upcomingTournaments?.classList.remove("hidden");
+		//upcomingTournaments();
+	} else {
+		upcomingTournaments?.classList.add("hidden");
+	}
 }
+
+

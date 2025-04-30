@@ -1,4 +1,6 @@
 const mainWrapper = document.getElementById("wrapper") as HTMLElement | null;
+let currentUser: string | null = localStorage.getItem("currentUser");
+
 
 function loadTemplate(templateId: string, title: string) {
 	if (!mainWrapper)
@@ -12,7 +14,6 @@ function loadTemplate(templateId: string, title: string) {
 	mainWrapper.innerHTML = '';
 	mainWrapper.appendChild(clone);
 	document.title = title;
-	location.hash = `#${templateId.split('-')[0]}`;
 }
 
 function loadHomePage() {
@@ -23,6 +24,7 @@ function loadHomePage() {
 function loadSignInForm() {
 	loadTemplate("signin-template", "Sign In");
 }
+
 function loadSignUpForm() {
 	loadTemplate("signup-template", "Sign Up");
 }
@@ -32,10 +34,22 @@ function loadGamePage() {
 	initializePongGame();
 }
 
-function loadProfilePage() {
+function loadProfilePage(username: string | null = null) {
+	if (username === currentUser || username === null) {
+		if (location.hash !== "#profile") {
+			location.hash = "#profile";
+			return;
+		}
+	} else {
+		if (location.hash !== `#profile/${username}`) {
+			location.hash = `#profile/${username}`;
+			return;
+		}
+	}
 	loadTemplate("profile-template", "Pong Profile");
-	initProfileData();
+	initPersonaleData(username);
 }
+
 
 const routes: { [key: string]: () => void } = {
 	"#": loadHomePage,
@@ -47,7 +61,15 @@ const routes: { [key: string]: () => void } = {
 };
 
 function handleRouting() {
-	const route = routes[location.hash] || loadHomePage;
+	const hash = location.hash;
+
+	if (hash.startsWith("#profile/")) {
+		const username = hash.split("/")[1];
+		loadProfilePage(username);
+		return;
+	}
+
+	const route = routes[hash] || loadHomePage;
 	route();
 }
 

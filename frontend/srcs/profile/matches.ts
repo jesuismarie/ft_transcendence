@@ -21,7 +21,7 @@ const matches: Match[] = [
 	{ id: 10, player1: "Diana", player2: "Edward", date: "2023-10-10", win: false, pl_1_score: 2, pl_2_score: 3 },
 ];
 
-function viewMatches() {
+function viewMatches(username: string | null = null) {
 	const previewContainer = document.getElementById("matches-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("match-modal-list") as HTMLElement | null;
 	const viewAllBtn = document.getElementById("match-list-btn") as HTMLButtonElement | null;
