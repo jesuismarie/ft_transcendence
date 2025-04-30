@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: [
-		"./public/**/*.html",
 		"./srcs/**/*.{ts,js}",
 		"./index.html"
 	],
@@ -17,11 +16,11 @@ module.exports = {
 			borderWidth: {
 				'5': '5px'
 			},
-			boxSHadow: {
-				'neon-btn-hover': '0_0_10px_#DCDCDD,0_0_20px_#B8B8B9,0_0_30px_#8F8F90',
-				'neon-hover': '0_0_5px_#DCDCDD,0_0_15px_#30BDAC,0_0_20px_#50A39A',
-				'white-glow': '0_0_5px_#DCDCDD,0_0_10px_#B8B8B9,0_0_15px_#8F8F90',
-				'div-glow': '0_10px_30px_rgba(0,0,0,0.2)',
+			boxShadow: {
+				'neon-btn-hover': '0 0 10px #DCDCDD, 0 0 20px #B8B8B9, 0 0 30px #8F8F90',
+				'neon-hover': '0 0 5px #DCDCDD, 0 0 15px #30BDAC, 0 0 20px #50A39A',
+				'white-glow': '0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90',
+				'div-glow': '0 10px 30px rgba(0,0,0,0.2)',
 			},
 			keyframes: {
 				neonGlow: {
