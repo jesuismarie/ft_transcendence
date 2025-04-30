@@ -99,20 +99,20 @@
 			</h1>
 			<div class="w-[80vw] h-[80vh] bg-white flex flex-col justify-center items-center text-center border rounded-[20px] shadow-div-glow p-2">
 				<!-- Navigation Menu -->
-				<div class="w-full h-14 flex justify-end items-center px-4 sm:px-6 lg:px-8">
-					<nav class="max-w-7xl flex justify-between h-14 items-center space-x-4">
-						<button id="view-tournent1" class="hover:text-hover">Tournaments</a>
-						<button id="search-modal-btn" class="w-[20px] h-[20px] mx-8 rounded-full">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+				<div class="w-full h-14 flex justify-end items-center px-4 sm:px-6 lg:px-8 bg-white">
+					<nav class="flex items-center space-x-4">
+						<button id="search-modal-btn" class="flex items-center gap-2 h-[40px] px-4 rounded-full hover:bg-hover transition">
+							<span class="text-sm font-medium">Search</span>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-5 h-5">
 								<path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
 							</svg>
 						</button>
+						<button id="logout-btn" class="flex items-center justify-center w-[40px] h-[40px] rounded-full hover:bg-hover transition">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-5 h-5">
+								<path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/>
+							</svg>
+						</button>
 					</nav>
-					<button class="w-[20px] h-[20px] ml-5 rounded-full">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-							<path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/>
-						</svg>
-					</button>
 				</div>
 				<div class="w-full h-full overflow-y-auto grid grid-cols-1 lg:grid-cols-4 gap-8 px-4 sm:px-6 lg:px-8">
 					<!-- Profile Information -->
@@ -151,7 +151,7 @@
 							</div>
 						</div>
 						<div class="px-4 py-3 rounded-md border border-hover">
-							<h3 class="text-lg border-b border-primary">
+							<h3 class="text-lg border-b border-hover">
 								Friends
 							</h3>
 							<div id="friends-preview" class="divide-y divide-gray-200">
@@ -159,10 +159,10 @@
 							<button id="friend-list-btn" class="hidden px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
 						</div>
 					</div>
-					<div class="lg:col-span-3 space-y-6 rounded-md border border-hover">
+					<div class="lg:col-span-3 rounded-md border border-hover">
 						<!-- Match History -->
 						<div class="rounded-mg px-5 py-4 border-b border-hover">
-							<h3 class="text-lg leading-6 font-medium border-b border-primary">
+							<h3 class="text-lg font-medium border-b border-hover">
 								Match History
 							</h3>
 							<div id="matches-preview" class="divide-y divide-gray-200">
@@ -171,8 +171,8 @@
 						</div>
 
 						<!-- Upcoming Tournaments -->
-						<div class="rounded-mg px-5 py-4 border-b border-hover">
-							<h3 class="text-lg leading-6 font-medium border-b border-primary">
+						<div class="rounded-mg px-5 py-4">
+							<h3 class="text-lg font-medium border-b border-hover">
 								Upcoming Tournaments
 							</h3>
 							<div class="divide-y divide-gray-200">
@@ -182,11 +182,11 @@
 											<!-- Tournment Name -->
 											<!-- Date -->
 										</div>
-										<span class=" mt-2 sm:mt-0 px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full"><!--Registered--></span>
+										<span class="mt-2 sm:mt-0 px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full"><!--Registered--></span>
 									</div>
 								</div>
 							</div>
-							<button id="view-tournent2" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">Browse Tournments</button>
+							<button id="view-tournent" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">Browse Tournments</button>
 						</div>
 					</div>
 				</div>
@@ -219,7 +219,7 @@
 		<div id="friends-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 				<div class="px-4 pt-5 pb-4 sm:p-6">
-					<h3 class="text-lg border-b border-primary pb-2">
+					<h3 class="text-lg border-b border-hover pb-2">
 						All Friends
 					</h3>
 					<div id="friend-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
@@ -235,7 +235,7 @@
 		<div id="search-users-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 				<div class="px-4 pt-5 pb-4 sm:p-6">
-					<h3 class="text-lg border-b border-primary pb-2">
+					<h3 class="text-lg border-b border-hover pb-2">
 						Search
 					</h3>
 					<div class="flex flex-col sm:flex-row gap-4 mt-4">
@@ -255,7 +255,7 @@
 		<div id="matches-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 				<div class="px-4 pt-5 pb-4 sm:p-6">
-					<h3 class="text-lg border-b border-primary pb-2">
+					<h3 class="text-lg border-b border-hover pb-2">
 						All Matches
 					</h3>
 					<div id="match-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">

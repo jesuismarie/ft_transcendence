@@ -38,7 +38,7 @@ function viewFriends() {
 	};
 
 	previewContainer.innerHTML = "";
-	const previewFriends = friends.slice(0, 5);
+	const previewFriends = friends.slice(0, 3);
 	previewFriends.forEach(friend => {
 		previewContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
 	});
@@ -52,7 +52,7 @@ function viewFriends() {
 		previewContainer.innerHTML = `<p class="text-gray-500 p-4">No friends yet.</p>`;
 		return;
 	}
-	if (friends.length > 5) {
+	if (friends.length > 3) {
 		viewAllBtn.classList.remove("hidden");
 	}
 

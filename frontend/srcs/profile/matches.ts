@@ -34,7 +34,7 @@ function viewMatches() {
 
 	const renderMatchItem = (match: Match): string => {
 		return `
-		<div class="p-4 sm:p-6 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition duration-300">
+		<div class="px-4 py-3 shadow-sm hover:bg-gray-50 transition duration-300">
 			<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
 				<div class="text-lg font-semibold text-gray-800 flex items-center flex-wrap gap-2 sm:gap-4">
 					<span >${match.player1}</span>
