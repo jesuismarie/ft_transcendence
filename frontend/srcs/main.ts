@@ -14,6 +14,8 @@ function loadTemplate(templateId: string, title: string) {
 	mainWrapper.innerHTML = '';
 	mainWrapper.appendChild(clone);
 	document.title = title;
+	if (templateId != "profile-template")
+		location.hash = `#${templateId.split('-')[0]}`;
 }
 
 function loadHomePage() {

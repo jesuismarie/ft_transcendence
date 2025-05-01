@@ -208,6 +208,8 @@ function initializePongGame() {
 	};
 	
 	const gameLoop = () => {
+		if (location.hash != "#game")
+			return ;
 		updateGameState();
 		renderGame();
 		handleScore();
