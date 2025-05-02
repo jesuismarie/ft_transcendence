@@ -35,6 +35,7 @@ function initPersonaleData(username: string | null = null) {
 		editProfile();
 		upcomingTournaments?.classList.remove("hidden");
 		//upcomingTournaments();
+		initRequests(username);
 	} else {
 		editProfileBtn?.classList.add("hidden");
 		upcomingTournaments?.classList.add("hidden");

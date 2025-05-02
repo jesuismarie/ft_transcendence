@@ -100,7 +100,10 @@
 			<div class="w-[80vw] h-[80vh] bg-white flex flex-col justify-center items-center text-center border rounded-[20px] shadow-div-glow p-2">
 				<!-- Navigation Menu -->
 				<div class="w-full h-14 flex justify-end items-center px-4 sm:px-6 lg:px-8 bg-white">
-					<nav class="flex items-center space-x-4">
+					<nav class="flex items-center space-x-2">
+						<button id="friend-request-list-btn" class="flex items-center gap-2 h-[40px] px-4 rounded-full hover:bg-hover transition">
+							Requests
+						</button>
 						<button id="search-modal-btn" class="flex items-center gap-2 h-[40px] px-4 rounded-full hover:bg-hover transition">
 							<span class="text-sm font-medium">Search</span>
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-5 h-5">
@@ -225,6 +228,25 @@
 			</div>
 		</div>
 
+
+		<!-- Friend Requests -->
+		<div id="friend-requests-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+				<div class="px-4 pt-5 pb-4 sm:p-6">
+					<h3 class="text-lg border-b border-hover pb-2">
+						Friend Requests
+					</h3>
+					<div id="friend-requests-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
+					<button id="close-friend-requests-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">
+						Close
+					</button>
+				</div>
+			</div>
+		</div>
+
 		<!-- Search Users -->
 		<div id="search-users-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
@@ -283,6 +305,7 @@
 	<script src="./dist/profile/edit.js" defer></script>
 	<script src="./dist/profile/search.js" defer></script>
 	<script src="./dist/profile/friends.js" defer></script>
+	<script src="./dist/profile/requests.js" defer></script>
 	<script src="./dist/profile/matches.js" defer></script>
 	<script src="./dist/profile/tournaments.js" defer></script>
 	<script src="./dist/animation/animation.js" defer></script>
