@@ -147,6 +147,7 @@
 									<!-- Losses Count -->
 								</div>
 								<button onclick="loadGamePage()" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
+								<button id="friend-request-btn" class="hidden mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
 								<button id="edit-profile-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
 							</div>
 						</div>
@@ -171,22 +172,15 @@
 						</div>
 
 						<!-- Upcoming Tournaments -->
-						<div id="upcoming-tournaments" class="rounded-mg px-5 py-4">
-							<h3 class="text-lg font-medium border-b border-hover">
+						<div id="upcoming-tournaments" class="rounded-md px-5 py-4">
+							<h3 class="text-lg font-medium border-b border-hover mb-4">
 								Upcoming Tournaments
 							</h3>
-							<div class="divide-y divide-gray-200">
-								<div class="px-4 py-5 sm:px-6 hover:bg-gray-50 cursor-pointer">
-									<div class="flex flex-col sm:flex-row sm:justify-between">
-										<div>
-											<!-- Tournment Name -->
-											<!-- Date -->
-										</div>
-										<span class="mt-2 sm:mt-0 px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full"><!--Registered--></span>
-									</div>
-								</div>
+							<div id="tournament-preview" class="divide-y divide-gray-200">
 							</div>
-							<button id="view-tournent" class="px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">Browse Tournments</button>
+							<button id="view-tournament" class="hidden mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">
+								Browse Tournaments
+							</button>
 						</div>
 					</div>
 				</div>
@@ -267,7 +261,20 @@
 			</div>
 		</div>
 
-		<!-- View Upcoming Tournment -->
+		<!-- View Upcoming Tournament -->
+		<div id="tournament-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+				<div class="px-4 pt-5 pb-4 sm:p-6">
+				<h3 class="text-lg border-b border-hover pb-2">
+					All Tournaments
+				</h3>
+				<div id="tournament-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200"></div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
+					<button id="close-tournament-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
+				</div>
+			</div>
+		</div>
 	</template>
 
 	<script src="./dist/main.js" defer></script>
@@ -277,6 +284,7 @@
 	<script src="./dist/profile/search.js" defer></script>
 	<script src="./dist/profile/friends.js" defer></script>
 	<script src="./dist/profile/matches.js" defer></script>
+	<script src="./dist/profile/tournaments.js" defer></script>
 	<script src="./dist/animation/animation.js" defer></script>
 </body>
 </html>

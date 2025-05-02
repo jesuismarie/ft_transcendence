@@ -3,11 +3,6 @@ function searchUsers() {
 	const listContainer = document.getElementById("search-users-list") as HTMLElement | null;
 	const closeModalBtn = document.getElementById("close-search-modal") as HTMLButtonElement | null;
 
-	console.log("searchUsers function called");
-	console.log(searchModalBtn);
-	console.log(listContainer);
-	console.log(closeModalBtn);
-	
 	if (!searchModalBtn || !listContainer || !closeModalBtn) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;

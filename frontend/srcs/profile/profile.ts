@@ -17,22 +17,28 @@ function initPersonaleData(username: string | null = null) {
 	searchUsers();
 	viewFriends(username);
 	viewMatches(username);
+	initTournaments();
+
 
 	const editProfileBtn = document.getElementById("edit-profile-btn") as HTMLButtonElement | null;
-	const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLElement | null;
+	const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLButtonElement | null;
+	const friendRequestBtn = document.getElementById("friend-request-btn") as HTMLButtonElement | null;
+
+	if (!editProfileBtn || !upcomingTournaments || !friendRequestBtn)
+	{
+		console.error("One or more required elements are missing in the DOM.");
+		return;
+	}
 
 	if (username === currentUser) {
 		editProfileBtn?.classList.remove("hidden");
 		editProfile();
-	} else {
-		editProfileBtn?.classList.add("hidden");
-	}
-
-	if (username === currentUser) {
 		upcomingTournaments?.classList.remove("hidden");
 		//upcomingTournaments();
 	} else {
+		editProfileBtn?.classList.add("hidden");
 		upcomingTournaments?.classList.add("hidden");
+		friendRequestBtn?.classList.remove("hidden");
 	}
 }
 
