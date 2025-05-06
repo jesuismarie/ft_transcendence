@@ -4,6 +4,7 @@ import {existsSync} from "node:fs";
 import {mkdirSync} from "fs";
 import {open} from "fs";
 
+console.log("Am I running the db.ts?");
 
 // Check if the database file exists, if not create it
 const dbDir = path.join(__dirname, '..', 'data');
@@ -28,9 +29,11 @@ db.pragma('journal_mode = WAL');
 db.exec(`CREATE TABLE IF NOT EXISTS users (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   email         TEXT    UNIQUE NOT NULL,
+  name          TEXT    NOT NULL,
   displayName   TEXT    NOT NULL,
   passwordHash  TEXT    NOT NULL,
-  createdAt     TEXT    NOT NULL DEFAULT (datetime('now'))
+  createdAt     TEXT    NOT NULL DEFAULT (datetime('now')),
+  rating        INTEGER NOT NULL DEFAULT 0
 )`);
 
 export default db;
