@@ -1,11 +1,3 @@
-interface Tournament {
-	id: number;
-	name: string;
-	date: string;
-	capacity: number;
-	registered: boolean;
-}
-
 const tournaments: Tournament[] = [
 	{ id: 1, name: "Masters Tournament", date: "2025-10-15", capacity: 64, registered: false },
 	{ id: 2, name: "Legends Cup", date: "2025-11-30", capacity: 128, registered: false },

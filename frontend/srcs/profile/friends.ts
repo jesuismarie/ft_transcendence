@@ -1,20 +1,14 @@
-interface Friend {
-	id: number;
-	username: string;
-	avatar?: string;
-}
-
 const friends: Friend[] = [
-	{ id: 1, username: "Alice", avatar: "https://example.com/avatar1.png" },
-	{ id: 2, username: "Bob", avatar: "https://example.com/avatar2.png" },
-	{ id: 3, username: "Charlie", avatar: "https://example.com/avatar3.png" },
-	{ id: 4, username: "Diana", avatar: "https://example.com/avatar4.png" },
-	{ id: 5, username: "Edward", avatar: "https://example.com/avatar5.png" },
-	{ id: 6, username: "Fiona", avatar: "https://example.com/avatar6.png" },
-	{ id: 7, username: "George", avatar: "https://example.com/avatar7.png" },
-	{ id: 8, username: "Hannah", avatar: "https://example.com/avatar8.png" },
-	{ id: 9, username: "Ian", avatar: "https://example.com/avatar9.png" },
-	{ id: 10, username: "Judy", avatar: "https://example.com/avatar10.png" },
+	{ id: 1, username: "friend1", avatar: "https://example.com/avatar1.jpg", status: true },
+	{ id: 2, username: "friend2", avatar: "https://example.com/avatar2.jpg", status: true },
+	{ id: 3, username: "friend3", avatar: "https://example.com/avatar3.jpg", status: true },
+	{ id: 4, username: "friend4", avatar: "https://example.com/avatar4.jpg", status: true },
+	{ id: 5, username: "friend5", avatar: "https://example.com/avatar5.jpg", status: true },
+	{ id: 6, username: "friend6", avatar: "https://example.com/avatar6.jpg", status: true },
+	{ id: 7, username: "friend7", avatar: "https://example.com/avatar7.jpg", status: true },
+	{ id: 8, username: "friend8", avatar: "https://example.com/avatar8.jpg", status: true },
+	{ id: 9, username: "friend9", avatar: "https://example.com/avatar9.jpg", status: true },
+	{ id: 10, username: "friend10", avatar: "https://example.com/avatar10.jpg", status: true },
 ];
 
 function viewFriends(username: string | null = null) {

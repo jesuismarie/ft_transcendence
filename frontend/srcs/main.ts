@@ -1,6 +1,10 @@
 const mainWrapper = document.getElementById("wrapper") as HTMLElement | null;
-let currentUser: string | null = localStorage.getItem("currentUser");
 
+function getCurrentUser(): string | null {
+	return localStorage.getItem("currentUser");
+}
+
+const currentUser = getCurrentUser();
 
 function loadTemplate(templateId: string, title: string) {
 	if (!mainWrapper)
@@ -37,6 +41,7 @@ function loadGamePage() {
 }
 
 function loadProfilePage(username: string | null = null) {
+	const currentUser = getCurrentUser();
 	if (username === currentUser || username === null) {
 		if (location.hash !== "#profile") {
 			location.hash = "#profile";
@@ -52,7 +57,6 @@ function loadProfilePage(username: string | null = null) {
 	initPersonaleData(username);
 }
 
-
 const routes: { [key: string]: () => void } = {
 	"#": loadHomePage,
 	"#home": loadHomePage,
@@ -67,6 +71,11 @@ function handleRouting() {
 
 	if (hash.startsWith("#profile/")) {
 		const username = hash.split("/")[1];
+		if (!username) {
+            console.error("Invalid profile URL");
+            loadHomePage();
+            return;
+        }
 		loadProfilePage(username);
 		return;
 	}
