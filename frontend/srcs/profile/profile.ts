@@ -12,7 +12,7 @@ function hideModal(modalId: string) {
 	}
 }
 
-function initPersonaleData(username: string | null = null, ) {
+function initPersonaleData(username: string | null = null) {
 	initWipeText();
 	searchUsers();
 	viewFriends(username);
@@ -21,6 +21,7 @@ function initPersonaleData(username: string | null = null, ) {
 	const editProfileBtn = document.getElementById("edit-profile-btn") as HTMLButtonElement | null;
 	const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLButtonElement | null;
 	const friendRequestBtn = document.getElementById("friend-request-btn") as HTMLButtonElement | null;
+	const friendRequestListBtn = document.getElementById("friend-request-list-btn") as HTMLButtonElement | null;
 
 	if (!editProfileBtn || !upcomingTournaments || !friendRequestBtn)
 	{
@@ -37,6 +38,7 @@ function initPersonaleData(username: string | null = null, ) {
 	} else {
 		editProfileBtn?.classList.add("hidden");
 		upcomingTournaments?.classList.add("hidden");
-		friendRequestBtn?.classList.add("hidden");
+		friendRequestBtn?.classList.remove("hidden");
+		friendRequestListBtn?.classList.add("hidden");
 	}
 }
