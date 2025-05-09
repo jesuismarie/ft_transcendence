@@ -138,3 +138,21 @@ function initTournaments(username: string | null = null) {
 		hideModal("tournament-modal");
 	});
 }
+
+function addTournament() {
+	const addTournamentPreviewBtn = document.getElementById("add-tournament-preview-btn") as HTMLButtonElement | null;
+	const closeTournamentModalBtn = document.getElementById("close-add-tournament-modal") as HTMLButtonElement | null;
+
+	if (!addTournamentPreviewBtn || !closeTournamentModalBtn) {
+		console.error("One or more required elements are missing in the DOM.");
+		return;
+	}
+
+	addTournamentPreviewBtn.addEventListener("click", () => {
+		showModal("add-tournament-modal");
+	});
+
+	closeTournamentModalBtn.addEventListener("click", () => {
+		hideModal("add-tournament-modal");
+	});
+}

@@ -67,11 +67,10 @@
 						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
 					</a>
 					<span>or use your email for registration</span>
-					<input type="text" name="name" placeholder="Name" required/>
-					<input type="text" name="surname" placeholder="Surname" required/>
 					<input type="text" name="username" placeholder="Username" required/>
 					<input type="email" name="email" placeholder="Email" required/>
 					<input type="password" name="password" placeholder="Password" required/>
+					<input type="password" name="password" placeholder="Confirm Password" required/>
 					<button type="submit">Sign Up</button>
 				</form>
 			</div>
@@ -183,6 +182,9 @@
 							</div>
 							<button id="view-tournament" class="hidden mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">
 								Browse Tournaments
+							</button>
+							<button id="add-tournament-preview-btn" class="mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">
+								Add Tournament / Play with Friend
 							</button>
 						</div>
 					</div>
@@ -296,10 +298,33 @@
 				</div>
 			</div>
 		</div>
+
+		<div id="add-tournament-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+				<div class="px-4 pt-5 pb-4 sm:p-6">
+					<h3 class="text-lg font-medium">
+						Add Tournament
+					</h3>
+					<div class="mt-4 space-y-4">
+						<label for="tournament-name" class="block text-sm font-medium">Tournament Name</label>
+						<input type="text" id="tournament-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+						<label for="date" class="block text-sm font-medium">Date</label>
+						<input type="date" id="tournament-date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+						<label for="capacity" class="block text-sm font-medium">Capacity</label>
+						<input type="number" id="tournament-capacity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex flex-row-reverse gap-3">
+					<button id="add-tournament-btn" type="button" class="bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Add</button>
+					<button id="close-add-tournament-modal" type="button" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
+				</div>
+			</div>
+		</div>
 	</template>
 
 	<script src="./dist/main.js" defer></script>
 	<script src="./dist/game/pong.js" defer></script>
+	<script src="./dist/profile/login.js" defer></script>
 	<script src="./dist/profile/profile.js" defer></script>
 	<script src="./dist/profile/types.js" defer></script>
 	<script src="./dist/profile/edit.js" defer></script>

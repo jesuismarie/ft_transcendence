@@ -22,6 +22,7 @@ function initPersonaleData(username: string | null = null) {
 	const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLButtonElement | null;
 	const friendRequestBtn = document.getElementById("friend-request-btn") as HTMLButtonElement | null;
 	const friendRequestListBtn = document.getElementById("friend-request-list-btn") as HTMLButtonElement | null;
+	const addTournamentPreviewBtn = document.getElementById("add-tournament-preview-btn") as HTMLButtonElement | null;
 
 	if (!editProfileBtn || !upcomingTournaments || !friendRequestBtn)
 	{
@@ -35,10 +36,12 @@ function initPersonaleData(username: string | null = null) {
 		upcomingTournaments?.classList.remove("hidden");
 		initRequests(username);
 		initTournaments();
+		addTournament();
 	} else {
 		editProfileBtn?.classList.add("hidden");
 		upcomingTournaments?.classList.add("hidden");
 		friendRequestBtn?.classList.remove("hidden");
 		friendRequestListBtn?.classList.add("hidden");
+		addTournamentPreviewBtn?.classList.add("hidden");
 	}
 }
