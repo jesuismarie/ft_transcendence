@@ -22,20 +22,19 @@ export class UserRepo {
     }
 
     findByEmail(email: string) {
-        return this.app.db
-            .prepare<User>('SELECT * FROM users WHERE email = ?')
-            .get(email);
+        const stmt = this.app.db.prepare('SELECT * FROM users WHERE email = ?');
+        return (stmt.get(email));
     }
 
     findById(id: number) {
         return this.app.db
-            .prepare<User>('SELECT id,email,displayName,createdAt FROM users WHERE id = ?')
+            .prepare('SELECT id,email,displayName,createdAt FROM users WHERE id = ?')
             .get(id);
     }
 
     findAll() {
         return this.app.db
-            .prepare<User>('SELECT id,email,displayName,createdAt FROM users')
+            .prepare('SELECT id,email,displayName,createdAt FROM users')
             .all();
     }
 
