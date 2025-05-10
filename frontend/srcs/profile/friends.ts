@@ -1,21 +1,11 @@
 const friends: Friend[] = [
-	{ id: 1, username: "friend1", avatar: "https://example.com/avatar1.jpg", status: true },
-	{ id: 2, username: "friend2", avatar: "https://example.com/avatar2.jpg", status: true },
-	{ id: 3, username: "friend3", avatar: "https://example.com/avatar3.jpg", status: true },
-	{ id: 4, username: "friend4", avatar: "https://example.com/avatar4.jpg", status: true },
-	{ id: 5, username: "friend5", avatar: "https://example.com/avatar5.jpg", status: true },
-	{ id: 6, username: "friend6", avatar: "https://example.com/avatar6.jpg", status: true },
-	{ id: 7, username: "friend7", avatar: "https://example.com/avatar7.jpg", status: true },
-	{ id: 8, username: "friend8", avatar: "https://example.com/avatar8.jpg", status: true },
-	{ id: 9, username: "friend9", avatar: "https://example.com/avatar9.jpg", status: true },
-	{ id: 10, username: "friend10", avatar: "https://example.com/avatar10.jpg", status: true },
 ];
 
 function viewFriends(username: string | null = null) {
 	const previewContainer = document.getElementById("friends-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("friend-modal-list") as HTMLElement | null;
-	const viewAllBtn = document.getElementById("friend-list-btn") as HTMLElement | null;
-	const closeModalBtn = document.getElementById("close-friends-modal") as HTMLElement | null;
+	const viewAllBtn = document.getElementById("friend-list-btn") as HTMLButtonElement | null;
+	const closeModalBtn = document.getElementById("close-friends-modal") as HTMLButtonElement | null;
 
 	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn) {
 		console.error("One or more required elements are missing in the DOM.");

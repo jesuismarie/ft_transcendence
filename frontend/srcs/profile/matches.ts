@@ -1,14 +1,4 @@
 const matches: Match[] = [
-	{ id: 1, opponent: { id: 2, username: "Player2", avatar: null }, win: true, score: { user: 3, opponent: 1 }, date: "2023-10-01" },
-	{ id: 2, opponent: { id: 3, username: "Player3", avatar: null }, win: false, score: { user: 1, opponent: 2 }, date: "2023-10-02" },
-	{ id: 3, opponent: { id: 4, username: "Player4", avatar: null }, win: true, score: { user: 2, opponent: 0 }, date: "2023-10-03" },
-	{ id: 4, opponent: { id: 5, username: "Player5", avatar: null }, win: false, score: { user: 0, opponent: 3 }, date: "2023-10-04" },
-	{ id: 5, opponent: { id: 6, username: "Player6", avatar: null }, win: true, score: { user: 4, opponent: 2 }, date: "2023-10-05" },
-	{ id: 6, opponent: { id: 7, username: "Player7", avatar: null }, win: false, score: { user: 1, opponent: 5 }, date: "2023-10-06" },
-	{ id: 7, opponent: { id: 8, username: "Player8", avatar: null }, win: true, score: { user: 3, opponent: 1 }, date: "2023-10-07" },
-	{ id: 8, opponent: { id: 9, username: "Player9", avatar: null }, win: false, score: { user: 2, opponent: 4 }, date: "2023-10-08" },
-	{ id: 9, opponent: { id: 10, username: "Player10", avatar: null }, win: true, score: { user: 5, opponent: 3 }, date: "2023-10-09" },
-	
 ];
 
 function viewMatches(username: string | null = null) {

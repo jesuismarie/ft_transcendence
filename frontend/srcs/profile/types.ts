@@ -27,7 +27,6 @@ interface Match {
 	opponent: {
 		id: number;
 		username: string;
-		avatar?: string | null;
 	};
 	win: boolean;
 	score: {
@@ -38,12 +37,16 @@ interface Match {
 }
 
 interface Tournament {
+	creator: {
+		username: string | null;
+	}
 	id: number;
 	name: string;
 	date: string;
 	capacity: number;
 	registered: boolean;
 }
+
 
 interface RegistrationFormData {
 	name: string;

@@ -1,23 +1,13 @@
 const tournaments: Tournament[] = [
-	{ id: 1, name: "Masters Tournament", date: "2025-10-15", capacity: 64, registered: false },
-	{ id: 2, name: "Legends Cup", date: "2025-11-30", capacity: 128, registered: false },
-	{ id: 3, name: "Grand Finals", date: "2025-12-25", capacity: 256, registered: false },
-	{ id: 4, name: "Battle Royale", date: "2025-01-01", capacity: 512, registered: false },
-	{ id: 5, name: "Ultimate Showdown", date: "2025-02-14", capacity: 1024, registered: false },
-	{ id: 6, name: "Spring Cup", date: "2025-05-05", capacity: 8, registered: false },
-	{ id: 7, name: "Summer Showdown", date: "2025-06-01", capacity: 16, registered: false },
-	{ id: 8, name: "Autumn Arena", date: "2025-07-10", capacity: 4, registered: false },
-	{ id: 9, name: "Winter Clash", date: "2025-08-20", capacity: 12, registered: false },
-	{ id: 10, name: "Champions League", date: "2025-09-01", capacity: 32, registered: false },
 ];
 
 function initTournaments(username: string | null = null) {
-	const previewContainer = document.getElementById("tournament-preview")!;
-	const modalListContainer = document.getElementById("tournament-modal-list")!;
-	const viewBtn = document.getElementById("view-tournament")!;
-	const closeModalBtn = document.getElementById("close-tournament-modal")!;
+	const previewContainer = document.getElementById("tournament-preview") as HTMLElement | null;
+	const modalListContainer = document.getElementById("tournament-modal-list") as HTMLElement | null;
+	const viewBtn = document.getElementById("view-tournament") as HTMLButtonElement | null;
+	const closeModalBtn = document.getElementById("close-tournament-modal") as HTMLButtonElement | null;
 
-	if (!previewContainer || !modalListContainer || !viewBtn) {
+	if (!previewContainer || !modalListContainer || !viewBtn || !closeModalBtn) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}

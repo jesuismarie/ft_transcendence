@@ -9,7 +9,7 @@ const currentUser = getCurrentUser();
 function loadTemplate(templateId: string, title: string) {
 	if (!mainWrapper)
 		return;
-	const template = document.getElementById(templateId) as HTMLTemplateElement;
+	const template = document.getElementById(templateId) as HTMLTemplateElement | null;
 	if (!template) {
 		console.warn(`Template "${templateId}" not found.`);
 		return;
@@ -41,7 +41,6 @@ function loadGamePage() {
 }
 
 function loadProfilePage(username: string | null = null) {
-	const currentUser = getCurrentUser();
 	if (username === currentUser || username === null) {
 		if (location.hash !== "#profile") {
 			location.hash = "#profile";
@@ -54,7 +53,7 @@ function loadProfilePage(username: string | null = null) {
 		}
 	}
 	loadTemplate("profile-template", "Pong Profile");
-	initPersonaleData(username);
+	initPersonalData(username ?? getCurrentUser());
 }
 
 const routes: { [key: string]: () => void } = {
@@ -72,10 +71,9 @@ function handleRouting() {
 	if (hash.startsWith("#profile/")) {
 		const username = hash.split("/")[1];
 		if (!username) {
-            console.error("Invalid profile URL");
-            loadHomePage();
-            return;
-        }
+			loadHomePage();
+			return;
+		}
 		loadProfilePage(username);
 		return;
 	}
