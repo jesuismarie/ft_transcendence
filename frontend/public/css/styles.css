@@ -24,7 +24,7 @@
 	}
 
 	.login-div button {
-		@apply h-16 w-36 text-lg font-[800] text-center border-none rounded-[60px] shadow-white-glow bg-primary hover:text-hover hover:shadow-neon-btn-hover;
+		@apply h-16 max-sm:h-12 w-32 max-sm:w-24 text-lg font-bold max-sm:text-base text-center border-none rounded-[60px] shadow-white-glow bg-primary hover:text-hover hover:shadow-neon-btn-hover;
 	}
 
 	form h1 {
