@@ -20,6 +20,8 @@ export default fp(async function dbPlugin(app: FastifyInstance) {
     email TEXT NOT NULL UNIQUE,
     displayName TEXT NOT NULL,
     passwordHash TEXT NOT NULL,
+    avatarPath TEXT,
+    rating INTEGER NOT NULL DEFAULT 1000,
     createdAt TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
 
