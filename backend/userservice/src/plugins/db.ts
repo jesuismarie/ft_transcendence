@@ -32,7 +32,6 @@ export default fp(async function dbPlugin(app: FastifyInstance) {
     rating INTEGER NOT NULL DEFAULT 1000,
     createdAt TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
-    
     ensureColumn(db, 'avatarPath', 'avatarPath TEXT');
     ensureColumn(db, 'rating', 'rating INTEGER NOT NULL DEFAULT 1000');
     

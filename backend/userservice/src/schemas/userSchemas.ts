@@ -11,12 +11,17 @@ export const createUserSchema = {
 
 export const updateUserSchema = {
     type: 'object',
-    required: ['displayName'],
     additionalProperties: false,
     properties: {
         displayName: { type: 'string', minLength: 1 },
+        email:       { type: 'string', format: 'email' },
+        password:    { type: 'string', minLength: 8 },
+        avatarPath:  { type: 'string', minLength: 1 }
     },
+    // at least one property must be supplied
+    minProperties: 1
 } as const;
+
 
 export const listUsersQuery = {
     type: 'object',

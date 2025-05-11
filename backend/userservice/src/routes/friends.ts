@@ -14,8 +14,8 @@ export default async function friendRoutes(app: FastifyInstance) {
         const { userId, friendId } = req.body as { userId: number; friendId: number };
         if (userId === friendId) return reply.sendError({ statusCode: 400, message: 'Cannot friend yourself' });
 
-        const userExists = await userRepo.findById(userId);
-        const friendExists = await userRepo.findById(friendId);
+        const userExists = userRepo.findById(userId);
+        const friendExists = userRepo.findById(friendId);
         if (!userExists || !friendExists) {
             return reply.sendError({ statusCode: 404, message: 'User or friend not found' });
         }
@@ -26,8 +26,8 @@ export default async function friendRoutes(app: FastifyInstance) {
     app.delete('/friends', { schema: {body: removeFriendSchema} }, async (req, reply: FastifyReply) => {
         const { userId, friendId } = req.body as { userId: number; friendId: number };
         
-        const userExists = await userRepo.findById(userId);
-        const friendExists = await userRepo.findById(friendId);
+        const userExists = userRepo.findById(userId);
+        const friendExists = userRepo.findById(friendId);
         if (!userExists || !friendExists) {
             return reply.sendError({ statusCode: 404, message: 'User or friend not found' });
         }

@@ -41,14 +41,32 @@ export class UserRepo {
             LIMIT ? OFFSET ?`);
         return stmt.all(`%${q ?? ''}%`, limit, offset);
     }
-
-    update(id: number, displayName: string) {
-        const res = this.app.db
-            .prepare('UPDATE users SET displayName = ? WHERE id = ?')
-            .run(displayName, id);
-        return res.changes > 0 ? this.findById(id) : undefined;
+    update(
+        id: number,
+        fields: {
+            displayName?: string;
+            email?: string;
+            avatarPath?: string;
+            passwordHash?: string;
+        },
+    ) {
+        const updates: string [] = [];
+        const vals: any[] = [];
+        
+        if (fields.displayName) { updates.push('displayName = ?'); vals.push(fields.displayName);   }
+        if (fields.email)       { updates.push('email = ?');       vals.push(fields.email);         }
+        if (fields.avatarPath)  { updates.push('avatarPath = ?');  vals.push(fields.avatarPath);    }
+        if (fields.passwordHash) { updates.push('passwordHash = ?'); vals.push(fields.passwordHash);}
+        
+        if (updates.length === 0)
+            return (this.findById(id));
+        
+        vals.push(id);                                // WHERE id = ?
+        const stmt = this.app.db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`);
+        stmt.run(...vals);
+        return this.findById(id);
     }
-
+    
     delete(id: number) {
         return this.app.db.prepare('DELETE FROM users WHERE id = ?').run(id).changes;
     }

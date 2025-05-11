@@ -30,14 +30,33 @@ export default async function userRoutes(app: FastifyInstance) {
     });
 
     app.put('/users/:id', {schema: {body: updateUserSchema}}, async (req, reply: FastifyReply) => {
-        const id = Number((req.params as any).id);
-        const {displayName} = req.body as any;
-        const user = userRepo.update(id, displayName);
-        if (!user)
-            return reply.sendError({statusCode: 404, message: 'User not found'});
-        return user;
+        reply.send({status: 'ok'});
     });
-
+    
+    app.patch(
+        '/users/:id',
+        { schema: {body: updateUserSchema}},
+        async (req, reply: FastifyReply) => {
+            const id = Number((req.params as any).id);
+            const { displayName, email, password, avatarPath } = req.body as any;
+            
+            // fetch current row or 404
+            const user = userRepo.findById(id);
+            if (!user)
+                return reply.sendError({ statusCode: 404, code: 'USER_NOT_FOUND', message: 'User not found' });
+            
+            // duplicate-email guard
+            if (email && email !== user.email && userRepo.findByEmail(email))
+                return reply.sendError({ statusCode: 409, code: 'EMAIL_EXISTS', message: 'Email already registered' });
+            
+            return userRepo.update(id, {
+                displayName,
+                email,
+                passwordHash: password ? await argon2.hash(password) : undefined,
+                avatarPath});
+        }
+    );
+    
     app.delete('/users/:id', async (req, reply: FastifyReply) => {
         const id = Number((req.params as any).id);
         const deleted = userRepo.delete(id);

@@ -32,6 +32,8 @@ export class FriendRepo {
     }
 
     list(userId: number, opts?: { offset: number; limit: number; q?: string }) {
+        const { offset = 0, limit = 10, q = '' } = opts ?? {};
+        
         const stmt = this.app.db.prepare(`
             SELECT u.id, u.email, u.displayName, u.avatarPath, u.rating, u.createdAt
             FROM friends f
@@ -41,6 +43,6 @@ export class FriendRepo {
             u.displayName LIKE ? COLLATE NOCASE
             ORDER BY u.displayName COLLATE NOCASE
             LIMIT ? OFFSET ?`);
-        return stmt.all(userId, `%${opts?.q}%`, opts?.limit, opts?.offset);
+        return stmt.all(userId, `%${q}%`, limit, offset);
     }
 }
