@@ -1,5 +1,5 @@
 import argon2 from "argon2";
-import { FastifyInstance } from "fastify";
+import {FastifyInstance, FastifyReply} from "fastify";
 import { UserRepo } from "../repositories/userRepo";
 import { createUserSchema, updateUserSchema } from "../schemas/userSchemas";
 
@@ -7,9 +7,9 @@ export default async function userRoutes(app: FastifyInstance) {
     const userRepo = new UserRepo(app);
 
     /* --- CRUD --- */
-    app.post('/users', {schema: {body: createUserSchema}}, async (req, reply) => {
+    app.post('/users', {schema: {body: createUserSchema}}, async (req, reply: FastifyReply) => {
         const {email, password, displayName} = req.body as any;
-        if (userRepo.findByEmail(email)) return reply.code(409).send({error: 'Email exists'});
+        if (userRepo.findByEmail(email)) return reply.sendError({statusCode: 409, message: 'Email already exists'});
         const hash = await argon2.hash(password);
         const user = userRepo.create(email, displayName, hash);
         reply.code(201).send(user);
@@ -17,25 +17,27 @@ export default async function userRoutes(app: FastifyInstance) {
 
     app.get('/users', async () => userRepo.findAll());
 
-    app.get('/users/:id', async (req, reply) => {
+    app.get('/users/:id', async (req, reply: FastifyReply) => {
         const id = Number((req.params as any).id);
         const user = userRepo.findById(id);
-        if (!user) return reply.code(404).send({error: 'Not found'});
+        if (!user)
+            return reply.sendError({statusCode: 404, message: 'User not found'});
         return user;
     });
 
-    app.put('/users/:id', {schema: {body: updateUserSchema}}, async (req, reply) => {
+    app.put('/users/:id', {schema: {body: updateUserSchema}}, async (req, reply: FastifyReply) => {
         const id = Number((req.params as any).id);
         const {displayName} = req.body as any;
         const user = userRepo.update(id, displayName);
-        if (!user) return reply.code(404).send({error: 'Not found'});
+        if (!user)
+            return reply.sendError({statusCode: 404, message: 'User not found'});
         return user;
     });
 
-    app.delete('/users/:id', async (req, reply) => {
+    app.delete('/users/:id', async (req, reply: FastifyReply) => {
         const id = Number((req.params as any).id);
         const deleted = userRepo.delete(id);
-        if (!deleted) return reply.code(404).send({error: 'Not found'});
+        if (!deleted) return reply.sendError({statusCode: 404, message: 'User not found'});
         reply.code(204).send();
     });
 }

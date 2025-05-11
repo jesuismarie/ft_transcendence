@@ -7,3 +7,5 @@ export const addFriendSchema = {
         friendId: { type: 'integer', minimum: 1 },
     },
 } as const;
+
+export const removeFriendSchema = addFriendSchema;
