@@ -2,6 +2,7 @@ import {FastifyInstance, FastifyReply} from "fastify";
 import { UserRepo } from "../repositories/userRepo";
 import { FriendRepo } from "../repositories/friendRepo";
 import { addFriendSchema, removeFriendSchema } from "../schemas/friendSchemas";
+import { listFriendsQuery } from "../schemas/friendSchemas";
 
 
 /* --- Friends --- */
@@ -18,8 +19,7 @@ export default async function friendRoutes(app: FastifyInstance) {
         if (!userExists || !friendExists) {
             return reply.sendError({ statusCode: 404, message: 'User or friend not found' });
         }
-
-        await friendRepo.add(userId, friendId);
+        friendRepo.add(userId, friendId);
         reply.code(201).send({ status: 'friend_added' });
     });
     
@@ -35,9 +35,10 @@ export default async function friendRoutes(app: FastifyInstance) {
         reply.code(204).send();
     });
 
-    app.get('/users/:id/friends', async (req, reply: FastifyReply) => {
+    app.get('/users/:id/friends', { schema: { querystring: listFriendsQuery } }, async (req, reply: FastifyReply) => {
         const id = Number((req.params as any).id);
+		const { offset = 0, limit = 10, q } = req.query as any;
         if (!userRepo.findById(id)) return reply.sendError({ statusCode: 404, message: 'User not found' });
-        return friendRepo.list(id);
+        return friendRepo.list(id, { offset, limit, q});
     });
 }

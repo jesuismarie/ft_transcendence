@@ -6,6 +6,14 @@ import { FastifyInstance } from 'fastify';
 
 export type DB = Database.Database;
 
+function ensureColumn(db: DB, col: string, ddl: string) {
+    const exists = db
+        .prepare(`PRAGMA table_info(users)`)
+        .all()
+        .some((row: any) => row.name === col);
+    if (!exists) db.exec(`ALTER TABLE users ADD COLUMN ${ddl}`);
+}
+
 export default fp(async function dbPlugin(app: FastifyInstance) {
     const dataDir = path.join(__dirname, '../data');
     fs.mkdirSync(dataDir, { recursive: true });
@@ -24,7 +32,10 @@ export default fp(async function dbPlugin(app: FastifyInstance) {
     rating INTEGER NOT NULL DEFAULT 1000,
     createdAt TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
-
+    
+    ensureColumn(db, 'avatarPath', 'avatarPath TEXT');
+    ensureColumn(db, 'rating', 'rating INTEGER NOT NULL DEFAULT 1000');
+    
     db.exec(`CREATE TABLE IF NOT EXISTS friends (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     userId INTEGER NOT NULL,
@@ -33,7 +44,10 @@ export default fp(async function dbPlugin(app: FastifyInstance) {
     FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY(friendId) REFERENCES users(id) ON DELETE CASCADE
   )`);
-
+    
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_users_displayName ON users(displayName)`);
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_friends_userId ON friends(userId)`);
+    
     app.decorate('db', db);
 
     app.addHook('onClose', (instance, done) => {

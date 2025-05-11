@@ -2,6 +2,7 @@ import argon2 from "argon2";
 import {FastifyInstance, FastifyReply} from "fastify";
 import { UserRepo } from "../repositories/userRepo";
 import { createUserSchema, updateUserSchema } from "../schemas/userSchemas";
+import { listUsersQuery } from "../schemas/userSchemas";
 
 export default async function userRoutes(app: FastifyInstance) {
     const userRepo = new UserRepo(app);
@@ -15,7 +16,10 @@ export default async function userRoutes(app: FastifyInstance) {
         reply.code(201).send(user);
     });
 
-    app.get('/users', async () => userRepo.findAll());
+    app.get('/users', { schema: { querystring: listUsersQuery } }, async (req) => {
+        const { offset = 0, limit = 20, q } = req.query as any;
+        return userRepo.findAll({ offset, limit, q });
+    });
 
     app.get('/users/:id', async (req, reply: FastifyReply) => {
         const id = Number((req.params as any).id);

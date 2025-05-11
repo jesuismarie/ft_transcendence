@@ -31,11 +31,15 @@ export class UserRepo {
             .prepare('SELECT id,email,displayName,createdAt FROM users WHERE id = ?')
             .get(id);
     }
-
-    findAll() {
-        return this.app.db
-            .prepare('SELECT id,email,displayName,createdAt FROM users')
-            .all();
+    
+    findAll({ offset, limit, q }: { offset: number; limit: number; q?: string }) {
+        const stmt = this.app.db.prepare(`
+            SELECT id, email, displayName, avatarPath, rating, createdAt
+            FROM users
+            WHERE displayName LIKE ? COLLATE NOCASE
+            ORDER BY displayName COLLATE NOCASE
+            LIMIT ? OFFSET ?`);
+        return stmt.all(`%${q ?? ''}%`, limit, offset);
     }
 
     update(id: number, displayName: string) {

@@ -31,18 +31,16 @@ export class FriendRepo {
         return tx(userId, friendId);
     }
 
-    list(userId: number) {
-        return this.app.db.prepare(`
-            SELECT u.id,
-                   u.email,
-                   u.displayName,
-                   u.avatarPath,
-                   u.rating,
-                   u.createdAt
-              FROM friends f
-              JOIN users  u ON u.id = f.friendId
-             WHERE f.userId = ?
-             ORDER BY u.displayName COLLATE NOCASE`)
-            .all(userId);
+    list(userId: number, opts?: { offset: number; limit: number; q?: string }) {
+        const stmt = this.app.db.prepare(`
+            SELECT u.id, u.email, u.displayName, u.avatarPath, u.rating, u.createdAt
+            FROM friends f
+            JOIN users u ON f.friendId = u.id
+            WHERE f.userId = ?
+            AND
+            u.displayName LIKE ? COLLATE NOCASE
+            ORDER BY u.displayName COLLATE NOCASE
+            LIMIT ? OFFSET ?`);
+        return stmt.all(userId, `%${opts?.q}%`, opts?.limit, opts?.offset);
     }
 }
