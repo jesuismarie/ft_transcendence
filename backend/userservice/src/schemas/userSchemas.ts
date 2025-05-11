@@ -15,8 +15,6 @@ export const updateUserSchema = {
     properties: {
         displayName: { type: 'string', minLength: 1 },
         email:       { type: 'string', format: 'email' },
-        password:    { type: 'string', minLength: 8 },
-        avatarPath:  { type: 'string', minLength: 1 }
     },
     // at least one property must be supplied
     minProperties: 1
