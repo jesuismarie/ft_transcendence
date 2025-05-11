@@ -20,6 +20,15 @@ export const updateUserSchema = {
     minProperties: 1
 } as const;
 
+export const updatePasswordSchema = {
+    type: 'object',
+    required: ['oldPassword', 'newPassword'],
+    additionalProperties: false,
+    properties: {
+        oldPassword: { type: 'string', minLength: 8 },
+        newPassword: { type: 'string', minLength: 8 },
+    }
+}
 
 export const listUsersQuery = {
     type: 'object',

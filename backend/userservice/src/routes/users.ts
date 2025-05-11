@@ -5,7 +5,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import {FastifyInstance, FastifyReply} from "fastify";
 import { UserRepo } from "../repositories/userRepo";
-import { createUserSchema, updateUserSchema } from "../schemas/userSchemas";
+import {createUserSchema, updatePasswordSchema, updateUserSchema} from "../schemas/userSchemas";
 import { listUsersQuery } from "../schemas/userSchemas";
 
 export default async function userRoutes(app: FastifyInstance) {
@@ -89,6 +89,22 @@ export default async function userRoutes(app: FastifyInstance) {
         // update DB
         const avatarUrl = `/static/avatars/${filename}`;
         return userRepo.update(id, { avatarPath: avatarUrl });
+    });
+    
+    app.put('/users/:id/password', { schema: { body: updatePasswordSchema } },
+        async (req, reply: FastifyReply) => {
+        const id = Number((req.params as any).id);
+        const { oldPassword, newPassword } = req.body as any;
+        const user = userRepo.findByIdAll(id);
+        
+        if (!user)
+            return reply.sendError({ statusCode: 404, message: 'User not found' });
+        if (!await argon2.verify(user.passwordHash, oldPassword))
+            return reply.sendError({ statusCode: 401, message: 'Invalid password' });
+        if (oldPassword === newPassword)
+            return reply.sendError({ statusCode: 400, message: 'New password must be different from old password' });
+        const hash = await argon2.hash(newPassword);
+        return userRepo.update(id, { passwordHash: hash });
     });
     
     app.delete('/users/:id', async (req, reply: FastifyReply) => {

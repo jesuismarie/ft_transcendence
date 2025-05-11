@@ -43,6 +43,6 @@ export class FriendRepo {
             u.displayName LIKE ? COLLATE NOCASE
             ORDER BY u.displayName COLLATE NOCASE
             LIMIT ? OFFSET ?`);
-        return stmt.all(userId, `%${q}%`, limit, offset);
+        return stmt.all(userId, `%${q ?? ''}%`, limit, offset);
     }
 }

@@ -1,6 +1,8 @@
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import multipart from '@fastify/multipart';
+import fastifyRateLimit from "@fastify/rate-limit";
+import fastifyHelmet from "@fastify/helmet";
 import path from 'path';
 
 // Plugins
@@ -18,6 +20,13 @@ app.register(multipart, { limits: {fileSize: 1_000_000} });
 app.register(fastifyStatic, {
 	root: path.join(process.cwd(), 'public'),
 	prefix: '/static/',
+});
+app.register(fastifyHelmet, {
+	contentSecurityPolicy: false
+});
+app.register(fastifyRateLimit, {
+	max: 1000,
+	timeWindow: '1 hour'
 });
 
 app.register(errorEnvelope);

@@ -9,6 +9,10 @@ export interface User {
     createdAt: string;
 }
 
+export interface UserAll extends User {
+    passwordHash: string;
+}
+
 export class UserRepo {
     private app: FastifyInstance;
     constructor(app: FastifyInstance) {
@@ -37,6 +41,15 @@ export class UserRepo {
             FROM users
             WHERE id = ?`);
         return (stmt.get(id) as User | undefined) ?? null;
+    }
+    
+    // Finds all user data. WARNING: Use only in the backend, as it returns sensitive data.
+    findByIdAll(id: number): UserAll | null {
+        const stmt = this.app.db.prepare(`
+            SELECT *
+            FROM users
+            WHERE id = ?`);
+        return (stmt.get(id) as UserAll | undefined) ?? null;
     }
     
     findAll({ offset, limit, q }: { offset: number; limit: number; q?: string }) {
