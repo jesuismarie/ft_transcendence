@@ -4,6 +4,7 @@ export interface User {
     id: number;
     email: string;
     displayName: string;
+    rating: number;
     createdAt: string;
 }
 
@@ -21,15 +22,20 @@ export class UserRepo {
         return this.findById(info.lastInsertRowid as number);
     }
 
-    findByEmail(email: string) {
-        const stmt = this.app.db.prepare('SELECT * FROM users WHERE email = ?');
-        return (stmt.get(email));
+    findByEmail(email: string): User | null {
+        const stmt = this.app.db.prepare(`
+            SELECT id, email, displayName, avatarPath, rating, createdAt
+            FROM users
+            WHERE email = ?`);
+        return (stmt.get(email) as User | undefined) ?? null;
     }
 
-    findById(id: number) {
-        return this.app.db
-            .prepare('SELECT id,email,displayName,createdAt FROM users WHERE id = ?')
-            .get(id);
+    findById(id: number): User | null {
+        const stmt = this.app.db.prepare(`
+            SELECT id, email, displayName, avatarPath, rating, createdAt
+            FROM users
+            WHERE id = ?`);
+        return (stmt.get(id) as User | undefined) ?? null;
     }
     
     findAll({ offset, limit, q }: { offset: number; limit: number; q?: string }) {
@@ -41,6 +47,7 @@ export class UserRepo {
             LIMIT ? OFFSET ?`);
         return stmt.all(`%${q ?? ''}%`, limit, offset);
     }
+
     update(
         id: number,
         fields: {
