@@ -15,9 +15,11 @@ function ensureColumn(db: DB, col: string, ddl: string) {
 }
 
 export default fp(async function dbPlugin(app: FastifyInstance) {
-    const dataDir = path.join(__dirname, '../data');
-    fs.mkdirSync(dataDir, { recursive: true });
-    const dbPath = path.join(dataDir, 'users.db');
+    // Path either from ENV or default to root/data
+    const dbPath = process.env.DB_PATH || path.join(process.cwd(), 'data', 'users.db');
+    // Make sure the directory exists
+    const dbDir = path.dirname(dbPath);
+    fs.mkdirSync(dbDir, { recursive: true });
     const db = new Database(dbPath);
     db.pragma('journal_mode = WAL');
     db.pragma('foreign_keys = ON');
