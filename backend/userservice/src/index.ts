@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
+import multipart from '@fastify/multipart';
 import path from 'path';
 
 // Plugins
@@ -13,12 +14,14 @@ import friendRoutes from "./routes/friends";
 
 const app = Fastify({ logger: true });
 
-app.register(errorEnvelope);
-app.register(dbPlugin);
+app.register(multipart, { limits: {fileSize: 1_000_000} });
 app.register(fastifyStatic, {
 	root: path.join(process.cwd(), 'public'),
 	prefix: '/static/',
 });
+
+app.register(errorEnvelope);
+app.register(dbPlugin);
 
 app.register(healthRoute);
 app.register(userRoutes);

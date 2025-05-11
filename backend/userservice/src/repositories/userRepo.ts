@@ -4,6 +4,7 @@ export interface User {
     id: number;
     email: string;
     displayName: string;
+    avatarPath: string | null;
     rating: number;
     createdAt: string;
 }
@@ -53,6 +54,8 @@ export class UserRepo {
         fields: {
             displayName?: string;
             email?: string;
+            passwordHash?: string;
+            avatarPath?: string;
         },
     ) {
         const updates: string [] = [];
@@ -60,6 +63,8 @@ export class UserRepo {
         
         if (fields.displayName) { updates.push('displayName = ?'); vals.push(fields.displayName);   }
         if (fields.email)       { updates.push('email = ?');       vals.push(fields.email);         }
+        if (fields.passwordHash){ updates.push('passwordHash = ?'); vals.push(fields.passwordHash); }
+        if (fields.avatarPath)  { updates.push('avatarPath = ?'); vals.push(fields.avatarPath);     }
         
         if (updates.length === 0)
             return ({"modified": false, "body": this.findById(id)});

@@ -1,4 +1,8 @@
 import argon2 from "argon2";
+import fs from "fs";
+import sharp from "sharp";
+import path from "path";
+import { randomUUID } from "crypto";
 import {FastifyInstance, FastifyReply} from "fastify";
 import { UserRepo } from "../repositories/userRepo";
 import { createUserSchema, updateUserSchema } from "../schemas/userSchemas";
@@ -54,6 +58,38 @@ export default async function userRoutes(app: FastifyInstance) {
                 email});
         }
     );
+    
+    app.put('/users/:id/avatar', async (req, reply: FastifyReply) => {
+        const id = Number((req.params as any).id);
+        const user = userRepo.findById(id);
+        if (!user)
+            return reply.sendError({ statusCode: 404, message: 'User not found' });
+        
+        // get the file
+        const file = await (req as any).file();          // plugin guarantees type
+        if (!file)
+            return reply.sendError({ statusCode: 400, message: 'No file field' });
+        
+        // read into buffer
+        let buf = await file.toBuffer();
+        
+        // verify dimensions (must be 200×200)
+        const meta = await sharp(buf).metadata();
+        if (meta.width !== 200 || meta.height !== 200) {
+            // Resize to 200x200
+            buf = await sharp(buf)
+                .resize(200, 200, { fit: 'cover' })
+                .toBuffer();
+        }
+        // store under public/avatars
+        const filename = `${randomUUID()}.png`;
+        const absPath  = path.join(process.cwd(), 'public', 'avatars');
+        fs.mkdirSync(absPath, { recursive: true });
+        await sharp(buf).png().toFile(path.join(absPath, filename));
+        // update DB
+        const avatarUrl = `/static/avatars/${filename}`;
+        return userRepo.update(id, { avatarPath: avatarUrl });
+    });
     
     app.delete('/users/:id', async (req, reply: FastifyReply) => {
         const id = Number((req.params as any).id);
