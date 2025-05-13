@@ -1,13 +1,15 @@
 export interface Tournament {
   id: number;
+  createdBy: number;
   maxPlayersCount: number;
   currentPlayersCount: number;
+  status: Status;
   created_at: string;
   started_at?: string;
   ended_at?: string;
 }
 
-export type MatchStatus = "created" | "in_progress" | "ended" | "error";
+export type Status = "created" | "in_progress" | "ended" | "error";
 
 export interface Match {
   id: number;
@@ -19,5 +21,5 @@ export interface Match {
   ended_at?: string;
   gameLevel: number;
   group_id: string;
-  status: MatchStatus;
+  status: Status;
 }

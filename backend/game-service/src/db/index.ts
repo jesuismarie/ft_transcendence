@@ -18,8 +18,10 @@ export default fp(async function initDb(app: FastifyInstance) {
     app.log.info("Creating tournament table...");
     db.exec(`CREATE TABLE IF NOT EXISTS tournament (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      maxPlayersCount INTEGER NOT NULL,
-      currentPlayersCount INTEGER DEFAULT 0,
+      created_by INTEGER NOT NULL,
+      max_players_count INTEGER NOT NULL,
+      current_players_count INTEGER DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'created' CHECK (status IN ('created', 'in_progress', 'ended', 'error')),
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       started_at TEXT,
       ended_at TEXT
@@ -54,11 +56,11 @@ export default fp(async function initDb(app: FastifyInstance) {
       score_1 INTEGER,
       score_2 INTEGER,
       started_at TEXT,
-      gameLevel INTEGER,
+      game_level INTEGER,
       group_id INTEGER,
       tournament_id INTEGER,
-      status TEXT NOT NULL DEFAULT 'created',
-      UNIQUE(group_id, gameLevel)
+      status TEXT NOT NULL DEFAULT 'created' CHECK (status IN ('created', 'in_progress', 'ended', 'error')),
+      UNIQUE(group_id, game_level)
     )`);
     app.log.info("Match table created.");
   } catch (err) {
