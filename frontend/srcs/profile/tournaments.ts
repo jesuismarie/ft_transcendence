@@ -1,11 +1,11 @@
-const tournaments: Tournament[] = [
-];
+const tournaments: Tournament[] = [];
+const tournamentParticipants: TournamentParticipant[] = [];
 
 function initTournaments(username: string | null = null) {
-	const previewContainer = document.getElementById("tournament-preview") as HTMLElement | null;
-	const modalListContainer = document.getElementById("tournament-modal-list") as HTMLElement | null;
-	const viewBtn = document.getElementById("view-tournament") as HTMLButtonElement | null;
-	const closeModalBtn = document.getElementById("close-tournament-modal") as HTMLButtonElement | null;
+	const previewContainer = document.getElementById("tournament-preview")!;
+	const modalListContainer = document.getElementById("tournament-modal-list")!;
+	const viewBtn = document.getElementById("view-tournament")!;
+	const closeModalBtn = document.getElementById("close-tournament-modal")!;
 
 	if (!previewContainer || !modalListContainer || !viewBtn || !closeModalBtn) {
 		console.error("One or more required elements are missing in the DOM.");
@@ -13,17 +13,19 @@ function initTournaments(username: string | null = null) {
 	}
 
 	const renderTournamentItem = (tournament: Tournament): string => {
-		const regBtnClass = tournament.registered
+		const isRegistered = tournament.participants.some(
+			(participant) => participant.username === username
+		);
+		const regBtnClass = isRegistered
 			? "bg-green-50 text-green-800"
 			: "bg-red-50 text-red-800";
-		const regBtnText = tournament.registered ? "Registered" : "Register";
+		const regBtnText = isRegistered ? "Registered" : "Register";
 
 		return `
 			<div class="px-4 py-5 sm:px-6 hover:bg-gray-50 cursor-pointer">
 				<div class="flex flex-col sm:flex-row sm:justify-between">
 					<div align="left">
 						<p class="font-semibold">${tournament.name}</p>
-						<p class="text-sm text-gray-600">${tournament.date}</p>
 					</div>
 					<button id="${tournament.id}" class="mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full ${regBtnClass}">
 						${regBtnText}
@@ -52,22 +54,10 @@ function initTournaments(username: string | null = null) {
 		viewBtn.classList.remove("hidden");
 	}
 
-	const checkRegistered = (tournamentId: number): boolean => {
-		const tournament = tournaments.find(t => t.id === tournamentId);
-		if (tournament) {
-			tournament.registered = !tournament.registered;
-			return tournament.registered;
-		}
-		return false;
-	};
-
-	const registerBtn = (tournamentId: number): void => {
-		const tournament = tournaments.find(t => t.id === tournamentId);
-		if (!tournament)
-			return;
-		const buttons = document.querySelectorAll(`button[id="${tournamentId}"]`);
+	const updateRegisterButton = (tournamentId: number, isRegistered: boolean): void => {
+		const buttons = document.querySelectorAll<HTMLButtonElement>(`button[data-id="${tournamentId}"]`);
 		buttons.forEach(btn => {
-			if (tournament.registered) {
+			if (isRegistered) {
 				btn.classList.remove("bg-red-50", "text-red-800");
 				btn.classList.add("bg-green-50", "text-green-800");
 				btn.textContent = "Registered";
@@ -79,46 +69,58 @@ function initTournaments(username: string | null = null) {
 		});
 	};
 
-	const handleTournamentRegistration = (username: string | null): void => {
-		const registerButtons = document.querySelectorAll("button[id]");
+	const handleTournamentRegistration = (): void => {
+		const registerButtons = document.querySelectorAll<HTMLButtonElement>(".register-btn");
+
 		registerButtons.forEach(button => {
-			button.addEventListener("click", (event) => {
-				const target = event.currentTarget as HTMLButtonElement;
-				const tournamentId = parseInt(target.id);
-				const isRegistered = checkRegistered(tournamentId);
-				registerBtn(tournamentId);
-				// if (username) {
-				// 	const url = `/api/tournament/${tournamentId}/register`;
-				// 	const method = isRegistered ? "POST" : "DELETE";
-				// 	fetch(url, {
-				// 		method: method,
-				// 		headers: {
-				// 			"Content-Type": "application/json",
-				// 			"Authorization": `Bearer ${localStorage.getItem("access_token")}`
-				// 		}
-				// 	})
-				// 		.then(response => {
-				// 			if (!response.ok) {
-				// 				throw new Error("Network response was not ok");
-				// 			}
-				// 			return response.json();
-				// 		})
-				// 		.then(data => {
-				// 			if (data.success) {
-				// 				console.log("Registration successful");
-				// 			} else {
-				// 				console.error("Registration failed");
-				// 			}
-				// 		})
-				// 		.catch(error => {
-				// 			console.error("There was a problem with the fetch operation:", error);
-				// 		});
-				// }
+			button.addEventListener("click", () => {
+				const tournamentId = parseInt(button.getAttribute("data-id")!);
+				const tournament = tournaments.find(t => t.id === tournamentId);
+				if (!tournament || !username) return;
+
+				const isCurrentlyRegistered = tournament.participants.some(
+					(p) => p.username === username
+				);
+
+				const method = isCurrentlyRegistered ? "DELETE" : "POST";
+				const url = `/api/tournament/${tournamentId}/register`;
+
+				fetch(url, {
+					method: method,
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${localStorage.getItem("access_token")}`
+					}
+				})
+					.then(response => {
+						if (!response.ok) throw new Error("Network response was not ok");
+						return response.json();
+					})
+					.then(data => {
+						if (data.success) {
+							if (isCurrentlyRegistered) {
+								tournament.participants = tournament.participants.filter(
+									(p) => p.username !== username
+								);
+							} else {
+								tournament.participants.push({
+									id: 0,
+									username: username,
+								});
+							}
+							updateRegisterButton(tournamentId, !isCurrentlyRegistered);
+						} else {
+							console.error("Registration failed");
+						}
+					})
+					.catch(error => {
+						console.error("There was a problem with the fetch operation:", error);
+					});
 			});
 		});
-	}
+	};
 
-	handleTournamentRegistration(username);
+	handleTournamentRegistration();
 
 	viewBtn.addEventListener("click", () => {
 		showModal("tournament-modal");

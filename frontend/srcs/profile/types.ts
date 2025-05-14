@@ -1,3 +1,23 @@
+interface UserProfile {
+	id: number;
+	username: string;
+	email: string;
+	wins: number;
+	losses: number;
+	online: boolean;
+	avatar?: string | null;
+	// friends: Friend[];
+	// tournaments: Tournament[];
+	// matches: Match[];
+}
+
+interface Friend {
+	id: number;
+	username: string;
+	avatar?: string | null;
+	online: boolean;
+}
+
 interface UserSearchResult {
 	id: number;
 	username: string;
@@ -13,13 +33,6 @@ interface FriendRequest {
 		username: string;
 		avatar?: string | null;
 	};
-}
-
-interface Friend {
-	id: number;
-	username: string;
-	avatar?: string | null;
-	status: boolean;
 }
 
 interface Match {
@@ -38,23 +51,26 @@ interface Match {
 
 interface Tournament {
 	creator: {
+		id: number;
 		username: string | null;
 	}
 	id: number;
 	name: string;
-	date: string;
 	capacity: number;
-	registered: boolean;
+	participants: TournamentParticipant[];
 }
 
+interface TournamentParticipant {
+	id: number;
+	username: string;
+}
 
 interface RegistrationFormData {
-	name: string;
-	surname: string;
 	username: string;
 	email: string;
 	password: string;
 }
+
 
 interface LoginFormData {
 	username: string;
