@@ -38,4 +38,83 @@ export class TournamentRepo {
     `);
     stmt.run(maxPlayersCount, createdBy);
   }
+
+  async getById(id: number): Promise<{
+    id: number;
+    max_players_count: number;
+    current_players_count: number;
+    status: Status;
+  } | null> {
+    const stmt = this.app.db.prepare(`
+      SELECT id, max_players_count, current_players_count, status
+      FROM tournament
+      WHERE id = ?
+    `);
+    const row = stmt.get(id);
+    return row ? (row as any) : null;
+  }
+
+  private getByIdForUpdate(tournament_id: number): {
+    id: number;
+    max_players_count: number;
+    current_players_count: number;
+    status: Status;
+  } | null {
+    const stmt = this.app.db.prepare(`
+      SELECT id, max_players_count, current_players_count, status
+      FROM tournament
+      WHERE id = ?
+    `);
+    const row = stmt.get(tournament_id);
+    return row ? (row as any) : null;
+  }
+
+  private incrementPlayerCount(tournament_id: number): void {
+    this.app.db
+      .prepare(
+        `
+      UPDATE tournament
+      SET current_players_count = current_players_count + 1
+      WHERE id = ?
+    `
+      )
+      .run(tournament_id);
+  }
+
+  registerPlayerToTournament(tournament_id: number, user_id: number): void {
+    const tx = this.app.db.transaction(() => {
+      const tournament = this.getByIdForUpdate(tournament_id);
+      if (
+        !tournament ||
+        tournament.status !== "created" ||
+        tournament.current_players_count >= tournament.max_players_count
+      ) {
+        throw new Error("Tournament is not available for registration");
+      }
+
+      this.insertPlayer(tournament_id, user_id);
+      this.incrementPlayerCount(tournament_id);
+    });
+
+    tx();
+  }
+
+  private insertPlayer(tournament_id: number, user_id: number): void {
+    this.app.db
+      .prepare(
+        `
+      INSERT INTO tournament_player (tournament_id, player_id)
+      VALUES (?, ?)
+    `
+      )
+      .run(tournament_id, user_id);
+  }
+
+  // Уменьшает счётчик текущих игроков
+  async decrementPlayerCount(tournament_id: number): Promise<void> {
+    const stmt = this.app.db.prepare(
+      `UPDATE tournament SET current_players_count = current_players_count - 1 WHERE id = ?`
+    );
+    stmt.run(tournament_id);
+  }
 }

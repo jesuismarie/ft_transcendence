@@ -1,7 +1,6 @@
 // src/index.ts
 import Fastify from "fastify";
 import initDb from "./db/index.ts";
-import pingRoute from "./routes/ping.ts";
 import matchInvitationRoutes from "./routes/matchInvitation/routes.ts";
 import matchRoutes from "./routes/match/routes.ts";
 import tournamentRoutes from "./routes/tournament/routes.ts";
@@ -12,7 +11,6 @@ const app = Fastify({ logger: true });
 app.register(initDb);
 
 // Регистрируем маршруты
-app.register(pingRoute);
 app.register(matchInvitationRoutes);
 app.register(matchRoutes)
 app.register(tournamentRoutes)
