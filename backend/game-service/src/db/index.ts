@@ -60,7 +60,7 @@ export default fp(async function initDb(app: FastifyInstance) {
       group_id INTEGER,
       tournament_id INTEGER,
       status TEXT NOT NULL DEFAULT 'created' CHECK (status IN ('created', 'in_progress', 'ended', 'error')),
-      UNIQUE(group_id, game_level)
+      UNIQUE(tournament_id, group_id, game_level, player_1, player_2)
     )`);
     app.log.info("Match table created.");
   } catch (err) {

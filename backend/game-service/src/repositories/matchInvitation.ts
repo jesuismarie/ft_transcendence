@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import type { Database } from "better-sqlite3";
 
 export interface MatchInvitation {
   id?: number;
@@ -9,14 +10,15 @@ export interface MatchInvitation {
 }
 
 export class MatchInvitationRequestRepo {
-  private app: FastifyInstance;
+  private db: Database;
 
-  constructor(app: FastifyInstance) {
-    this.app = app;
+  constructor(app: FastifyInstance & { db: Database }) {
+    this.db = app.db;
   }
 
-  add(data: MatchInvitation): void {
-    const stmt = this.app.db.prepare(`
+  add(data: MatchInvitation, db?: Database): void {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
       INSERT INTO match_invitation_request (user_id1, user_id2, date_time)
       VALUES (?, ?, ?)
     `);
@@ -27,7 +29,8 @@ export class MatchInvitationRequestRepo {
     );
   }
 
-  update(id: number, updates: Partial<MatchInvitation>): void {
+  update(id: number, updates: Partial<MatchInvitation>, db?: Database): void {
+    const database = db ?? this.db;
     const parts: string[] = [];
     const values: any[] = [];
 
@@ -40,7 +43,7 @@ export class MatchInvitationRequestRepo {
 
     values.push(id);
 
-    const stmt = this.app.db.prepare(`
+    const stmt = database.prepare(`
       UPDATE match_invitation_request
       SET ${parts.join(", ")}
       WHERE id = ?
@@ -48,30 +51,38 @@ export class MatchInvitationRequestRepo {
     stmt.run(...values);
   }
 
-  delete(id: number): void {
-    const stmt = this.app.db.prepare(`
+  delete(id: number, db?: Database): void {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
       DELETE FROM match_invitation_request WHERE id = ?
     `);
     stmt.run(id);
   }
 
-  getById(id: number): MatchInvitation | null {
-    const stmt = this.app.db.prepare(`
+  getById(id: number, db?: Database): MatchInvitation | null {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
       SELECT * FROM match_invitation_request WHERE id = ?
     `);
     return (stmt.get(id) as MatchInvitation | undefined) || null;
   }
 
-  listPendingForUser(userId: number): MatchInvitation[] {
-    const stmt = this.app.db.prepare(`
+  listPendingForUser(userId: number, db?: Database): MatchInvitation[] {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
       SELECT * FROM match_invitation_request
       WHERE (user_id1 = ? OR user_id2 = ?) AND is_accepted = 0
     `);
     return stmt.all(userId, userId) as MatchInvitation[];
   }
 
-  hasPendingRequestBetween(userId1: number, userId2: number): boolean {
-    const stmt = this.app.db.prepare(`
+  hasPendingRequestBetween(
+    userId1: number,
+    userId2: number,
+    db?: Database
+  ): boolean {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
       SELECT 1 FROM match_invitation_request
       WHERE
         (

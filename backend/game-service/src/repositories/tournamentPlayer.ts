@@ -1,24 +1,28 @@
 import type { FastifyInstance } from "fastify";
+import type { Database } from "better-sqlite3";
 
 export class TournamentPlayerRepo {
-  private app: FastifyInstance;
+  private db: Database;
 
-  constructor(app: FastifyInstance) {
-    this.app = app;
+  constructor(app: FastifyInstance & { db: Database }) {
+    this.db = app.db;
   }
 
-  async isPlayerInTournament(
+  isPlayerInTournament(
     playerId: number,
-    tournamentId: number
-  ): Promise<boolean> {
-    const stmt = this.app.db.prepare(`
-        SELECT 1 FROM tournament_player WHERE player_id = ? AND tournament_id = ?
-      `);
+    tournamentId: number,
+    db?: Database
+  ): boolean {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      SELECT 1 FROM tournament_player WHERE player_id = ? AND tournament_id = ?
+    `);
     return !!stmt.get(playerId, tournamentId);
   }
 
-  async isPlayerInAnyActiveTournament(userId: number): Promise<boolean> {
-    const stmt = this.app.db.prepare(`
+  isPlayerInAnyActiveTournament(userId: number, db?: Database): boolean {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
       SELECT 1
       FROM tournament_player tp
       JOIN tournament t ON tp.tournament_id = t.id
@@ -26,16 +30,25 @@ export class TournamentPlayerRepo {
         AND t.status IN ('created', 'in_progress')
       LIMIT 1
     `);
-
     const result = stmt.get(userId);
     return !!result;
   }
 
-  // Удаляет регистрацию игрока
-  async unregister(user_id: number, tournament_id: number): Promise<void> {
-    const stmt = this.app.db.prepare(
-      `DELETE FROM tournament_player WHERE player_id = ? AND tournament_id = ?`
-    );
-    stmt.run(user_id, tournament_id);
+  unregister(user_id: number, tournament_id: number, db?: Database): void {
+    const database = db ?? this.db;
+    database
+      .prepare(
+        `DELETE FROM tournament_player WHERE player_id = ? AND tournament_id = ?`
+      )
+      .run(user_id, tournament_id);
+  }
+
+  getPlayersByTournament(tournament_id: number, db?: Database): number[] {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      SELECT player_id FROM tournament_player WHERE tournament_id = ?
+    `);
+    const rows = stmt.all(tournament_id) as { player_id: number }[];
+    return rows.map((row) => row.player_id);
   }
 }

@@ -1,51 +1,57 @@
-import type { FastifyInstance } from "fastify";
 import type { Status } from "../types/index.ts";
+import type { Database } from "better-sqlite3";
+import { BaseRepo } from "./base.ts";
 
-export class TournamentRepo {
-  private app: FastifyInstance;
+export class TournamentRepo extends BaseRepo {
+  // Все методы принимают в качестве опционального параметра объект с методом prepare
+  // Просто передаем объект Database
 
-  constructor(app: FastifyInstance) {
-    this.app = app;
-  }
-
-  async exists(id: number): Promise<boolean> {
-    const stmt = this.app.db.prepare(`SELECT 1 FROM tournament WHERE id = ?`);
+  exists(id: number, db?: Database): boolean {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`SELECT 1 FROM tournament WHERE id = ?`);
     return !!stmt.get(id);
   }
 
-  async getStatus(id: number): Promise<Status | null> {
-    const stmt = this.app.db.prepare(
-      `SELECT status FROM tournament WHERE id = ?`
-    );
+  getStatus(id: number, db?: Database): Status | null {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`SELECT status FROM tournament WHERE id = ?`);
     const row = stmt.get(id) as { status: Status } | undefined;
     return row ? row.status : null;
   }
 
-  async checkIsActiveTournamentByUserId(createdBy: number): Promise<boolean> {
-    const stmt = this.app.db.prepare(
+  checkIsActiveTournamentByUserId(createdBy: number, db?: Database): boolean {
+    const database = db ?? this.db;
+    const stmt = database.prepare(
       `SELECT 1 FROM tournament WHERE created_by = ? AND status IN ('created', 'in_progress')`
     );
     const row = stmt.get(createdBy);
-    return row ? true : false;
+    return !!row;
   }
 
-  async createTournament(data: { maxPlayersCount: number; createdBy: number }) {
+  createTournament(
+    data: { maxPlayersCount: number; createdBy: number },
+    db?: Database
+  ) {
+    const database = db ?? this.db;
     const { maxPlayersCount, createdBy } = data;
-
-    const stmt = this.app.db.prepare(`
+    const stmt = database.prepare(`
       INSERT INTO tournament (max_players_count, current_players_count, status, created_by)
       VALUES (?, 0, 'created', ?)
     `);
     stmt.run(maxPlayersCount, createdBy);
   }
 
-  async getById(id: number): Promise<{
+  getById(
+    id: number,
+    db?: Database
+  ): {
     id: number;
     max_players_count: number;
     current_players_count: number;
     status: Status;
-  } | null> {
-    const stmt = this.app.db.prepare(`
+  } | null {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
       SELECT id, max_players_count, current_players_count, status
       FROM tournament
       WHERE id = ?
@@ -54,13 +60,16 @@ export class TournamentRepo {
     return row ? (row as any) : null;
   }
 
-  private getByIdForUpdate(tournament_id: number): {
+  private getByIdForUpdate(
+    tournament_id: number,
+    db: Database
+  ): {
     id: number;
     max_players_count: number;
     current_players_count: number;
     status: Status;
   } | null {
-    const stmt = this.app.db.prepare(`
+    const stmt = db.prepare(`
       SELECT id, max_players_count, current_players_count, status
       FROM tournament
       WHERE id = ?
@@ -69,21 +78,21 @@ export class TournamentRepo {
     return row ? (row as any) : null;
   }
 
-  private incrementPlayerCount(tournament_id: number): void {
-    this.app.db
-      .prepare(
-        `
+  private incrementPlayerCount(tournament_id: number, db: Database): void {
+    db.prepare(
+      `
       UPDATE tournament
       SET current_players_count = current_players_count + 1
       WHERE id = ?
     `
-      )
-      .run(tournament_id);
+    ).run(tournament_id);
   }
 
   registerPlayerToTournament(tournament_id: number, user_id: number): void {
-    const tx = this.app.db.transaction(() => {
-      const tournament = this.getByIdForUpdate(tournament_id);
+    // Транзакция - функция, внутри которой используем this.db
+    const tx = this.db.transaction(() => {
+      const tournament = this.getByIdForUpdate(tournament_id, this.db);
+
       if (
         !tournament ||
         tournament.status !== "created" ||
@@ -92,29 +101,52 @@ export class TournamentRepo {
         throw new Error("Tournament is not available for registration");
       }
 
-      this.insertPlayer(tournament_id, user_id);
-      this.incrementPlayerCount(tournament_id);
+      this.insertPlayer(tournament_id, user_id, this.db);
+      this.incrementPlayerCount(tournament_id, this.db);
     });
 
     tx();
   }
 
-  private insertPlayer(tournament_id: number, user_id: number): void {
-    this.app.db
-      .prepare(
-        `
+  private insertPlayer(
+    tournament_id: number,
+    user_id: number,
+    db: Database
+  ): void {
+    db.prepare(
+      `
       INSERT INTO tournament_player (tournament_id, player_id)
       VALUES (?, ?)
     `
-      )
-      .run(tournament_id, user_id);
+    ).run(tournament_id, user_id);
   }
 
-  // Уменьшает счётчик текущих игроков
-  async decrementPlayerCount(tournament_id: number): Promise<void> {
-    const stmt = this.app.db.prepare(
-      `UPDATE tournament SET current_players_count = current_players_count - 1 WHERE id = ?`
-    );
-    stmt.run(tournament_id);
+  decrementPlayerCount(tournament_id: number, db?: Database): void {
+    const database = db ?? this.db;
+    database
+      .prepare(
+        `
+      UPDATE tournament SET current_players_count = current_players_count - 1 WHERE id = ?
+    `
+      )
+      .run(tournament_id);
+  }
+
+  updateStatus(id: number, status: Status, db?: Database): void {
+    const database = db ?? this.db;
+    database
+      .prepare(
+        `
+      UPDATE tournament SET status = ?, started_at = datetime('now') WHERE id = ?
+    `
+      )
+      .run(status, id);
+  }
+
+  setStatus(tournament_id: number, status: Status, db?: Database) {
+    const database = db ?? this.db;
+    database
+      .prepare(`UPDATE tournament SET status = ? WHERE id = ?`)
+      .run(status, tournament_id);
   }
 }
