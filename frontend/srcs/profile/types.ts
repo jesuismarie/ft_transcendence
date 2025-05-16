@@ -4,7 +4,6 @@ interface UserProfile {
 	email: string;
 	wins: number;
 	losses: number;
-	online: boolean;
 	avatar?: string | null;
 }
 
@@ -12,23 +11,16 @@ interface Friend {
 	id: number;
 	username: string;
 	avatar?: string | null;
-	online: boolean;
 }
 
-interface UserSearchResult {
+interface FriendRequest {
 	id: number;
-	username: string;
-	avatar?: string | null;
+	fromUser: {
+		id: number;
+		username: string;
+		avatar?: string | null;
+	};
 }
-
-// interface FriendRequest {
-// 	id: number;
-// 	fromUser: {
-// 		id: number;
-// 		username: string;
-// 		avatar?: string | null;
-// 	};
-// }
 
 interface Match {
 	id: number;
