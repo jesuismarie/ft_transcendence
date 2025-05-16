@@ -10,11 +10,29 @@ function clearErrors() {
 	allErrors.forEach((el) => (el.textContent = ''));
 }
 
+function isValidUsername(username: string): boolean {
+	return (
+		/^[a-zA-Z_][a-zA-Z0-9_]{2,19}$/.test(username)
+	);
+}
+
+function isValidEmail(email: string): boolean {
+	return /^[^\d][^@]*@[^@]+\.[^@]+$/.test(email);
+}
+
+function isValidPassword(password: string): boolean {
+	return (
+		password.length >= 8 &&
+		/[A-Z]/.test(password) &&
+		/[!@#$%^&*(),.?":{}|<>]/.test(password) &&
+		!/\s/.test(password)
+	);
+}
+
 function initRegistrationForm() {
 	const registrationForm = document.getElementById('registrationForm') as HTMLFormElement | null;
 
-	if (!registrationForm)
-		return;
+	if (!registrationForm) return;
 
 	registrationForm.addEventListener('submit', async (event: Event) => {
 		event.preventDefault();
@@ -35,59 +53,41 @@ function initRegistrationForm() {
 			}
 		});
 
-		const username = formValues.username?.trim() || '';
-		const email = formValues.email?.trim() || '';
+		const username = formValues.username || '';
+		const email = formValues.email || '';
 		const password = formValues.password?.toString() || '';
 
-		console.log('Form data:', {
-			username,
-			email,
-			password,
-			confirmPassword,
-		});
 		let hasError = false;
 
 		if (!username) {
 			showError('username', 'Username is required.');
 			hasError = true;
+		} else if (!isValidUsername(username)) {
+			showError('username', 'Invalid username.');
+			hasError = true;
 		}
+
 		if (!email) {
 			showError('email', 'Email is required.');
 			hasError = true;
+		} else if (!isValidEmail(email)) {
+			showError('email', 'Invalid email.');
+			hasError = true;
 		}
+
 		if (!password) {
 			showError('password', 'Password is required.');
 			hasError = true;
 		}
+
 		if (!confirmPassword) {
 			showError('confirm_password', 'Confirm Password is required.');
 			hasError = true;
 		}
 
-		if (hasError)
-			return;
-
-		if (/^\d/.test(username) || /\s/.test(username) || /[^a-zA-Z0-9_]/.test(username) || username.length < 3 || username.length > 20) {
-			showError('username', 'Invalid username.');
-			hasError = true;
-		}
-
-		if (!email.includes('@')) {
-			showError('email', 'Invalid email.');
-			hasError = true;
-		}
-
-		if (password.length < 8) {
-			showError('password', 'Password must be at least 8 characters.');
-			hasError = true;
-		} else if (!/[A-Z]/.test(password)) {
-			showError('password', 'Password must contain at least one uppercase letter.');
-			hasError = true;
-		} else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-			showError('password', 'Password must include at least one special character.');
-			hasError = true;
-		} else if (/\s/.test(password)) {
-			showError('password', 'Password must not contain spaces.');
+		if (!hasError && !isValidPassword(password)) {
+			showError('password', 'Invalid password.');
+			showError('confirm_password', 'Invalid password.');
 			hasError = true;
 		}
 
@@ -96,8 +96,7 @@ function initRegistrationForm() {
 			hasError = true;
 		}
 
-		if (hasError)
-			return;
+		if (hasError) return;
 
 		try {
 			const response = await fetch('https://pong/register', {
