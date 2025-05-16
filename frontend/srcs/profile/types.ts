@@ -6,9 +6,6 @@ interface UserProfile {
 	losses: number;
 	online: boolean;
 	avatar?: string | null;
-	// friends: Friend[];
-	// tournaments: Tournament[];
-	// matches: Match[];
 }
 
 interface Friend {
@@ -22,18 +19,16 @@ interface UserSearchResult {
 	id: number;
 	username: string;
 	avatar?: string | null;
-	isFriend: boolean;
-	requestSent: boolean;
 }
 
-interface FriendRequest {
-	id: number;
-	fromUser: {
-		id: number;
-		username: string;
-		avatar?: string | null;
-	};
-}
+// interface FriendRequest {
+// 	id: number;
+// 	fromUser: {
+// 		id: number;
+// 		username: string;
+// 		avatar?: string | null;
+// 	};
+// }
 
 interface Match {
 	id: number;
@@ -63,6 +58,7 @@ interface Tournament {
 interface TournamentParticipant {
 	id: number;
 	username: string;
+	avatar?: string | null;
 }
 
 interface RegistrationFormData {
@@ -70,7 +66,6 @@ interface RegistrationFormData {
 	email: string;
 	password: string;
 }
-
 
 interface LoginFormData {
 	username: string;
