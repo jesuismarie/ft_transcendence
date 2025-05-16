@@ -33,6 +33,7 @@ function loadSignInForm() {
 
 function loadSignUpForm() {
 	loadTemplate("signup-template", "Sign Up");
+	initRegistrationForm();
 }
 
 function loadGamePage() {

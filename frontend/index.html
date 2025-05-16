@@ -67,10 +67,14 @@
 						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
 					</a>
 					<span>or use your email for registration</span>
-					<input type="text" name="username" placeholder="Username" required/>
-					<input type="email" name="email" placeholder="Email" required/>
-					<input type="password" name="password" placeholder="Password" required/>
-					<input type="password" name="password" placeholder="Confirm Password" required/>
+					<input type="text" name="username" placeholder="Username"/>
+					<p class="error-msg text-red-500 text-sm h-4" data-error-for="username"></p>
+					<input type="email" name="email" placeholder="Email"/>
+					<p class="error-msg text-red-500 text-sm h-4" data-error-for="email"></p>
+					<input type="password" name="password" placeholder="Password"/>
+					<p class="error-msg text-red-500 text-sm h-4" data-error-for="password"></p>
+					<input type="password" name="confirm_password" placeholder="Confirm Password"/>
+					<p class="error-msg text-red-500 text-sm h-4" data-error-for="confirm_password"></p>
 					<button type="submit">Sign Up</button>
 				</form>
 			</div>
@@ -324,6 +328,7 @@
 	<script src="./dist/main.js" defer></script>
 	<script src="./dist/game/pong.js" defer></script>
 	<script src="./dist/profile/login.js" defer></script>
+	<script src="./dist/profile/register.js" defer></script>
 	<script src="./dist/profile/profile.js" defer></script>
 	<script src="./dist/profile/types.js" defer></script>
 	<script src="./dist/profile/edit.js" defer></script>
