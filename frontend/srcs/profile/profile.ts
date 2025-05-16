@@ -1,22 +1,9 @@
-function showModal(modalId: string) {
-	const modal = document.getElementById(modalId) as HTMLElement | null;
-	if (modal) {
-		modal.classList.remove("hidden");
-	}
-}
-
-function hideModal(modalId: string) {
-	const modal = document.getElementById(modalId) as HTMLElement | null;
-	if (modal) {
-		modal.classList.add("hidden");
-	}
-}
-
 function initPersonalData(username: string | null = null) {
 	initWipeText();
 	searchUsers();
 	viewFriends(username);
 	viewMatches(username);
+	const user: UserProfile = { id: 0, username: "qwerty", email: "hello@hey.com", wins: 0, losses: 0 };
 
 	const editProfileBtn = document.getElementById("edit-profile-btn") as HTMLButtonElement | null;
 	const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLElement | null;
@@ -31,7 +18,7 @@ function initPersonalData(username: string | null = null) {
 
 	if (username === getCurrentUser()) {
 		editProfileBtn?.classList.remove("hidden");
-		editProfile();
+		editProfile(user);
 		upcomingTournaments?.classList.remove("hidden");
 		initFriendRequests(username);
 		initTournaments(username);

@@ -42,9 +42,9 @@
 					</a>
 					<span>or use your username password</span>
 					<input type="text" name="username" placeholder="Username"/>
-					<p class="error-msg text-red-500 text-sm h-4" data-error-for="username"></p>
+					<p class="error-msg text-red-500 text-sm" data-error-for="username"></p>
 					<input type="password" name="password" placeholder="Password"/>
-					<p class="error-msg text-red-500 text-sm h-4" data-error-for="password"></p>
+					<p class="error-msg text-red-500 text-sm" data-error-for="password"></p>
 					<a href="#">Forgot your password?</a>
 					<button type="submit">Sign In</button>
 				</form>
@@ -70,13 +70,13 @@
 					</a>
 					<span>or use your email for registration</span>
 					<input type="text" name="username" placeholder="Username"/>
-					<p class="error-msg text-red-500 text-sm h-4" data-error-for="username"></p>
+					<p class="error-msg text-red-500 text-sm" data-error-for="username"></p>
 					<input type="text" name="email" placeholder="Email"/>
-					<p class="error-msg text-red-500 text-sm h-4" data-error-for="email"></p>
+					<p class="error-msg text-red-500 text-sm" data-error-for="email"></p>
 					<input type="password" name="password" placeholder="Password"/>
-					<p class="error-msg text-red-500 text-sm h-4" data-error-for="password"></p>
+					<p class="error-msg text-red-500 text-sm" data-error-for="password"></p>
 					<input type="password" name="confirm_password" placeholder="Confirm Password"/>
-					<p class="error-msg text-red-500 text-sm h-4" data-error-for="confirm_password"></p>
+					<p class="error-msg text-red-500 text-sm" data-error-for="confirm_password"></p>
 					<button type="submit">Sign Up</button>
 				</form>
 			</div>
@@ -244,11 +244,26 @@
 						Edit Profile
 					</h3>
 					<div class="mt-4 space-y-4">
-						<label for="edit-username" class="block text-sm font-medium">Username</label>
-						<input type="text" id="edit-username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-						<label for="edit-email" class="block text-sm font-medium">Email</label>
-						<input type="email" id="edit-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-						<button id="change-password-btn" class="mt-4 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Change Password</button>
+						<div>
+							<label for="edit-username" class="block text-sm font-medium">Username</label>
+							<input type="text" id="edit-username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+							<p class="error-msg text-red-500 text-sm" data-error-for="username"></p>
+						</div>
+						<div>
+							<label for="edit-email" class="block text-sm font-medium">Email</label>
+							<input type="email" id="edit-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+							<p class="error-msg text-red-500 text-sm" data-error-for="email"></p>
+						</div>
+						<div>
+							<label for="edit-password" class="block text-sm font-medium">Password</label>
+							<input type="password" id="edit-password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+							<p class="error-msg text-red-500 text-sm" data-error-for="password"></p>
+						</div>
+						<div>
+							<label for="edit-confirm-password" class="block text-sm font-medium">Confirm Password</label>
+							<input type="password" id="edit-confirm-password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+							<p class="error-msg text-red-500 text-sm" data-error-for="confirm_password"></p>
+						</div>
 					</div>
 				</div>
 				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex flex-row-reverse gap-3">
@@ -332,7 +347,6 @@
 	<script src="./dist/profile/login.js" defer></script>
 	<script src="./dist/profile/register.js" defer></script>
 	<script src="./dist/profile/profile.js" defer></script>
-	<script src="./dist/profile/types.js" defer></script>
 	<script src="./dist/profile/edit.js" defer></script>
 	<script src="./dist/profile/search.js" defer></script>
 	<script src="./dist/profile/friends.js" defer></script>
@@ -340,5 +354,9 @@
 	<script src="./dist/profile/matches.js" defer></script>
 	<script src="./dist/profile/tournaments.js" defer></script>
 	<script src="./dist/animation/animation.js" defer></script>
+	<script src="./dist/utils/types.js" defer></script>
+	<script src="./dist/utils/validation.js" defer></script>
+	<script src="./dist/utils/error_messages.js" defer></script>
+	<script src="./dist/utils/modal_utils.js" defer></script>
 </body>
 </html>
