@@ -1,9 +1,8 @@
-function initPersonalData(username: string | null = null) {
+async function initPersonalData(username: string | null = null) {
 	initWipeText();
 	searchUsers();
 	viewFriends(username);
 	viewMatches(username);
-	const user: UserProfile = { id: 0, username: "qwerty", email: "hello@hey.com", wins: 0, losses: 0 };
 
 	const editProfileBtn = document.getElementById("edit-profile-btn") as HTMLButtonElement | null;
 	const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLElement | null;
@@ -16,18 +15,48 @@ function initPersonalData(username: string | null = null) {
 		return;
 	}
 
-	if (username === getCurrentUser()) {
-		editProfileBtn?.classList.remove("hidden");
-		editProfile(user);
-		upcomingTournaments?.classList.remove("hidden");
-		initFriendRequests(username);
-		initTournaments(username);
-		addTournament();
-	} else {
-		editProfileBtn?.classList.add("hidden");
-		upcomingTournaments?.classList.add("hidden");
-		friendRequestBtn?.classList.remove("hidden");
-		friendRequestListBtn?.classList.add("hidden");
-		addTournamentPreviewBtn?.classList.add("hidden");
+	try {
+		const currentUsername = getCurrentUser();
+		const targetUsername = username || currentUsername;
+
+		// let currentUsername;
+		// let targetUsername = username || currentUsername;
+		// currentUsername = "me"; // For testing purposes
+		// targetUsername = "me"; // For testing purposes
+		
+		if (!targetUsername) {
+			throw new Error("Username is required to load user profile");
+		}
+
+		const res = await fetch(`/api/users/${targetUsername}`);
+		if (!res.ok)
+			throw new Error("Failed to load user profile");
+		const user: UserProfile = await res.json();
+
+		// const user: UserProfile = {
+		// 	id: 1,
+		// 	username: targetUsername,
+		// 	email: "hey@gmail.com",
+		// 	wins: 10,
+		// 	losses: 5,
+		// 	avatar: "https://example.com/avatar.png",
+		// };
+
+		if (targetUsername === currentUsername) {
+			editProfileBtn.classList.remove("hidden");
+			editProfile(user);
+			upcomingTournaments.classList.remove("hidden");
+			initFriendRequests(username);
+			initTournaments(username);
+			addTournament();
+		} else {
+			editProfileBtn.classList.add("hidden");
+			upcomingTournaments.classList.add("hidden");
+			friendRequestBtn.classList.remove("hidden");
+			friendRequestListBtn.classList.add("hidden");
+			addTournamentPreviewBtn.classList.add("hidden");
+		}
+	} catch (err) {
+		console.error("Error loading personal data:", err);
 	}
 }
