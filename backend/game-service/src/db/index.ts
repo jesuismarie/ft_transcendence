@@ -37,8 +37,8 @@ export default fp(async function initDb(app: FastifyInstance) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       player_id INTEGER NOT NULL,
       tournament_id INTEGER NOT NULL,
-      wins INTEGER,
-      losses INTEGER,
+      wins INTEGER NOT NULL DEFAULT 0,
+      losses INTEGER NOT NULL DEFAULT 0,
       UNIQUE(player_id, tournament_id)
     )`);
     app.log.info("Tournament_player table created.");

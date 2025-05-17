@@ -2,39 +2,39 @@ import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament.ts";
 
 export interface CreateTournamentRequestBody {
-  maxPlayersCount: number;
-  createdBy: number;
+  max_players_count: number;
+  created_by: number;
 }
 
 export default async function createTournamentRoute(app: FastifyInstance) {
   const tournamentRepo = new TournamentRepo(app);
 
   app.post("/create-tournament", async (request, reply) => {
-    const { maxPlayersCount, createdBy } =
+    const { max_players_count, created_by } =
       request.body as CreateTournamentRequestBody;
 
-    // Валидация maxPlayersCount
-    if (![4, 8, 16].includes(maxPlayersCount)) {
+    // Валидация max_players_count
+    if (![4, 8, 16].includes(max_players_count)) {
       return reply.status(400).send({
-        message: "maxPlayersCount must be one of the following: 4, 8, 16",
+        message: "max_players_count must be one of the following: 4, 8, 16",
       });
     }
 
-    // Проверка, есть ли турнир с таким createdBy и статусом 'created' или 'in_progress'
+    // Проверка, есть ли турнир с таким created_by и статусом 'created' или 'in_progress'
     const existingTournament =
-      await tournamentRepo.checkIsActiveTournamentByUserId(createdBy);
+      await tournamentRepo.checkIsActiveTournamentByUserId(created_by);
     if (existingTournament) {
       return reply.status(400).send({
         message:
-          "A tournament with this createdBy already exists in 'created' or 'in_progress' status.",
+          "A tournament with this created_by already exists in 'created' or 'in_progress' status.",
       });
     }
 
     try {
       // Создаем новый турнир
       await tournamentRepo.createTournament({
-        maxPlayersCount,
-        createdBy,
+        maxPlayersCount: max_players_count,
+        createdBy: created_by,
       });
 
       return reply

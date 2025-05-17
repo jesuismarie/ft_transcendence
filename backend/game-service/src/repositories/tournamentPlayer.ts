@@ -51,4 +51,14 @@ export class TournamentPlayerRepo {
     const rows = stmt.all(tournament_id) as { player_id: number }[];
     return rows.map((row) => row.player_id);
   }
+
+  incrementWins(user_id: number, tournament_id: number, db?: Database) {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      UPDATE tournament_player
+      SET wins = wins + 1
+      WHERE player_id = ? AND tournament_id = ?
+    `);
+    stmt.run(user_id, tournament_id);
+  }
 }
