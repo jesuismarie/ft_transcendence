@@ -17,7 +17,7 @@ function viewMatches(username: string | null = null) {
 		<div class="px-4 py-3 shadow-sm hover:bg-gray-50 transition duration-300">
 			<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
 				<div class="text-lg font-semibold text-gray-800 flex items-center flex-wrap gap-2 sm:gap-4">
-					<span >${currentUser}</span>
+					<span >${username}</span>
 					<span class="font-normal">vs</span>
 					<span >${match.opponent.username}</span>
 					<span class="ml-auto px-3 py-1 text-xs font-semibold rounded-full 

@@ -1,7 +1,8 @@
 function initRegistrationForm() {
 	const registrationForm = document.getElementById('registrationForm') as HTMLFormElement | null;
 
-	if (!registrationForm) return;
+	if (!registrationForm)
+		return;
 
 	registrationForm.addEventListener('submit', async (event: Event) => {
 		event.preventDefault();
@@ -65,7 +66,8 @@ function initRegistrationForm() {
 			hasError = true;
 		}
 
-		if (hasError) return;
+		if (hasError)
+			return;
 
 		try {
 			const response = await fetch('https://pong/register', {
