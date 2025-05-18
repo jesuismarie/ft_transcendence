@@ -131,28 +131,32 @@
 								<div class="flex justify-center -mt-12">
 									<div class="relative">
 										<img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="./public/images/background1.jpg" alt="User avatar">
-										<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-primary hover:shadow-neon focus:outline-none">
+										<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-white hover:shadow-neon focus:outline-none">
 											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
 											</svg>
 										</button>
-										<input type="file" id="avatar-input" class="hidden" accept="image/*">
+										<input type="file" id="avatar-input" class="hidden" accept="image/*" />
 									</div>
 								</div>
 								<div class="text-center mt-4">
-									<h2 id="tournment-name" class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-gray-900">
+									<h2 id="player-name" class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-gray-900">
 										<!-- Player Username -->
 									</h2>
-									<div class="flex items-center justify-center mt-2">
+									<div id="online-status" class="flex items-center justify-center mt-2">
 										<!-- Online Status -->
 									</div>
 								</div>
 								<div class="mt-6 grid grid-cols-2 gap-4 text-center">
-									<p class="text-gray-600">Wins</p>
-									<!-- Wins Count -->
-									<p class="text-gray-600">Losses</p>
-									<!-- Losses Count -->
+									<div>
+										<p class="text-gray-600">Wins</p>
+										<p id="player-wins" class="text-black font-bold">0</p>
+									</div>
+									<div>
+										<p class="text-gray-600">Losses</p>
+										<p id="player-losses" class="text-black font-bold">0</p>
+									</div>
 								</div>
 								<button onclick="loadGamePage()" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
 								<button id="friend-request-btn" class="hidden mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
@@ -184,6 +188,7 @@
 							<h3 class="text-lg font-medium border-b border-hover mb-4">
 								Upcoming Tournaments
 							</h3>
+							<p class="error-msg text-red-500 text-sm" data-error-for="tournament2"></p>
 							<div id="tournament-preview" class="divide-y divide-gray-200">
 							</div>
 							<button id="view-tournament" class="hidden mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">
@@ -322,26 +327,11 @@
 				<h3 class="text-lg border-b border-hover pb-2">
 					All Tournaments
 				</h3>
+				<p class="error-msg text-red-500 text-sm" data-error-for="tournament1"></p>
 				<div id="tournament-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200"></div>
 				</div>
 				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
 					<button id="close-tournament-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
-				</div>
-			</div>
-		</div>
-
-		<!-- View Tournament Details -->
-		<div id="tournament-detals-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
-			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
-				<div class="px-4 pt-5 pb-4 sm:p-6">
-					<h3 class="text-lg border-b border-hover pb-2">
-						All Participants
-					</h3>
-					<div id="participant-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
-					</div>
-				</div>
-				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
-					<button id="close-tournament-detals-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
 				</div>
 			</div>
 		</div>
