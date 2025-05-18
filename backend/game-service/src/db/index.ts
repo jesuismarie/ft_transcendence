@@ -56,9 +56,9 @@ export default fp(async function initDb(app: FastifyInstance) {
       score_1 INTEGER,
       score_2 INTEGER,
       started_at TEXT,
-      game_level INTEGER,
-      group_id INTEGER,
-      tournament_id INTEGER,
+      game_level INTEGER NOT NULL DEFAULT 1,
+      group_id INTEGER NOT NULL DEFAULT 0,
+      tournament_id INTEGER NOT NULL DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'created' CHECK (status IN ('created', 'in_progress', 'ended', 'error')),
       UNIQUE(tournament_id, group_id, game_level, player_1, player_2)
     )`);

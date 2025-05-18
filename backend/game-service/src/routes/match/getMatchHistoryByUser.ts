@@ -1,10 +1,28 @@
 import type { FastifyInstance } from "fastify";
 import { MatchRepo } from "../../repositories/match.ts";
+import type { Status } from "../../types/index.ts";
 
 interface GetMatchHistoryRequestBody {
   user_id: number;
   limit?: number;
   offset?: number;
+}
+
+interface GetMatchHistoryResponse {
+  totalCount: number;
+  matches: MatchHistory[];
+}
+
+interface MatchHistory {
+  id: number;
+  opponent: number;
+  status: Status;
+  is_won: boolean | null;
+  score: {
+    user: number;
+    opponent: number;
+  };
+  date: string | null;
 }
 
 export default async function getMatchHistoryByUserRoute(app: FastifyInstance) {
@@ -22,25 +40,38 @@ export default async function getMatchHistoryByUserRoute(app: FastifyInstance) {
     }
 
     try {
-      const totalCount = matchRepo.countUserMatchHistory(user_id);
-      const rawMatches = matchRepo.getUserMatchHistory(user_id, limit, offset);
+      const totalCount = await matchRepo.countUserMatchHistory(user_id);
+      const rawMatches = await matchRepo.getUserMatchHistory(
+        user_id,
+        limit,
+        offset
+      );
 
-      const matches = rawMatches.map((match) => {
-        const isPlayer1 = match.player_1 === user_id;
+      const formattedMatches: MatchHistory[] = rawMatches.map((match) => {
+        const isPlayer1 = match.user1_id === user_id;
         const player_score = isPlayer1 ? match.score_1 : match.score_2;
         const opponent_score = isPlayer1 ? match.score_2 : match.score_1;
+        const isMatchWon = match.winner_id === user_id;
+
         return {
-          match_id: match.id,
-          player: user_id,
-          opponent: isPlayer1 ? match.player_2 : match.player_1,
-          startedAt: match.started_at,
-          isMatchWon: player_score > opponent_score,
-          player_score,
-          opponent_score,
+          id: match.id,
+          opponent: isPlayer1 ? match.user2_id : match.user1_id,
+          status: match.status as Status,
+          is_won: match.winner_id === null ? null : isMatchWon,
+          score: {
+            user: player_score,
+            opponent: opponent_score,
+          },
+          date: match.started_at,
         };
       });
 
-      return reply.send({ totalCount, matches });
+      const response: GetMatchHistoryResponse = {
+        totalCount,
+        matches: formattedMatches,
+      };
+
+      return reply.send(response);
     } catch (err) {
       app.log.error(err);
       return reply

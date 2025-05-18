@@ -1,13 +1,19 @@
 import type { FastifyInstance } from "fastify";
 import type { Database } from "better-sqlite3";
+import type { Status } from "../types/index.ts";
 
-interface RawMatch {
+interface Match {
   id: number;
-  player_1: number;
-  player_2: number;
+  user1_id: number;
+  user2_id: number;
+  winner_id: number | null;
   score_1: number;
   score_2: number;
-  started_at: string;
+  status: Status;
+  game_level: number;
+  group_id: number;
+  tournament_id: number;
+  started_at: string | null;
 }
 
 interface GetTournamentMatchesParams {
@@ -73,58 +79,58 @@ export class MatchRepo {
       FROM match
       WHERE 
         (player_1 = ? OR player_2 = ?)
-        AND tournament_id IS NULL
         AND status IN ('ended', 'error')
     `);
     const row = stmt.get(user_id, user_id) as { count: number };
     return row.count;
   }
 
-  getUserMatchHistory(
-    user_id: number,
-    limit: number,
-    offset: number
-  ): RawMatch[] {
+  getUserMatchHistory(user_id: number, limit: number, offset: number): Match[] {
     const stmt = this.db.prepare(`
       SELECT 
         id,
         player_1,
         player_2,
+        winner_id,
         score_1,
         score_2,
-        started_at
+        started_at,
+        group_id,
+        game_level,
+        tournament_id,
+        status
       FROM match
       WHERE 
         (player_1 = ? OR player_2 = ?)
-        AND tournament_id IS NULL
         AND status IN ('ended', 'error')
       ORDER BY started_at DESC
       LIMIT ? OFFSET ?
     `);
 
-    return stmt.all(user_id, user_id, limit, offset) as RawMatch[];
+    return stmt.all(user_id, user_id, limit, offset) as Match[];
   }
 
   getTournamentMatches(params: GetTournamentMatchesParams): {
     totalCount: number;
-    matches: {
-      match_id: number;
-      player_1: number;
-      player_2: number;
-      score_1: number;
-      score_2: number;
-      started_at: string;
-      status: string;
-      game_level: number;
-      tournament_id: number;
-    }[];
+    matches: Match[];
   } {
     const db = this.db;
 
     const { tournament_id, limit, offset, statuses } = params;
 
     const baseQuery = `
-      SELECT id AS match_id, player_1, player_2, score_1, score_2, started_at, status, game_level, tournament_id
+      SELECT 
+        id AS id, 
+        player_1 AS user1_id, 
+        player_2 AS user2_id, 
+        winner_id, 
+        score_1, 
+        score_2, 
+        started_at, 
+        status, 
+        game_level, 
+        group_id, 
+        tournament_id
       FROM match
       WHERE tournament_id = ?
       ${
@@ -151,24 +157,14 @@ export class MatchRepo {
     const bindings = [tournament_id, ...(statuses || []), limit, offset];
     const countBindings = [tournament_id, ...(statuses || [])];
 
-    const matches = db.prepare(baseQuery).all(...bindings) as any[];
+    const matches = db.prepare(baseQuery).all(...bindings) as Match[];
     const totalCountRow = db.prepare(countQuery).get(...countBindings) as {
       count: number;
     };
 
     return {
       totalCount: totalCountRow.count,
-      matches: matches.map((match) => ({
-        match_id: match.match_id,
-        player_1: match.player_1,
-        player_2: match.player_2,
-        score_1: match.score_1,
-        score_2: match.score_2,
-        started_at: match.started_at,
-        status: match.status,
-        game_level: match.game_level,
-        tournament_id: match.tournament_id,
-      })),
+      matches: matches,
     };
   }
 

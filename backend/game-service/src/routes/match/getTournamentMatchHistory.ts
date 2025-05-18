@@ -1,5 +1,30 @@
 import type { FastifyInstance } from "fastify";
 import { MatchRepo } from "../../repositories/match.ts";
+import type { Status } from "../../types/index.ts";
+
+interface GetMatchHistoryByTournamentRequestBody {
+  tournament_id: number;
+  limit?: number;
+  offset?: number;
+  statuses?: Status[];
+}
+
+interface GetMatchHistoryByTournamentResponse {
+  total_count: number;
+  matches: TournamentMatchHistory[];
+}
+interface TournamentMatchHistory {
+  id: number;
+  user1_id: number;
+  user2_id: number;
+  status: Status;
+  winner_id: number | null;
+  score: {
+    score_1: number;
+    score_2: number;
+  };
+  date: string | null;
+}
 
 const VALID_STATUSES = ["created", "in_progress", "ended", "error"] as const;
 type MatchStatus = (typeof VALID_STATUSES)[number];
@@ -15,12 +40,7 @@ export default async function getTournamentMatchHistoryRoute(
       limit = 10,
       offset = 0,
       statuses = [],
-    } = request.body as {
-      tournament_id?: number;
-      limit?: number;
-      offset?: number;
-      statuses?: string[];
-    };
+    } = request.body as GetMatchHistoryByTournamentRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
       return reply.status(400).send({ message: "Invalid tournament_id" });
@@ -49,7 +69,22 @@ export default async function getTournamentMatchHistoryRoute(
         statuses: statuses.length > 0 ? (statuses as MatchStatus[]) : undefined,
       });
 
-      return reply.send({ totalCount, matches });
+      const response: GetMatchHistoryByTournamentResponse = {
+        total_count: totalCount,
+        matches: matches.map((match) => ({
+          id: match.id,
+          user1_id: match.user1_id,
+          user2_id: match.user2_id,
+          status: match.status as Status,
+          winner_id: match.winner_id,
+          score: {
+            score_1: match.score_1,
+            score_2: match.score_2,
+          },
+          date: match.started_at,
+        })),
+      };
+      return reply.send(response);
     } catch (err) {
       app.log.error(err);
       return reply.status(500).send({ message: "Failed to retrieve matches" });
