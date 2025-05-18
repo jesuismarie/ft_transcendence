@@ -7,10 +7,20 @@ interface UserProfile {
 	avatar?: string | null;
 }
 
+interface SearchUserResponse {
+	users: UserProfile[];
+	total: number;
+}
+
 interface Friend {
 	id: number;
 	username: string;
 	avatar?: string | null;
+}
+
+interface FriendResponse {
+	total: number;
+	friends: Friend[];
 }
 
 interface FriendRequest {
@@ -36,6 +46,11 @@ interface Match {
 	date: string;
 }
 
+interface MatchResponse {
+	total: number;
+	matches: Match[];
+}
+
 interface Tournament {
 	id: number;
 	name: string;
@@ -44,6 +59,11 @@ interface Tournament {
 	current_players_count: number;
 	status: "created" | "in_progress" | "ended" | "error";
 	participants: string[];
+}
+
+interface TournamentResponse {
+	total: number;
+	tournament: Tournament[];
 }
 
 interface TournamentParticipant {
