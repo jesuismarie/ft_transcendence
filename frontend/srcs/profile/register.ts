@@ -87,7 +87,6 @@ function initRegistrationForm() {
 			}
 
 			console.log('Registration successful:', result);
-			// loadProfile(); // optional
 		} catch (error) {
 			console.error('Registration failed:', error);
 		}

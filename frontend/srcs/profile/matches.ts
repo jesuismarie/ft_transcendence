@@ -1,9 +1,3 @@
-const matches: Match[] = [
-	{ id: 1, opponent: { id: 2, username: "Player2" }, status: "Win", score: { user: 3, opponent: 1 }, date: "2023-10-01" },
-	{ id: 2, opponent: { id: 3, username: "Player3" }, status: "Draw", score: { user: 2, opponent: 2 }, date: "2023-10-02" },
-	{ id: 3, opponent: { id: 4, username: "Player4" }, status: "Loss", score: { user: 0, opponent: 1 }, date: "2023-10-03" },
-];
-
 function viewMatches(username: string | null = null) {
 	const previewContainer = document.getElementById("matches-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("match-modal-list") as HTMLElement | null;
@@ -14,6 +8,8 @@ function viewMatches(username: string | null = null) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
+
+	const matches: Match[] = [];
 
 	const renderMatchItem = (match: Match): string => {
 		return `

@@ -36,6 +36,6 @@
 	}
 	
 	form button {
-		@apply bg-hover border-none text-primary p-[10px_20px] rounded-[20px] mt-[10px] text-[12px] cursor-pointer transition-colors duration-300 ease-in-out hover:shadow-neon;
+		@apply bg-hover border-none text-white p-[10px_20px] rounded-[20px] mt-[10px] text-[12px] cursor-pointer transition-colors duration-300 ease-in-out hover:shadow-neon;
 	}
 }

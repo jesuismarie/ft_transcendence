@@ -1,6 +1,3 @@
-const friendRequests: FriendRequest[] = [
-];
-
 function initFriendRequests(username: string | null = null)
 {
 	const friendRequestListBtn = document.getElementById("friend-request-list-btn") as HTMLButtonElement | null;
@@ -11,6 +8,8 @@ function initFriendRequests(username: string | null = null)
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
+
+	const friendRequests: FriendRequest[] = [];
 
 	modalRequestList.innerHTML = "";
 	if (friendRequests.length === 0) {
