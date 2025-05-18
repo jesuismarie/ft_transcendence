@@ -1,8 +1,5 @@
 let currentFriendOffset = 0;
-const FRIENDS_LIMIT = 5;
-
-const friends: Friend[] = [
-]
+const FRIENDS_LIMIT = 25;
 
 function viewFriends(username: string | null = null, offset: number = 0, limit: number = FRIENDS_LIMIT) {
 	const previewContainer = document.getElementById("friends-preview") as HTMLElement | null;
@@ -12,16 +9,19 @@ function viewFriends(username: string | null = null, offset: number = 0, limit: 
 	const prevPageBtn = document.getElementById("prev-friends-page") as HTMLButtonElement | null;
 	const nextPageBtn = document.getElementById("next-friends-page") as HTMLButtonElement | null;
 	const pageInfo = document.getElementById("friend-page-info") as HTMLElement | null;
+	const paginatioBtns = document.getElementById("friend-pagination") as HTMLButtonElement | null;
 
-	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn || !prevPageBtn || !nextPageBtn || !pageInfo) {
+	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn || !prevPageBtn || !nextPageBtn || !pageInfo || !paginatioBtns) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
 
+	const friends: Friend[] = [];
+
 	const renderFriendItem = (friend: Friend): string => {
 		const targetHash = friend.username === currentUser ? "#profile" : `#profile/${friend.username}`;
 		return `
-			<div onclick="location.hash = '${targetHash}';" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
+			<div onclick="location.hash = '${targetHash}'; initPersonalData('${friend.username}');" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
 				<img src="${friend.avatar}" alt="${friend.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
 				<span>${friend.username}</span>
 			</div>
@@ -48,6 +48,9 @@ function viewFriends(username: string | null = null, offset: number = 0, limit: 
 		modalListContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
 	});
 
+	if (friends.length > FRIENDS_LIMIT) {
+		paginatioBtns.classList.remove("hidden");
+	}
 	const totalPages = Math.ceil(friends.length / limit);
 	const currentPage = Math.floor(offset / limit) + 1;
 	pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
