@@ -5,7 +5,7 @@ export interface Tournament {
   max_players_count: number;
   current_players_count: number;
   status: Status;
-  participants: string[];
+  participants: number[];
 }
 
 export type Status = "created" | "in_progress" | "ended" | "error";

@@ -153,4 +153,13 @@ export class TournamentRepo extends BaseRepo {
     `);
     stmt.run(tournament_id);
   }
+
+  getAll(db?: Database): Tournament[] {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      SELECT id, name, created_by, max_players_count, current_players_count, status
+      FROM tournament
+    `);
+    return stmt.all() as Tournament[];
+  }
 }
