@@ -149,4 +149,12 @@ export class TournamentRepo extends BaseRepo {
       .prepare(`UPDATE tournament SET status = ? WHERE id = ?`)
       .run(status, tournament_id);
   }
+
+  deleteTournament(tournament_id: number, db?: Database): void {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      DELETE FROM tournament WHERE id = ?
+    `);
+    stmt.run(tournament_id);
+  }
 }

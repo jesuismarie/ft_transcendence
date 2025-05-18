@@ -202,4 +202,12 @@ export class MatchRepo {
     `);
     stmt.run(winner_id, match_id);
   }
+
+  deleteMatchesByTournamentId(tournament_id: number, db?: Database): void {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      DELETE FROM match WHERE tournament_id = ?
+    `);
+    stmt.run(tournament_id);
+  }
 }
