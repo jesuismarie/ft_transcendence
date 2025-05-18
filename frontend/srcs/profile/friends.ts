@@ -1,13 +1,19 @@
-const friends: Friend[] = [
-];
+let currentFriendOffset = 0;
+const FRIENDS_LIMIT = 5;
 
-function viewFriends(username: string | null = null) {
+const friends: Friend[] = [
+]
+
+function viewFriends(username: string | null = null, offset: number = 0, limit: number = FRIENDS_LIMIT) {
 	const previewContainer = document.getElementById("friends-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("friend-modal-list") as HTMLElement | null;
 	const viewAllBtn = document.getElementById("friend-list-btn") as HTMLButtonElement | null;
 	const closeModalBtn = document.getElementById("close-friends-modal") as HTMLButtonElement | null;
+	const prevPageBtn = document.getElementById("prev-friends-page") as HTMLButtonElement | null;
+	const nextPageBtn = document.getElementById("next-friends-page") as HTMLButtonElement | null;
+	const pageInfo = document.getElementById("friend-page-info") as HTMLElement | null;
 
-	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn) {
+	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn || !prevPageBtn || !nextPageBtn || !pageInfo) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
@@ -24,28 +30,49 @@ function viewFriends(username: string | null = null) {
 
 	previewContainer.innerHTML = "";
 	const previewFriends = friends.slice(0, 3);
-	previewFriends.forEach(friend => {
-		previewContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
-	});
-
-	modalListContainer.innerHTML = "";
-	friends.forEach(friend => {
-		modalListContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
-	});
-
-	if (friends.length == 0) {
+	if (previewFriends.length === 0) {
 		previewContainer.innerHTML = `<p class="text-gray-500 p-4">No friends yet.</p>`;
-		return;
+	} else {
+		previewFriends.forEach(friend => {
+			previewContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
+		});
 	}
+
 	if (friends.length > 3) {
 		viewAllBtn.classList.remove("hidden");
 	}
 
-	viewAllBtn.addEventListener("click", () => {
-		showModal("friends-modal");
+	const paginatedFriends = friends.slice(offset, offset + limit);
+	modalListContainer.innerHTML = "";
+	paginatedFriends.forEach(friend => {
+		modalListContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
 	});
 
-	closeModalBtn.addEventListener("click", () => {
+	const totalPages = Math.ceil(friends.length / limit);
+	const currentPage = Math.floor(offset / limit) + 1;
+	pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+	prevPageBtn.disabled = offset === 0;
+	nextPageBtn.disabled = offset + limit >= friends.length;
+
+	prevPageBtn.onclick = () => {
+		currentFriendOffset = Math.max(0, currentFriendOffset - limit);
+		viewFriends(null, currentFriendOffset, limit);
+	};
+
+	nextPageBtn.onclick = () => {
+		if (currentFriendOffset + limit < friends.length) {
+			currentFriendOffset += limit;
+			viewFriends(null, currentFriendOffset, limit);
+		}
+	};
+
+	viewAllBtn.onclick = () => {
+		showModal("friends-modal");
+		viewFriends(null, currentFriendOffset, limit);
+	};
+
+	closeModalBtn.onclick = () => {
 		hideModal("friends-modal");
-	});
+	};
 }
