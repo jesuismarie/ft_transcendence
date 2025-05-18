@@ -23,6 +23,15 @@ export default async function unregisterFromTournamentRoute(
     }
 
     try {
+      // Check if the user is the tournament creator
+      const tournament = tournamentRepo.getById(tournament_id);
+      if (tournament?.created_by === user_id) {
+        return reply.status(400).send({
+          message:
+            "Tournament creator cannot unregister from their own tournament",
+        });
+      }
+
       // Вся логика (включая проверки) внутри транзакции
       const tx = app.db.transaction((txn) => {
         const isInTournament = tournamentPlayerRepo.isPlayerInTournament(

@@ -1,4 +1,4 @@
-import type { Status } from "../types/index.ts";
+import type { Status, Tournament } from "../types/index.ts";
 import type { Database } from "better-sqlite3";
 import { BaseRepo } from "./base.ts";
 
@@ -45,24 +45,15 @@ export class TournamentRepo extends BaseRepo {
     };
   }
 
-  getById(
-    id: number,
-    db?: Database
-  ): {
-    id: number;
-    name: string;
-    max_players_count: number;
-    current_players_count: number;
-    status: Status;
-  } | null {
+  getById(id: number, db?: Database): Tournament | null {
     const database = db ?? this.db;
     const stmt = database.prepare(`
-      SELECT id, name, max_players_count, current_players_count, status
+      SELECT id, name, created_by, max_players_count, current_players_count, status
       FROM tournament
       WHERE id = ?
     `);
     const row = stmt.get(id);
-    return row ? (row as any) : null;
+    return row ? (row as Tournament) : null;
   }
 
   private getByIdForUpdate(

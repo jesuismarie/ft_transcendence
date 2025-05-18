@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament.ts";
+import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
 
 export interface CreateTournamentRequestBody {
   name: string;
@@ -9,6 +10,7 @@ export interface CreateTournamentRequestBody {
 
 export default async function createTournamentRoute(app: FastifyInstance) {
   const tournamentRepo = new TournamentRepo(app);
+  const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
   app.post("/create-tournament", async (request, reply) => {
     const { name, max_players_count, created_by } =
@@ -18,20 +20,29 @@ export default async function createTournamentRoute(app: FastifyInstance) {
       return reply.status(400).send({ message: "Tournament name is required" });
     }
 
-    // Валидация max_players_count
-    if (![4, 8, 16].includes(max_players_count)) {
+    if (![2, 4, 8, 16].includes(max_players_count)) {
       return reply.status(400).send({
-        message: "max_players_count must be one of the following: 4, 8, 16",
+        message: "max_players_count must be one of the following: 2, 4, 8, 16",
       });
     }
 
-    // Проверка, есть ли турнир с таким created_by и статусом 'created' или 'in_progress'
+    // Check if the creator is already registered in another active tournament
+    const isCreatorInActiveTournament =
+      tournamentPlayerRepo.isPlayerInAnyActiveTournament(created_by);
+    if (isCreatorInActiveTournament) {
+      return reply.status(400).send({
+        message:
+          "Creator is already registered in another active tournament and cannot create a new one.",
+      });
+    }
+
+    // Check if the creator already has an active tournament they created
     const existingTournament =
-      await tournamentRepo.checkIsActiveTournamentByUserId(created_by);
+      tournamentRepo.checkIsActiveTournamentByUserId(created_by);
     if (existingTournament) {
       return reply.status(400).send({
         message:
-          "A tournament with this created_by already exists in 'created' or 'in_progress' status.",
+          "A tournament created by this user already exists in 'created' or 'in_progress' status.",
       });
     }
 
@@ -42,6 +53,9 @@ export default async function createTournamentRoute(app: FastifyInstance) {
         maxPlayersCount: max_players_count,
         createdBy: created_by,
       });
+
+      // Automatically register the creator in the tournament
+      tournamentRepo.registerPlayerToTournament(id, created_by);
 
       return reply.status(201).send({
         message: "Tournament created successfully",
