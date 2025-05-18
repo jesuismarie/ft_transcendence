@@ -44,7 +44,7 @@ export default async function startTournamentRoute(app: FastifyInstance) {
 
       const totalPlayers = shuffled.length;
 
-      if (![4, 8, 16].includes(totalPlayers)) {
+      if (![2, 4, 8, 16].includes(totalPlayers)) {
         throw new Error("Invalid number of players for tournament bracket");
       }
 
@@ -59,7 +59,7 @@ export default async function startTournamentRoute(app: FastifyInstance) {
           {
             tournament_id,
             group_id: i + 1, // каждый матч — отдельная группа
-            game_level: 1,
+            game_level: totalPlayers / 2,
             player_1: player1,
             player_2: player2,
           },
