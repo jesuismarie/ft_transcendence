@@ -346,8 +346,13 @@
 					<div class="mt-4 space-y-4">
 						<label for="tournament-name" class="block text-sm font-medium">Tournament Name</label>
 						<input type="text" id="tournament-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-						<label for="tournament-capacity" class="block text-sm font-medium">Capacity</label>
-						<input type="number" id="tournament-capacity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+						<label for="tournament-capacity" class="block text-sm font-medium text-gray-700">Tournament Capacity</label>
+						<select id="tournament-capacity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+							<option value="2">2</option>
+							<option value="4">4</option>
+							<option value="8">8</option>
+							<option value="16">16</option>
+						</select>
 					</div>
 				</div>
 				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex flex-row-reverse gap-3">
@@ -369,6 +374,8 @@
 	<script src="./dist/profile/requests.js" defer></script>
 	<script src="./dist/profile/matches.js" defer></script>
 	<script src="./dist/profile/tournaments.js" defer></script>
+	<script src="./dist/profile/tournament_details.js" defer></script>
+	<script src="./dist/profile/add_tournaments.js" defer></script>
 	<script src="./dist/animation/animation.js" defer></script>
 	<script src="./dist/utils/types.js" defer></script>
 	<script src="./dist/utils/validation.js" defer></script>
