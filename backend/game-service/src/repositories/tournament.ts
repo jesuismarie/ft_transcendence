@@ -29,16 +29,20 @@ export class TournamentRepo extends BaseRepo {
   }
 
   createTournament(
-    data: { maxPlayersCount: number; createdBy: number },
+    data: { name: string; maxPlayersCount: number; createdBy: number },
     db?: Database
-  ) {
+  ): { id: number; name: string } {
     const database = db ?? this.db;
-    const { maxPlayersCount, createdBy } = data;
+    const { name, maxPlayersCount, createdBy } = data;
     const stmt = database.prepare(`
-      INSERT INTO tournament (max_players_count, current_players_count, status, created_by)
-      VALUES (?, 0, 'created', ?)
+      INSERT INTO tournament (name, max_players_count, current_players_count, status, created_by)
+      VALUES (?, ?, 0, 'created', ?)
+      RETURNING id, name
     `);
-    stmt.run(maxPlayersCount, createdBy);
+    return stmt.get(name, maxPlayersCount, createdBy) as {
+      id: number;
+      name: string;
+    };
   }
 
   getById(
@@ -46,13 +50,14 @@ export class TournamentRepo extends BaseRepo {
     db?: Database
   ): {
     id: number;
+    name: string;
     max_players_count: number;
     current_players_count: number;
     status: Status;
   } | null {
     const database = db ?? this.db;
     const stmt = database.prepare(`
-      SELECT id, max_players_count, current_players_count, status
+      SELECT id, name, max_players_count, current_players_count, status
       FROM tournament
       WHERE id = ?
     `);

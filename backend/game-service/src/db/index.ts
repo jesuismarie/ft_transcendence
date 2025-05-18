@@ -19,6 +19,7 @@ export default fp(async function initDb(app: FastifyInstance) {
     db.exec(`CREATE TABLE IF NOT EXISTS tournament (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       created_by INTEGER NOT NULL,
+      name TEXT NOT NULL,
       max_players_count INTEGER NOT NULL,
       current_players_count INTEGER DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'created' CHECK (status IN ('created', 'in_progress', 'ended', 'error')),

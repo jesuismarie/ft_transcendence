@@ -31,6 +31,8 @@ export default async function deleteTournamentRoute(app: FastifyInstance) {
           );
         }
 
+        app.log.info(`Deleting tournament: ${tournament.name}`);
+
         matchRepo.deleteMatchesByTournamentId(tournament_id, txn);
         tournamentRepo.deleteTournament(tournament_id, txn);
       }) as unknown as () => void;

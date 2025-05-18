@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament.ts";
 
 export interface CreateTournamentRequestBody {
+  name: string;
   max_players_count: number;
   created_by: number;
 }
@@ -10,8 +11,12 @@ export default async function createTournamentRoute(app: FastifyInstance) {
   const tournamentRepo = new TournamentRepo(app);
 
   app.post("/create-tournament", async (request, reply) => {
-    const { max_players_count, created_by } =
+    const { name, max_players_count, created_by } =
       request.body as CreateTournamentRequestBody;
+
+    if (!name || name.trim().length === 0) {
+      return reply.status(400).send({ message: "Tournament name is required" });
+    }
 
     // Валидация max_players_count
     if (![4, 8, 16].includes(max_players_count)) {
@@ -31,15 +36,18 @@ export default async function createTournamentRoute(app: FastifyInstance) {
     }
 
     try {
-      // Создаем новый турнир
-      await tournamentRepo.createTournament({
+      // Create a new tournament and get its ID and name
+      const { id, name: tournamentName } = tournamentRepo.createTournament({
+        name,
         maxPlayersCount: max_players_count,
         createdBy: created_by,
       });
 
-      return reply
-        .status(201)
-        .send({ message: "Tournament created successfully" });
+      return reply.status(201).send({
+        message: "Tournament created successfully",
+        tournament_id: id,
+        name: tournamentName,
+      });
     } catch (err) {
       app.log.error(err);
       return reply.status(500).send({ message: "Error creating tournament" });
