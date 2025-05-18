@@ -229,6 +229,11 @@
 					</div>
 					<div id="search-users-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
 					</div>
+					<div id="search-pagination" class="hidden flex justify-between items-center p-4 border-t border-gray-200">
+						<button id="prev-search-page" class="text-sm px-3 py-1 border rounded disabled:opacity-50">Previous</button>
+						<span id="search-page-info" class="text-sm"></span>
+						<button id="next-search-page" class="text-sm px-3 py-1 border rounded disabled:opacity-50">Next</button>
+					</div>
 				</div>
 				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
 					<button id="close-search-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
@@ -283,7 +288,7 @@
 					<div id="friend-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
 					</div>
 				</div>
-				<div id="friend-pagination" class="flex justify-between items-center p-4 border-t border-gray-200">
+				<div id="friend-pagination" class="hidden flex justify-between items-center p-4 border-t border-gray-200">
 					<button id="prev-friends-page" class="text-sm px-3 py-1 border rounded disabled:opacity-50">Previous</button>
 					<span id="friend-page-info" class="text-sm"></span>
 					<button id="next-friends-page" class="text-sm px-3 py-1 border rounded disabled:opacity-50">Next</button>

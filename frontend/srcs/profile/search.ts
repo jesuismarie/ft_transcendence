@@ -1,17 +1,22 @@
+const SEARCH_LIMIT = 10;
+let currentSearchOffset = 0;
+let totalSearchResults = 0;
+
 function searchUsers() {
 	const searchModalBtn = document.getElementById("search-modal-btn") as HTMLButtonElement | null;
 	const listContainer = document.getElementById("search-users-list") as HTMLElement | null;
 	const closeModalBtn = document.getElementById("close-search-modal") as HTMLButtonElement | null;
 	const searchInput = document.getElementById("search-people") as HTMLInputElement | null;
-	const searchResultsContainer = document.getElementById("search-users-btn") as HTMLElement | null;
+	const searchBtn = document.getElementById("search-users-btn") as HTMLButtonElement | null;
+	const prevPageBtn = document.getElementById("prev-search-page") as HTMLButtonElement | null;
+	const nextPageBtn = document.getElementById("next-search-page") as HTMLButtonElement | null;
+	const pageInfo = document.getElementById("search-page-info") as HTMLElement | null;
+	const paginatioBtns = document.getElementById("search-pagination") as HTMLButtonElement | null;
 
-	if (!searchModalBtn || !listContainer || !closeModalBtn || !searchInput || !searchResultsContainer) {
+	if (!searchModalBtn || !listContainer || !closeModalBtn || !searchInput || !searchBtn || !prevPageBtn || !nextPageBtn || !pageInfo || !paginatioBtns) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
-
-	let users: UserProfile[] = [
-	];
 
 	const renderSearchItem = (user: UserProfile): string => {
 		const targetHash = user.username === currentUser ? "#profile" : `#profile/${user.username}`;
@@ -24,40 +29,66 @@ function searchUsers() {
 	};
 
 	const renderSearchResults = (results: UserProfile[], container: HTMLElement) => {
-		container.innerHTML = "";
-
-		if (results.length === 0) {
-			container.innerHTML = `<p class="text-gray-500 p-4">No users found.</p>`;
-			return;
-		}
-
-		results.forEach(user => {
-			container.insertAdjacentHTML("beforeend", renderSearchItem(user));
-		});
+		container.innerHTML = results.length === 0
+			? `<p class="text-gray-500 p-4">No users found.</p>`
+			: results.map(renderSearchItem).join("");
 	};
 
-	searchModalBtn.addEventListener("click", async () => {
-		showModal("search-users-modal");
-	});
-	
-	searchResultsContainer.addEventListener("click", async () => {
-		try {
-			const res = await fetch("/api/users");
-			if (!res.ok) throw new Error("Failed to fetch users");
+	const updatePaginationControls = () => {
+		const totalPages = Math.ceil(totalSearchResults / SEARCH_LIMIT);
+		const currentPage = Math.floor(currentSearchOffset / SEARCH_LIMIT) + 1;
 
-			users = await res.json();
-			renderSearchResults(users, listContainer);
+		pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+		prevPageBtn.disabled = currentSearchOffset === 0;
+		nextPageBtn.disabled = currentSearchOffset + SEARCH_LIMIT >= totalSearchResults;
+	};
+
+	const loadSearchResults = async (query: string, offset: number = 0) => {
+		try {
+			const res = await fetch(`/api/users?query=${encodeURIComponent(query)}&offset=${offset}&limit=${SEARCH_LIMIT}`);
+			if (!res.ok)
+				throw new Error("Failed to fetch users");
+
+			const data: SearchUserResponse = await res.json();
+			renderSearchResults(data.users, listContainer);
+
+			totalSearchResults = data.total;
+			currentSearchOffset = offset;
+			updatePaginationControls();
+
+			if (data.total > SEARCH_LIMIT)
+				paginatioBtns.classList.remove("hidden");
 		} catch (err) {
 			console.error("Error fetching users:", err);
 			listContainer.innerHTML = `<p class="text-red-500 p-4">Failed to load users.</p>`;
 		}
+	};
+
+	searchModalBtn.addEventListener("click", () => {
+		showModal("search-users-modal");
 	});
 
-	// searchInput.addEventListener("input", () => {
-	// 	const query = searchInput.value.trim().toLowerCase();
-	// 	const filtered = users.filter(user => user.username.toLowerCase().includes(query));
-	// 	renderSearchResults(filtered, listContainer);
-	// });
+	searchBtn.addEventListener("click", () => {
+		const query = searchInput.value.trim();
+		if (query) {
+			currentSearchOffset = 0;
+			loadSearchResults(query, currentSearchOffset);
+		}
+	});
+
+	prevPageBtn.addEventListener("click", () => {
+		const query = searchInput.value.trim();
+		if (query && currentSearchOffset >= SEARCH_LIMIT) {
+			loadSearchResults(query, currentSearchOffset - SEARCH_LIMIT);
+		}
+	});
+
+	nextPageBtn.addEventListener("click", () => {
+		const query = searchInput.value.trim();
+		if (query && currentSearchOffset + SEARCH_LIMIT < totalSearchResults) {
+			loadSearchResults(query, currentSearchOffset + SEARCH_LIMIT);
+		}
+	});
 
 	closeModalBtn.addEventListener("click", () => {
 		hideModal("search-users-modal");
