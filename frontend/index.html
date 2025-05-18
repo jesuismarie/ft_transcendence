@@ -320,6 +320,22 @@
 			</div>
 		</div>
 
+		<!-- View Tournament Details -->
+		<div id="tournament-detals-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+				<div class="px-4 pt-5 pb-4 sm:p-6">
+					<h3 class="text-lg border-b border-hover pb-2">
+						All Participants
+					</h3>
+					<div id="participant-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200">
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
+					<button id="close-tournament-detals-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
+				</div>
+			</div>
+		</div>
+
 		<!-- Add Tournament -->
 		<div id="add-tournament-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">

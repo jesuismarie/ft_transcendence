@@ -28,7 +28,7 @@ interface Match {
 		id: number;
 		username: string;
 	};
-	win: boolean;
+	status: "Win" | "Loss" | "Draw";
 	score: {
 		user: number;
 		opponent: number;
@@ -37,14 +37,13 @@ interface Match {
 }
 
 interface Tournament {
-	creator: {
-		id: number;
-		username: string | null;
-	}
 	id: number;
 	name: string;
-	capacity: number;
-	participants: TournamentParticipant[];
+	created_by: string;
+	max_players_count: number;
+	current_players_count: number;
+	status: "created" | "in_progress" | "ended" | "error";
+	participants: string[];
 }
 
 interface TournamentParticipant {

@@ -1,4 +1,7 @@
 const matches: Match[] = [
+	{ id: 1, opponent: { id: 2, username: "Player2" }, status: "Win", score: { user: 3, opponent: 1 }, date: "2023-10-01" },
+	{ id: 2, opponent: { id: 3, username: "Player3" }, status: "Draw", score: { user: 2, opponent: 2 }, date: "2023-10-02" },
+	{ id: 3, opponent: { id: 4, username: "Player4" }, status: "Loss", score: { user: 0, opponent: 1 }, date: "2023-10-03" },
 ];
 
 function viewMatches(username: string | null = null) {
@@ -20,9 +23,9 @@ function viewMatches(username: string | null = null) {
 					<span >${username}</span>
 					<span class="font-normal">vs</span>
 					<span >${match.opponent.username}</span>
-					<span class="ml-auto px-3 py-1 text-xs font-semibold rounded-full 
-						${match.win ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'} shadow-sm">
-						${match.win ? "Win" : "Lose"}
+					<span class="ml-auto px-3 py-1 text-xs font-semibold rounded-full
+						${match.status === 'Win' ? 'bg-green-100 text-green-800' : match.status === 'Draw' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} shadow-sm">
+						${match.status}
 					</span>
 				</div>
 				<div class="mt-2 sm:mt-0 text-sm text-gray-500 text-right">

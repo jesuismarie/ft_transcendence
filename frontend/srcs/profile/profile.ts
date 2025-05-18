@@ -19,11 +19,6 @@ async function initPersonalData(username: string | null = null) {
 		const currentUsername = getCurrentUser();
 		const targetUsername = username || currentUsername;
 
-		// let currentUsername;
-		// let targetUsername = username || currentUsername;
-		// currentUsername = "me"; // For testing purposes
-		// targetUsername = "me"; // For testing purposes
-		
 		if (!targetUsername) {
 			throw new Error("Username is required to load user profile");
 		}
@@ -33,21 +28,12 @@ async function initPersonalData(username: string | null = null) {
 			throw new Error("Failed to load user profile");
 		const user: UserProfile = await res.json();
 
-		// const user: UserProfile = {
-		// 	id: 1,
-		// 	username: targetUsername,
-		// 	email: "hey@gmail.com",
-		// 	wins: 10,
-		// 	losses: 5,
-		// 	avatar: "https://example.com/avatar.png",
-		// };
-
 		if (targetUsername === currentUsername) {
 			editProfileBtn.classList.remove("hidden");
 			editProfile(user);
 			upcomingTournaments.classList.remove("hidden");
-			initFriendRequests(username);
-			initTournaments(username);
+			initFriendRequests(targetUsername);
+			initTournaments(targetUsername);
 			addTournament();
 		} else {
 			editProfileBtn.classList.add("hidden");
