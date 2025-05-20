@@ -19,7 +19,7 @@ export class TournamentRepo extends BaseRepo {
     return row ? row.status : null;
   }
 
-  checkIsActiveTournamentByUserId(createdBy: number, db?: Database): boolean {
+  checkIsActiveTournamentByUsername(createdBy: string, db?: Database): boolean {
     const database = db ?? this.db;
     const stmt = database.prepare(
       `SELECT 1 FROM tournament WHERE created_by = ? AND status IN ('created', 'in_progress')`
@@ -29,7 +29,7 @@ export class TournamentRepo extends BaseRepo {
   }
 
   createTournament(
-    data: { name: string; maxPlayersCount: number; createdBy: number },
+    data: { name: string; maxPlayersCount: number; createdBy: string },
     db?: Database
   ): { id: number; name: string } {
     const database = db ?? this.db;
@@ -84,8 +84,7 @@ export class TournamentRepo extends BaseRepo {
     ).run(tournament_id);
   }
 
-  registerPlayerToTournament(tournament_id: number, user_id: number): void {
-    // Транзакция - функция, внутри которой используем this.db
+  registerPlayerToTournament(tournament_id: number, username: string): void {
     const tx = this.db.transaction(() => {
       const tournament = this.getByIdForUpdate(tournament_id, this.db);
 
@@ -97,7 +96,7 @@ export class TournamentRepo extends BaseRepo {
         throw new Error("Tournament is not available for registration");
       }
 
-      this.insertPlayer(tournament_id, user_id, this.db);
+      this.insertPlayer(tournament_id, username, this.db);
       this.incrementPlayerCount(tournament_id, this.db);
     });
 
@@ -106,15 +105,15 @@ export class TournamentRepo extends BaseRepo {
 
   private insertPlayer(
     tournament_id: number,
-    user_id: number,
+    username: string,
     db: Database
   ): void {
     db.prepare(
       `
-      INSERT INTO tournament_player (tournament_id, player_id)
+      INSERT INTO tournament_player (tournament_id, player_username)
       VALUES (?, ?)
     `
-    ).run(tournament_id, user_id);
+    ).run(tournament_id, username);
   }
 
   decrementPlayerCount(tournament_id: number, db?: Database): void {

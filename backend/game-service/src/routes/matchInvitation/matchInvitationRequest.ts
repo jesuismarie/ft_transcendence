@@ -2,8 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { MatchInvitationRequestRepo } from "../../repositories/matchInvitation.ts";
 
 interface MatchInvitationRequestBody {
-  user_id1: number;
-  user_id2: number;
+  user1: string;
+  user2: string;
   date_time?: string; // Опциональное поле
 }
 
@@ -16,10 +16,10 @@ export default async function matchInvitationRequestRoute(
   // Ручка для создания нового запроса на матч
   app.post("/create-match-invitation-request", async (request, reply) => {
     const body = request.body as MatchInvitationRequestBody;
-    const { user_id1, user_id2, date_time } = body;
+    const { user1, user2, date_time } = body;
 
     // Валидация входных данных
-    if (!user_id1 || !user_id2 || user_id1 <= 0 || user_id2 <= 0) {
+    if (!user1 || !user2) {
       return reply
         .status(400)
         .send({ message: "User IDs must be greater than 0" });
@@ -28,8 +28,8 @@ export default async function matchInvitationRequestRoute(
     try {
       // Проверка наличия существующего запроса
       const alreadyExists = matchInvitationRequestRepo.hasPendingRequestBetween(
-        user_id1,
-        user_id2
+        user1,
+        user2
       );
 
       if (alreadyExists) {
@@ -42,8 +42,8 @@ export default async function matchInvitationRequestRoute(
 
       // Создание новой заявки
       matchInvitationRequestRepo.add({
-        user_id1,
-        user_id2,
+        username1: user1,
+        username2: user2,
         date_time: currentDateTime,
       });
 

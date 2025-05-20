@@ -4,7 +4,7 @@ import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
 import { MatchRepo } from "../../repositories/match.ts";
 
 interface LeaveTournamentRequestBody {
-  user_id: number;
+  username: string;
   tournament_id: number;
 }
 
@@ -14,13 +14,13 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
   const matchRepo = new MatchRepo(app);
 
   app.post("/leave-tournament", async (request, reply) => {
-    const { user_id, tournament_id } =
+    const { username, tournament_id } =
       request.body as LeaveTournamentRequestBody;
 
-    if (!user_id || !tournament_id || user_id <= 0 || tournament_id <= 0) {
+    if (!username || !tournament_id || tournament_id <= 0) {
       return reply
         .status(400)
-        .send({ message: "Invalid user_id or tournament_id" });
+        .send({ message: "Invalid username or tournament_id" });
     }
 
     try {
@@ -31,7 +31,7 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
         }
 
         const isInTournament = tournamentPlayerRepo.isPlayerInTournament(
-          user_id,
+          username,
           tournament_id,
           txn
         );
@@ -40,18 +40,18 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
         }
 
         // Удаляем игрока
-        tournamentPlayerRepo.unregister(user_id, tournament_id, txn);
+        tournamentPlayerRepo.unregister(username, tournament_id, txn);
 
         // Получаем незавершённые матчи
         const matches = matchRepo.getIncompleteTournamentMatchesWithPlayer(
-          user_id,
+          username,
           tournament_id,
           txn
         );
 
         for (const match of matches) {
           const opponentId =
-            match.player_1 === user_id ? match.player_2 : match.player_1;
+            match.player_1 === username ? match.player_2 : match.player_1;
           matchRepo.setMatchWinner(match.id, opponentId, txn);
           tournamentPlayerRepo.incrementWins(opponentId, tournament_id, txn);
         }

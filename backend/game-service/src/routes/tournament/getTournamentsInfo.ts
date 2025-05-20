@@ -9,11 +9,11 @@ interface GetTournamentsInfoRequest {
 interface TournamentInfo {
   id: number;
   name: string;
-  created_by: number;
+  created_by: string;
   max_players_count: number;
   current_players_count: number;
   status: string;
-  participants: number[];
+  participants: string[];
 }
 
 export default async function getTournamentsInfoRoute(app: FastifyInstance) {

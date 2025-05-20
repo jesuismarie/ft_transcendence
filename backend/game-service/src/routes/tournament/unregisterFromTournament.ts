@@ -3,7 +3,7 @@ import { TournamentRepo } from "../../repositories/tournament.ts";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
 
 interface UnregisterRequestBody {
-  user_id: number;
+  username: string;
   tournament_id: number;
 }
 
@@ -14,18 +14,18 @@ export default async function unregisterFromTournamentRoute(
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
   app.post("/unregister-from-tournament", async (request, reply) => {
-    const { user_id, tournament_id } = request.body as UnregisterRequestBody;
+    const { username, tournament_id } = request.body as UnregisterRequestBody;
 
-    if (!user_id || !tournament_id || user_id <= 0 || tournament_id <= 0) {
+    if (!username || !tournament_id || tournament_id <= 0) {
       return reply
         .status(400)
-        .send({ message: "Invalid user_id or tournament_id" });
+        .send({ message: "Invalid username or tournament_id" });
     }
 
     try {
       // Check if the user is the tournament creator
       const tournament = tournamentRepo.getById(tournament_id);
-      if (tournament?.created_by === user_id) {
+      if (tournament?.created_by === username) {
         return reply.status(400).send({
           message:
             "Tournament creator cannot unregister from their own tournament",
@@ -35,7 +35,7 @@ export default async function unregisterFromTournamentRoute(
       // Вся логика (включая проверки) внутри транзакции
       const tx = app.db.transaction((txn) => {
         const isInTournament = tournamentPlayerRepo.isPlayerInTournament(
-          user_id,
+          username,
           tournament_id,
           txn
         );
@@ -50,7 +50,7 @@ export default async function unregisterFromTournamentRoute(
           );
         }
 
-        tournamentPlayerRepo.unregister(user_id, tournament_id, txn);
+        tournamentPlayerRepo.unregister(username, tournament_id, txn);
         tournamentRepo.decrementPlayerCount(tournament_id, txn);
       }) as unknown as () => void;
 

@@ -9,57 +9,57 @@ export class TournamentPlayerRepo {
   }
 
   isPlayerInTournament(
-    playerId: number,
+    username: string,
     tournamentId: number,
     db?: Database
   ): boolean {
     const database = db ?? this.db;
     const stmt = database.prepare(`
-      SELECT 1 FROM tournament_player WHERE player_id = ? AND tournament_id = ?
+      SELECT 1 FROM tournament_player WHERE player_username = ? AND tournament_id = ?
     `);
-    return !!stmt.get(playerId, tournamentId);
+    return !!stmt.get(username, tournamentId);
   }
 
-  isPlayerInAnyActiveTournament(userId: number, db?: Database): boolean {
+  isPlayerInAnyActiveTournament(username: string, db?: Database): boolean {
     const database = db ?? this.db;
     const stmt = database.prepare(`
       SELECT 1
       FROM tournament_player tp
       JOIN tournament t ON tp.tournament_id = t.id
-      WHERE tp.player_id = ?
+      WHERE tp.player_username = ?
         AND t.status IN ('created', 'in_progress')
       LIMIT 1
     `);
-    const result = stmt.get(userId);
+    const result = stmt.get(username);
     return !!result;
   }
 
-  unregister(user_id: number, tournament_id: number, db?: Database): void {
+  unregister(username: string, tournament_id: number, db?: Database): void {
     const database = db ?? this.db;
     database
       .prepare(
-        `DELETE FROM tournament_player WHERE player_id = ? AND tournament_id = ?`
+        `DELETE FROM tournament_player WHERE player_username = ? AND tournament_id = ?`
       )
-      .run(user_id, tournament_id);
+      .run(username, tournament_id);
   }
 
-  getPlayersByTournament(tournament_id: number, db?: Database): number[] {
+  getPlayersByTournament(tournament_id: number, db?: Database): string[] {
     const database = db ?? this.db;
     const stmt = database.prepare(`
-      SELECT player_id FROM tournament_player WHERE tournament_id = ?
+      SELECT player_username FROM tournament_player WHERE tournament_id = ?
     `);
-    const rows = stmt.all(tournament_id) as { player_id: number }[];
-    return rows.map((row) => row.player_id);
+    const rows = stmt.all(tournament_id) as { player_username: string }[];
+    return rows.map((row) => row.player_username);
   }
 
-  incrementWins(user_id: number, tournament_id: number, db?: Database) {
+  incrementWins(username: string, tournament_id: number, db?: Database) {
     const database = db ?? this.db;
     const stmt = database.prepare(`
       UPDATE tournament_player
       SET wins = wins + 1
-      WHERE player_id = ? AND tournament_id = ?
+      WHERE player_username = ? AND tournament_id = ?
     `);
-    stmt.run(user_id, tournament_id);
+    stmt.run(username, tournament_id);
   }
 
   unregisterAllPlayers(tournament_id: number, db?: Database): void {

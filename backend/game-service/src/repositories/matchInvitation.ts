@@ -3,8 +3,8 @@ import type { Database } from "better-sqlite3";
 
 export interface MatchInvitation {
   id?: number;
-  user_id1: number;
-  user_id2: number;
+  username1: string;
+  username2: string;
   date_time?: string;
   is_accepted?: boolean;
 }
@@ -19,12 +19,12 @@ export class MatchInvitationRequestRepo {
   add(data: MatchInvitation, db?: Database): void {
     const database = db ?? this.db;
     const stmt = database.prepare(`
-      INSERT INTO match_invitation_request (user_id1, user_id2, date_time)
+      INSERT INTO match_invitation_request (username1, username2, date_time)
       VALUES (?, ?, ?)
     `);
     stmt.run(
-      data.user_id1,
-      data.user_id2,
+      data.username1,
+      data.username2,
       data.date_time ?? new Date().toISOString()
     );
   }
@@ -67,18 +67,18 @@ export class MatchInvitationRequestRepo {
     return (stmt.get(id) as MatchInvitation | undefined) || null;
   }
 
-  listPendingForUser(userId: number, db?: Database): MatchInvitation[] {
+  listPendingForUser(username: string, db?: Database): MatchInvitation[] {
     const database = db ?? this.db;
     const stmt = database.prepare(`
       SELECT * FROM match_invitation_request
-      WHERE (user_id1 = ? OR user_id2 = ?) AND is_accepted = 0
+      WHERE (username1 = ? OR username2 = ?) AND is_accepted = 0
     `);
-    return stmt.all(userId, userId) as MatchInvitation[];
+    return stmt.all(username, username) as MatchInvitation[];
   }
 
   hasPendingRequestBetween(
-    userId1: number,
-    userId2: number,
+    username1: string,
+    username2: string,
     db?: Database
   ): boolean {
     const database = db ?? this.db;
@@ -86,14 +86,14 @@ export class MatchInvitationRequestRepo {
       SELECT 1 FROM match_invitation_request
       WHERE
         (
-          (user_id1 = ? AND user_id2 = ?)
+          (username1 = ? AND username2 = ?)
           OR
-          (user_id1 = ? AND user_id2 = ?)
+          (username1 = ? AND username2 = ?)
         )
         AND is_accepted IS NULL
       LIMIT 1
     `);
-    const row = stmt.get(userId1, userId2, userId2, userId1);
+    const row = stmt.get(username1, username2, username2, username1);
     return !!row;
   }
 }

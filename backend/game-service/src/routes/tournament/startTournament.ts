@@ -13,7 +13,7 @@ export default async function startTournamentRoute(app: FastifyInstance) {
   const matchRepo = new MatchRepo(app);
 
   app.post("/start-tournament", async (request, reply) => {
-    const { tournament_id } = request.body as { tournament_id: number };
+    const { tournament_id } = request.body as StartTournamentRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
       return reply.status(400).send({ message: "Invalid tournament_id" });

@@ -7,7 +7,8 @@ import type { FastifyInstance } from "fastify";
 export type DB = Database.Database;
 
 export default fp(async function initDb(app: FastifyInstance) {
-  const dbPath = process.env.DB_PATH || path.join(process.cwd(), 'data', 'users.db');
+  const dbPath =
+    process.env.DB_PATH || path.join(process.cwd(), "data", "users.db");
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   const db = new Database(dbPath);
 
@@ -36,11 +37,11 @@ export default fp(async function initDb(app: FastifyInstance) {
     app.log.info("Creating tournament_player table...");
     db.exec(`CREATE TABLE IF NOT EXISTS tournament_player (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      player_id INTEGER NOT NULL,
+      player_username TEXT NOT NULL,
       tournament_id INTEGER NOT NULL,
       wins INTEGER NOT NULL DEFAULT 0,
       losses INTEGER NOT NULL DEFAULT 0,
-      UNIQUE(player_id, tournament_id)
+      UNIQUE(player_username, tournament_id)
     )`);
     app.log.info("Tournament_player table created.");
   } catch (err) {
@@ -51,9 +52,9 @@ export default fp(async function initDb(app: FastifyInstance) {
     app.log.info("Creating match table...");
     db.exec(`CREATE TABLE IF NOT EXISTS match (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      player_1 INTEGER,
-      player_2 INTEGER,
-      winner_id INTEGER,
+      player_1 TEXT,
+      player_2 TEXT,
+      winner_username TEXT,
       score_1 INTEGER,
       score_2 INTEGER,
       started_at TEXT,
@@ -72,8 +73,8 @@ export default fp(async function initDb(app: FastifyInstance) {
     app.log.info("Creating match_invitation_request table...");
     db.exec(`CREATE TABLE IF NOT EXISTS match_invitation_request (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id1 INTEGER NOT NULL,
-      user_id2 INTEGER NOT NULL,
+      username1 TEXT NOT NULL,
+      username2 TEXT NOT NULL,
       date_time TEXT DEFAULT CURRENT_TIMESTAMP,
       is_accepted BOOLEAN
     )`);

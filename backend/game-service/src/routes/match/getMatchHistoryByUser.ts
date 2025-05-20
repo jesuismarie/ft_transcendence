@@ -3,7 +3,7 @@ import { MatchRepo } from "../../repositories/match.ts";
 import type { Status } from "../../types/index.ts";
 
 interface GetMatchHistoryRequestBody {
-  user_id: number;
+  username: string;
   limit?: number;
   offset?: number;
 }
@@ -15,7 +15,7 @@ interface GetMatchHistoryResponse {
 
 interface MatchHistory {
   id: number;
-  opponent: number;
+  opponent: string;
   status: Status;
   is_won: boolean | null;
   score: {
@@ -30,34 +30,34 @@ export default async function getMatchHistoryByUserRoute(app: FastifyInstance) {
 
   app.post("/get-match-history-by-user", async (request, reply) => {
     const {
-      user_id,
+      username,
       limit = 10,
       offset = 0,
     } = request.body as GetMatchHistoryRequestBody;
 
-    if (!user_id || user_id <= 0 || limit < 0 || offset < 0) {
+    if (!username || limit < 0 || offset < 0) {
       return reply.status(400).send({ message: "Invalid input parameters" });
     }
 
     try {
-      const totalCount = await matchRepo.countUserMatchHistory(user_id);
+      const totalCount = await matchRepo.countUserMatchHistory(username);
       const rawMatches = await matchRepo.getUserMatchHistory(
-        user_id,
+        username,
         limit,
         offset
       );
 
-      const formattedMatches: MatchHistory[] = rawMatches.map((match) => {
-        const isPlayer1 = match.user1_id === user_id;
+      const formattedMatches = rawMatches.map((match) => {
+        const isPlayer1 = match.player_1 === username;
         const player_score = isPlayer1 ? match.score_1 : match.score_2;
         const opponent_score = isPlayer1 ? match.score_2 : match.score_1;
-        const isMatchWon = match.winner_id === user_id;
+        const isMatchWon = match.winner_username === username;
 
         return {
           id: match.id,
-          opponent: isPlayer1 ? match.user2_id : match.user1_id,
-          status: match.status as Status,
-          is_won: match.winner_id === null ? null : isMatchWon,
+          opponent: isPlayer1 ? match.player_2 : match.player_1,
+          status: match.status,
+          is_won: match.winner_username === null ? null : isMatchWon,
           score: {
             user: player_score,
             opponent: opponent_score,
@@ -66,12 +66,7 @@ export default async function getMatchHistoryByUserRoute(app: FastifyInstance) {
         };
       });
 
-      const response: GetMatchHistoryResponse = {
-        totalCount,
-        matches: formattedMatches,
-      };
-
-      return reply.send(response);
+      return reply.send({ totalCount, matches: formattedMatches });
     } catch (err) {
       app.log.error(err);
       return reply

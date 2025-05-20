@@ -15,10 +15,10 @@ interface GetMatchHistoryByTournamentResponse {
 }
 interface TournamentMatchHistory {
   id: number;
-  user1_id: number;
-  user2_id: number;
+  user1: string;
+  user2: string;
   status: Status;
-  winner_id: number | null;
+  winner_username: string | null;
   score: {
     score_1: number;
     score_2: number;
@@ -71,18 +71,21 @@ export default async function getTournamentMatchHistoryRoute(
 
       const response: GetMatchHistoryByTournamentResponse = {
         total_count: totalCount,
-        matches: matches.map((match) => ({
-          id: match.id,
-          user1_id: match.user1_id,
-          user2_id: match.user2_id,
-          status: match.status as Status,
-          winner_id: match.winner_id,
-          score: {
-            score_1: match.score_1,
-            score_2: match.score_2,
-          },
-          date: match.started_at,
-        })),
+        matches: matches.map(
+          (match) =>
+            ({
+              id: match.id,
+              user1: match.player_1,
+              user2: match.player_2,
+              status: match.status as Status,
+              winner_username: match.winner_username,
+              score: {
+                score_1: match.score_1,
+                score_2: match.score_2,
+              },
+              date: match.started_at,
+            } as TournamentMatchHistory)
+        ),
       };
       return reply.send(response);
     } catch (err) {

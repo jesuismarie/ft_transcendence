@@ -5,7 +5,7 @@ import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
 export interface CreateTournamentRequestBody {
   name: string;
   max_players_count: number;
-  created_by: number;
+  created_by: string;
 }
 
 export default async function createTournamentRoute(app: FastifyInstance) {
@@ -38,7 +38,7 @@ export default async function createTournamentRoute(app: FastifyInstance) {
 
     // Check if the creator already has an active tournament they created
     const existingTournament =
-      tournamentRepo.checkIsActiveTournamentByUserId(created_by);
+      tournamentRepo.checkIsActiveTournamentByUsername(created_by);
     if (existingTournament) {
       return reply.status(400).send({
         message:

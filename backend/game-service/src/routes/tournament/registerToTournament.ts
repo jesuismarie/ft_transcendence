@@ -3,7 +3,7 @@ import { TournamentRepo } from "../../repositories/tournament.ts";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
 
 interface RegisterRequestBody {
-  user_id: number;
+  username: string;
   tournament_id: number;
 }
 
@@ -12,16 +12,16 @@ export default async function registerToTournamentRoute(app: FastifyInstance) {
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
   app.post("/register-to-tournament", async (request, reply) => {
-    const { user_id, tournament_id } = request.body as RegisterRequestBody;
+    const { username, tournament_id } = request.body as RegisterRequestBody;
 
-    if (!user_id || !tournament_id || user_id <= 0 || tournament_id <= 0) {
+    if (!username || !tournament_id || tournament_id <= 0) {
       return reply
         .status(400)
-        .send({ message: "Invalid user_id or tournament_id" });
+        .send({ message: "Invalid username or tournament_id" });
     }
 
     const isAlreadyInActiveTournament =
-      await tournamentPlayerRepo.isPlayerInAnyActiveTournament(user_id);
+      await tournamentPlayerRepo.isPlayerInAnyActiveTournament(username);
     if (isAlreadyInActiveTournament) {
       return reply.status(400).send({
         message: "User is already registered in another active tournament",
@@ -29,7 +29,7 @@ export default async function registerToTournamentRoute(app: FastifyInstance) {
     }
 
     try {
-      await tournamentRepo.registerPlayerToTournament(tournament_id, user_id);
+      await tournamentRepo.registerPlayerToTournament(tournament_id, username);
       return reply
         .status(201)
         .send({ message: "User registered to tournament" });

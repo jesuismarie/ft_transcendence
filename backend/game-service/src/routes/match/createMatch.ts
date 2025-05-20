@@ -4,8 +4,9 @@ import { TournamentRepo } from "../../repositories/tournament.ts";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
 
 export interface CreateMatchRequestBody {
-  player_1: number;
-  player_2: number;
+  player_1: string;
+  player_2: string;
+  game_level: number;
   tournament_id?: number;
   group_id?: number;
   gameLevel?: number;
@@ -18,21 +19,14 @@ export default async function createMatchRoute(app: FastifyInstance) {
 
   app.post("/create-match", async (request, reply) => {
     const { player_1, player_2, tournament_id, group_id, game_level } =
-      request.body as {
-        player_1: number;
-        player_2: number;
-        tournament_id?: number;
-        group_id?: number;
-        game_level?: number;
-      };
+      request.body as CreateMatchRequestBody;
 
-    if (!player_1 || !player_2 || player_1 <= 0 || player_2 <= 0) {
-      return reply.status(400).send({ message: "Invalid player IDs" });
+    if (!player_1 || !player_2) {
+      return reply.status(400).send({ message: "Invalid player usernames" });
     }
 
     if (tournament_id) {
       try {
-        // транзакция с синхронным коллбэком
         const tx = app.db.transaction((txn) => {
           // Проверки внутри транзакции
           const tournamentExists = tournamentRepo.exists(tournament_id, txn);
@@ -84,17 +78,13 @@ export default async function createMatchRoute(app: FastifyInstance) {
           );
         }) as unknown as () => void;
 
-        tx(); // Запуск транзакции
-
+        tx();
         return reply.status(201).send({ message: "Tournament match created" });
       } catch (err) {
         app.log.error(err);
-        const errorMessage =
-          (err as Error).message || "Error creating tournament match";
-        return reply.status(400).send({ message: errorMessage });
+        return reply.status(400).send({ message: "Error creating match" });
       }
     } else {
-      // обычный матч — без транзакции
       try {
         await matchRepo.createFriendlyMatch({ player_1, player_2 });
         return reply.status(201).send({ message: "Friendly match created" });
