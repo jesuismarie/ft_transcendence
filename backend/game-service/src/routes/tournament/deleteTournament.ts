@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament.ts";
 import { MatchRepo } from "../../repositories/match.ts";
+import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
 
 interface DeleteTournamentRequestBody {
   tournament_id: number;
@@ -9,6 +10,7 @@ interface DeleteTournamentRequestBody {
 export default async function deleteTournamentRoute(app: FastifyInstance) {
   const tournamentRepo = new TournamentRepo(app);
   const matchRepo = new MatchRepo(app);
+  const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
   app.delete("/delete-tournament", async (request, reply) => {
     const { tournament_id } = request.body as DeleteTournamentRequestBody;
@@ -34,6 +36,7 @@ export default async function deleteTournamentRoute(app: FastifyInstance) {
         app.log.info(`Deleting tournament: ${tournament.name}`);
 
         matchRepo.deleteMatchesByTournamentId(tournament_id, txn);
+        tournamentPlayerRepo.unregisterAllPlayers(tournament_id, txn); // Delete all players from the tournament
         tournamentRepo.deleteTournament(tournament_id, txn);
       }) as unknown as () => void;
 

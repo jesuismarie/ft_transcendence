@@ -61,4 +61,11 @@ export class TournamentPlayerRepo {
     `);
     stmt.run(user_id, tournament_id);
   }
+
+  unregisterAllPlayers(tournament_id: number, db?: Database): void {
+    const database = db ?? this.db;
+    database
+      .prepare(`DELETE FROM tournament_player WHERE tournament_id = ?`)
+      .run(tournament_id);
+  }
 }
