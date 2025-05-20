@@ -1,0 +1,33 @@
+{
+  "name": "pong_game",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "webpack --watch & node dist/server/server.js",
+    "start:server": "node dist/server/server.js"
+  },
+  "keywords": [],
+  "author": "Ruzanna Grigoryan",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/socket.io": "^3.0.1",
+    "@types/socket.io-client": "^1.4.36",
+    "eslint": "^9.26.0",
+    "express": "^5.1.0",
+    "html-webpack-plugin": "^5.6.3",
+    "nodemon": "^3.1.10",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.8",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.1",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "ws": "^8.18.2"
+  }
+}
