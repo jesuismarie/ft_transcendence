@@ -24,6 +24,18 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
     }
 
     try {
+      const tournament = tournamentRepo.getById(tournament_id);
+      if (!tournament) {
+        return reply.status(404).send({ message: "Tournament not found" });
+      }
+
+      // Check if the user is the tournament creator
+      if (tournament.created_by === username) {
+        return reply.status(400).send({
+          message: "Tournament creator cannot leave their own tournament",
+        });
+      }
+
       const tx = app.db.transaction((txn) => {
         const status = tournamentRepo.getStatus(tournament_id, txn);
         if (status !== "in_progress") {
