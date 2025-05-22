@@ -1,7 +1,7 @@
 function initRegistrationForm() {
 	const registrationForm = document.getElementById('registrationForm') as HTMLFormElement | null;
 
-	if (!registrationForm)
+	if (!registrationForm) 
 		return;
 
 	registrationForm.addEventListener('submit', async (event: Event) => {
@@ -9,31 +9,19 @@ function initRegistrationForm() {
 		clearErrors();
 
 		const formData = new FormData(registrationForm);
-		const formValues: Partial<RegistrationFormData> = {};
 
-		let confirmPassword = '';
-
-		formData.forEach((value, key) => {
-			if (typeof value === 'string') {
-				if (key === 'confirm_password') {
-					confirmPassword = value.trim();
-				} else {
-					formValues[key as keyof RegistrationFormData] = value.trim();
-				}
-			}
-		});
-
-		const username = formValues.username || '';
-		const email = formValues.email || '';
-		const password = formValues.password?.toString() || '';
+		const username = (formData.get('reg_username') as string)?.trim();
+		const email = (formData.get('email') as string)?.trim();
+		const password = (formData.get('reg_assword') as string)?.trim();
+		const confirmPassword = (formData.get('confirm_password') as string)?.trim();
 
 		let hasError = false;
 
 		if (!username) {
-			showError('username', 'Username is required.');
+			showError('reg_username', 'Username is required.');
 			hasError = true;
 		} else if (!isValidUsername(username)) {
-			showError('username', 'Invalid username.');
+			showError('reg_username', 'Invalid username.');
 			hasError = true;
 		}
 
@@ -41,22 +29,22 @@ function initRegistrationForm() {
 			showError('email', 'Email is required.');
 			hasError = true;
 		} else if (!isValidEmail(email)) {
-			showError('email', 'Invalid email.');
+			showError('email', 'Invalid email address.');
 			hasError = true;
 		}
 
 		if (!password) {
-			showError('password', 'Password is required.');
+			showError('reg_password', 'Password is required.');
 			hasError = true;
 		}
 
 		if (!confirmPassword) {
-			showError('confirm_password', 'Confirm Password is required.');
+			showError('confirm_password', 'Please confirm your password.');
 			hasError = true;
 		}
 
 		if (!hasError && !isValidPassword(password)) {
-			showError('password', 'Invalid password.');
+			showError('reg_password', 'Invalid password.');
 			showError('confirm_password', 'Invalid password.');
 			hasError = true;
 		}
@@ -75,20 +63,22 @@ function initRegistrationForm() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify(formValues),
+				body: JSON.stringify({ username, email, password }),
 			});
 
 			const result = await response.json();
 
 			if (!response.ok) {
-				console.error('Server responded with error:', result);
+				console.error('Registration failed:', result);
 				showError('email', result?.message || 'Server error');
 				return;
 			}
 
 			console.log('Registration successful:', result);
+			// window.location.href = '/login';
 		} catch (error) {
-			console.error('Registration failed:', error);
+			console.error('Network error during registration:', error);
+			showError('email', 'Network or server error.');
 		}
 	});
 }

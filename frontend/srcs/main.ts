@@ -29,6 +29,7 @@ function loadHomePage() {
 
 function loadSignInForm() {
 	loadTemplate("signin-template", "Sign In");
+	initLoginForm();
 }
 
 function loadSignUpForm() {
