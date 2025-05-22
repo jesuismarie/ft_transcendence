@@ -1,7 +1,8 @@
+const FRIENDS_LIMIT = 10;
 let currentFriendOffset = 0;
-const FRIENDS_LIMIT = 25;
+let totalFriendResults = 0;
 
-function viewFriends(username: string | null = null, offset: number = 0, limit: number = FRIENDS_LIMIT) {
+function viewFriends(username: string | null = null) {
 	const previewContainer = document.getElementById("friends-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("friend-modal-list") as HTMLElement | null;
 	const viewAllBtn = document.getElementById("friend-list-btn") as HTMLButtonElement | null;
@@ -16,8 +17,6 @@ function viewFriends(username: string | null = null, offset: number = 0, limit: 
 		return;
 	}
 
-	const friends: Friend[] = [];
-
 	const renderFriendItem = (friend: Friend): string => {
 		const targetHash = friend.username === currentUser ? "#profile" : `#profile/${friend.username}`;
 		return `
@@ -28,52 +27,64 @@ function viewFriends(username: string | null = null, offset: number = 0, limit: 
 		`;
 	};
 
-	previewContainer.innerHTML = "";
-	const previewFriends = friends.slice(0, 3);
-	if (previewFriends.length === 0) {
-		previewContainer.innerHTML = `<p class="text-gray-500 p-4">No friends yet.</p>`;
-	} else {
-		previewFriends.forEach(friend => {
-			previewContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
-		});
-	}
+	const loadFriendList = async (offset: number = 0) => {
+		try {
+			const res = await fetch(`/api/friends?offset=${offset}&limit=${FRIENDS_LIMIT}`);
+			if (!res.ok)
+				throw new Error("Failed to fetch friends");
 
-	if (friends.length > 3) {
-		viewAllBtn.classList.remove("hidden");
-	}
+			const data: FriendResponse = await res.json();
+			if (data.total === 0) {
+				previewContainer.innerHTML = `<p class="text-gray-500 p-4">No friends yet.</p>`;
+				return ;
+			}
+			if (currentFriendOffset === 0)
+			{
+				previewContainer.innerHTML = "";
+				const previewFriends = data.friends.slice(0, 3);
+				previewFriends.forEach(friend => {
+					previewContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
+				});
+			}
 
-	const paginatedFriends = friends.slice(offset, offset + limit);
-	modalListContainer.innerHTML = "";
-	paginatedFriends.forEach(friend => {
-		modalListContainer.insertAdjacentHTML("beforeend", renderFriendItem(friend));
-	});
+			if (data.total > 3)
+				viewAllBtn.classList.remove("hidden");
+			modalListContainer.innerHTML = data.friends.map(renderFriendItem).join("");
+			totalFriendResults = data.total;
+			currentFriendOffset = offset;
 
-	if (friends.length > FRIENDS_LIMIT) {
-		paginatioBtns.classList.remove("hidden");
-	}
-	const totalPages = Math.ceil(friends.length / limit);
-	const currentPage = Math.floor(offset / limit) + 1;
-	pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+			const totalPages = Math.ceil(totalFriendResults / FRIENDS_LIMIT);
+			const currentPage = Math.floor(offset / FRIENDS_LIMIT) + 1;
+			pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 
-	prevPageBtn.disabled = offset === 0;
-	nextPageBtn.disabled = offset + limit >= friends.length;
+			prevPageBtn.disabled = offset === 0;
+			nextPageBtn.disabled = offset + FRIENDS_LIMIT >= totalFriendResults;
+
+			if (data.total > FRIENDS_LIMIT) {
+				paginatioBtns.classList.remove("hidden");
+			}
+		} catch (err) {
+			console.error("Error loading friends:", err);
+			modalListContainer.innerHTML = `<p class="text-red-500 p-4">Failed to load friends list.</p>`;
+		}
+	};
 
 	prevPageBtn.onclick = () => {
-		currentFriendOffset = Math.max(0, currentFriendOffset - limit);
-		viewFriends(null, currentFriendOffset, limit);
+		if (currentFriendOffset >= FRIENDS_LIMIT) {
+			loadFriendList(currentFriendOffset - FRIENDS_LIMIT);
+		}
 	};
 
 	nextPageBtn.onclick = () => {
-		if (currentFriendOffset + limit < friends.length) {
-			currentFriendOffset += limit;
-			viewFriends(null, currentFriendOffset, limit);
+		if (currentFriendOffset + FRIENDS_LIMIT < totalFriendResults) {
+			loadFriendList(currentFriendOffset + FRIENDS_LIMIT);
 		}
 	};
 
 	viewAllBtn.onclick = () => {
 		showModal("friends-modal");
-		viewFriends(null, currentFriendOffset, limit);
 	};
+	loadFriendList(currentFriendOffset);
 
 	closeModalBtn.onclick = () => {
 		hideModal("friends-modal");
