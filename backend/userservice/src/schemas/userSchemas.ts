@@ -1,11 +1,11 @@
 export const createUserSchema = {
     type: 'object',
-    required: ['email', 'password', 'displayName'],
+    required: ['email', 'password', 'username'],
     additionalProperties: false,
     properties: {
         email: { type: 'string', format: 'email' },
         password: { type: 'string', minLength: 8 },
-        displayName: { type: 'string', minLength: 1 },
+        username: { type: 'string', minLength: 1 },
     },
 } as const;
 
@@ -13,7 +13,7 @@ export const updateUserSchema = {
     type: 'object',
     additionalProperties: false,
     properties: {
-        displayName: { type: 'string', minLength: 1 },
+        username: { type: 'string', minLength: 1 },
         email:       { type: 'string', format: 'email' },
     },
     // at least one property must be supplied

@@ -1,13 +1,7 @@
 import { FastifyInstance } from 'fastify';
+import { UserTypes } from '@ft-transcendence/api-types';
 
-export interface User {
-    id: number;
-    email: string;
-    displayName: string;
-    avatarPath: string | null;
-    rating: number;
-    createdAt: string;
-}
+type User = UserTypes.User;
 
 export interface UserAll extends User {
     passwordHash: string;
@@ -65,7 +59,7 @@ export class UserRepo {
     update(
         id: number,
         fields: {
-            displayName?: string;
+            username?: string;
             email?: string;
             passwordHash?: string;
             avatarPath?: string;
@@ -74,7 +68,7 @@ export class UserRepo {
         const updates: string [] = [];
         const vals: any[] = [];
         
-        if (fields.displayName) { updates.push('displayName = ?'); vals.push(fields.displayName);   }
+        if (fields.username) { updates.push('displayName = ?'); vals.push(fields.username);   }
         if (fields.email)       { updates.push('email = ?');       vals.push(fields.email);         }
         if (fields.passwordHash){ updates.push('passwordHash = ?'); vals.push(fields.passwordHash); }
         if (fields.avatarPath)  { updates.push('avatarPath = ?'); vals.push(fields.avatarPath);     }

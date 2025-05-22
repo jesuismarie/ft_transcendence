@@ -54,7 +54,7 @@ export default async function userRoutes(app: FastifyInstance) {
                 return reply.sendError({ statusCode: 409, code: 'EMAIL_EXISTS', message: 'Email already registered' });
             
             return userRepo.update(id, {
-                displayName,
+                username: displayName,
                 email});
         }
     );
