@@ -6,6 +6,7 @@ export interface Tournament {
   current_players_count: number;
   status: Status;
   participants: string[];
+  winner: string | null;
 }
 
 export type Status = "created" | "in_progress" | "ended" | "error";

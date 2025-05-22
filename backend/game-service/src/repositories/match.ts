@@ -42,7 +42,7 @@ export class MatchRepo {
     stmt.run(data.player_1, data.player_2, new Date().toISOString());
   }
 
-  async createTournamentMatch(
+  createTournamentMatch(
     data: {
       tournament_id: number;
       group_id: number;
@@ -51,7 +51,7 @@ export class MatchRepo {
       player_2: string;
     },
     db?: Database
-  ) {
+  ): number {
     const database = db ?? this.db;
     const stmt = database.prepare(`
       INSERT INTO match (
@@ -59,18 +59,22 @@ export class MatchRepo {
         group_id,
         game_level,
         player_1,
-        player_2
+        player_2,
+        status
       )
-      VALUES (?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, 'created')
+      RETURNING id
     `);
 
-    stmt.run(
+    const result = stmt.get(
       data.tournament_id,
       data.group_id,
       data.game_level,
       data.player_1,
       data.player_2
-    );
+    ) as { id: number };
+
+    return result.id;
   }
 
   countUserMatchHistory(username: string): number {
@@ -197,7 +201,7 @@ export class MatchRepo {
     }[];
   }
 
-  setMatchWinner(match_id: number, winner_username: string, db: Database) {
+  setMatchWinner(match_id: number, winner_username: string, db?: Database) {
     const database = db ?? this.db;
     const stmt = database.prepare(`
       UPDATE match
@@ -205,6 +209,16 @@ export class MatchRepo {
       WHERE id = ?
     `);
     stmt.run(winner_username, match_id);
+  }
+
+  updateMatchStatus(match_id: number, status: string, db?: Database): void {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      UPDATE match
+      SET status = ?
+      WHERE id = ?
+    `);
+    stmt.run(status, match_id);
   }
 
   deleteMatchesByTournamentId(tournament_id: number, db?: Database): void {

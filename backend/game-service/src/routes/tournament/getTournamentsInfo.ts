@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament.ts";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
+import type { Tournament } from "../../types/index.ts";
 
 interface GetTournamentsInfoRequest {
   tournament_id?: number;
@@ -14,6 +15,7 @@ interface TournamentInfo {
   current_players_count: number;
   status: string;
   participants: string[];
+  winner?: string; // Добавлено поле winner
 }
 
 export default async function getTournamentsInfoRoute(app: FastifyInstance) {
@@ -25,7 +27,9 @@ export default async function getTournamentsInfoRoute(app: FastifyInstance) {
 
     try {
       if (tournament_id) {
-        const tournament = tournamentRepo.getById(tournament_id);
+        const tournament = tournamentRepo.getById(
+          tournament_id
+        ) as Tournament | null; // Явно указываем тип
         if (!tournament) {
           return reply.status(404).send({ message: "Tournament not found" });
         }
@@ -36,25 +40,28 @@ export default async function getTournamentsInfoRoute(app: FastifyInstance) {
         const tournamentInfo: TournamentInfo = {
           ...tournament,
           participants,
+          winner: tournament.winner ?? undefined, // Преобразуем null в undefined
         };
 
         return reply.status(200).send([tournamentInfo]);
-      } else {
-        const tournaments = tournamentRepo.getAll();
-        const tournamentsInfo: TournamentInfo[] = tournaments.map(
-          (tournament) => {
-            const participants = tournamentPlayerRepo.getPlayersByTournament(
-              tournament.id
-            );
-            return {
-              ...tournament,
-              participants,
-            };
-          }
-        );
-
-        return reply.status(200).send(tournamentsInfo);
       }
+
+      // If no tournament_id is provided, return all tournaments
+      const tournaments = tournamentRepo.getAll() as Tournament[]; // Явно указываем тип
+      const tournamentsInfo: TournamentInfo[] = tournaments.map(
+        (tournament) => {
+          const participants = tournamentPlayerRepo.getPlayersByTournament(
+            tournament.id
+          );
+          return {
+            ...tournament,
+            participants,
+            winner: tournament.winner ?? undefined, // Преобразуем null в undefined
+          };
+        }
+      );
+
+      return reply.status(200).send(tournamentsInfo);
     } catch (err) {
       app.log.error(err);
       return reply

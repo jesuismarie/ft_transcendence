@@ -48,7 +48,7 @@ export class TournamentRepo extends BaseRepo {
   getById(id: number, db?: Database): Tournament | null {
     const database = db ?? this.db;
     const stmt = database.prepare(`
-      SELECT id, name, created_by, max_players_count, current_players_count, status
+      SELECT id, name, created_by, max_players_count, current_players_count, status, winner
       FROM tournament
       WHERE id = ?
     `);
@@ -145,6 +145,15 @@ export class TournamentRepo extends BaseRepo {
       .run(status, tournament_id);
   }
 
+  updateWinner(tournament_id: number, winner: string, db?: Database): void {
+    const database = db ?? this.db;
+    database
+      .prepare(
+        `UPDATE tournament SET winner = ?, status = 'ended', ended_at = datetime('now') WHERE id = ?`
+      )
+      .run(winner, tournament_id);
+  }
+
   deleteTournament(tournament_id: number, db?: Database): void {
     const database = db ?? this.db;
     const stmt = database.prepare(`
@@ -156,7 +165,7 @@ export class TournamentRepo extends BaseRepo {
   getAll(db?: Database): Tournament[] {
     const database = db ?? this.db;
     const stmt = database.prepare(`
-      SELECT id, name, created_by, max_players_count, current_players_count, status
+      SELECT id, name, created_by, max_players_count, current_players_count, status, winner
       FROM tournament
     `);
     return stmt.all() as Tournament[];

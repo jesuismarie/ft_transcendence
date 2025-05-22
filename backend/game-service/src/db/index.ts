@@ -26,7 +26,8 @@ export default fp(async function initDb(app: FastifyInstance) {
       status TEXT NOT NULL DEFAULT 'created' CHECK (status IN ('created', 'in_progress', 'ended', 'error')),
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       started_at TEXT,
-      ended_at TEXT
+      ended_at TEXT,
+      winner TEXT
     )`);
     app.log.info("Tournament table created.");
   } catch (err) {

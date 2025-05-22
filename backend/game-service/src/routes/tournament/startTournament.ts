@@ -54,12 +54,11 @@ export default async function startTournamentRoute(app: FastifyInstance) {
         const player1 = shuffled[i * 2];
         const player2 = shuffled[i * 2 + 1];
 
-        // Передаём txn в метод, чтобы он использовал транзакцию
         matchRepo.createTournamentMatch(
           {
             tournament_id,
-            group_id: i + 1, // каждый матч — отдельная группа
-            game_level: totalPlayers / 2,
+            group_id: Math.floor(i / 2) + 1, // Каждые 2 матча в одной группе
+            game_level: totalPlayers / 2, // Уровень игры соответствует количеству матчей
             player_1: player1,
             player_2: player2,
           },
