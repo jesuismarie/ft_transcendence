@@ -1,12 +1,12 @@
 # API Types Package
 
-Shared TypeScript interfaces for ft\_transcendence microservices and the frontend.
+Shared TypeScript interfaces and (optional) JSON schemas for ft\_transcendence microservices and the frontend.
 
 ---
 
 ## Getting Started
 
-This package provides a single source of truth for all REST payloads via TypeScript declarations.
+This package provides a single source of truth for all REST payloads via TypeScript declarations (and optional AJV JSON schemas).
 
 **Prerequisites**
 
@@ -73,7 +73,7 @@ npm install ../../packages/api-types
 
 Then import as above.
 
-### 3. Configure TS path mapping
+### 3. (Optional) Configure TS path mapping
 
 In your service’s `tsconfig.json`, you can add for IDE support:
 
@@ -184,3 +184,28 @@ Fix any TS errors, then submit a pull request with your new types.
 * **CI**: Incorporate `tsc --noEmit` in your pipeline to catch drift.
 
 ---
+
+---
+
+## Handling Errors with ApiError 🛑🚨⚠️
+
+When your services and frontend communicate, errors are wrapped in the `ApiError` interface:
+
+```ts
+export interface ApiError {
+  status: 'error';          // always 'error' for failures
+  code: string;             // machine-readable error code, e.g. 'EMAIL_EXISTS'
+  message: string;          // human-readable description
+}
+export type ApiResponse<T> = T | ApiError;
+```
+
+### Best Practices
+
+* **Check status**: Always inspect the `status` field before casting to your expected type.
+* **Handle known codes**: Create an enum or union of expected `code` values in your service to ensure exhaustive handling.
+* **User feedback**: Surface `message` to users or log it internally for debugging.
+
+---
+
+Happy coding! With this shared package, your teams stay in sync on all API contracts—no more mismatches or duplicate definitions.
