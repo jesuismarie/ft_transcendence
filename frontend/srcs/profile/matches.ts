@@ -1,15 +1,21 @@
+const MATCHS_LIMIT = 10;
+let currentMatchOffset = 0;
+let totalMatchResults = 0;
+
 function viewMatches(username: string | null = null) {
 	const previewContainer = document.getElementById("matches-preview") as HTMLElement | null;
 	const modalListContainer = document.getElementById("match-modal-list") as HTMLElement | null;
 	const viewAllBtn = document.getElementById("match-list-btn") as HTMLButtonElement | null;
 	const closeModalBtn = document.getElementById("close-matches-modal") as HTMLButtonElement | null;
+	const prevPageBtn = document.getElementById("prev-matches-page") as HTMLButtonElement | null;
+	const nextPageBtn = document.getElementById("next-matches-page") as HTMLButtonElement | null;
+	const pageInfo = document.getElementById("match-page-info") as HTMLElement | null;
+	const paginatioBtns = document.getElementById("match-pagination") as HTMLButtonElement | null;
 
-	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn) {
+	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn || !prevPageBtn || !nextPageBtn || !pageInfo || !paginatioBtns) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
-
-	const matches: Match[] = [];
 
 	const renderMatchItem = (match: Match): string => {
 		return `
@@ -34,30 +40,66 @@ function viewMatches(username: string | null = null) {
 		`;
 	};
 
-	previewContainer.innerHTML = "";
-	const previewMatches = matches.slice(0, 5);
-	previewMatches.forEach(match => {
-		previewContainer.insertAdjacentHTML("beforeend", renderMatchItem(match));
-	});
+	const loadMatchList = async (offset: number = 0) => {
+		try {
+			const res = await fetch(`/api/matches?offset=${offset}&limit=${MATCHS_LIMIT}`);
+			if (!res.ok)
+				throw new Error("Failed to fetch matches");
 
-	modalListContainer.innerHTML = "";
-	matches.forEach(match => {
-		modalListContainer.insertAdjacentHTML("beforeend", renderMatchItem(match));
-	});
+			const data: MatchResponse = await res.json();
+			if (data.total === 0) {
+				previewContainer.innerHTML = `<p class="text-gray-500 p-4">No matches yet.</p>`;
+				return ;
+			}
+			if (currentMatchOffset === 0)
+			{
+				previewContainer.innerHTML = "";
+				const previewMathes = data.matches.slice(0, 5);
+				previewMathes.forEach(match => {
+					previewContainer.insertAdjacentHTML("beforeend", renderMatchItem(match));
+				});
+			}
 
-	if (matches.length == 0) {
-		previewContainer.innerHTML = `<p class="text-gray-500 p-4">No matches yet.</p>`;
-		return;
-	}
-	if (matches.length > 5) {
-		viewAllBtn.classList.remove("hidden");
-	}
+			if (data.total > 5)
+				viewAllBtn.classList.remove("hidden");
+			modalListContainer.innerHTML = data.matches.map(renderMatchItem).join("");
+			totalMatchResults = data.total;
+			currentMatchOffset = offset;
 
-	viewAllBtn.addEventListener("click", () => {
+			const totalPages = Math.ceil(totalMatchResults / MATCHS_LIMIT);
+			const currentPage = Math.floor(offset / MATCHS_LIMIT) + 1;
+			pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+			prevPageBtn.disabled = offset === 0;
+			nextPageBtn.disabled = offset + MATCHS_LIMIT >= totalMatchResults;
+
+			if (data.total > MATCHS_LIMIT) {
+				paginatioBtns.classList.remove("hidden");
+			}
+		} catch (err) {
+			console.error("Error loading matches:", err);
+			modalListContainer.innerHTML = `<p class="text-red-500 p-4">Failed to load matches list.</p>`;
+		}
+	};
+
+	prevPageBtn.onclick = () => {
+		if (currentMatchOffset >= MATCHS_LIMIT) {
+			loadMatchList(currentMatchOffset - MATCHS_LIMIT);
+		}
+	};
+
+	nextPageBtn.onclick = () => {
+		if (currentMatchOffset + MATCHS_LIMIT < totalMatchResults) {
+			loadMatchList(currentMatchOffset + MATCHS_LIMIT);
+		}
+	};
+
+	viewAllBtn.onclick = () => {
 		showModal("matches-modal");
-	});
+	};
+	loadMatchList(currentMatchOffset);
 
-	closeModalBtn.addEventListener("click", () => {
+	closeModalBtn.onclick = () => {
 		hideModal("matches-modal");
-	});
+	};
 }
