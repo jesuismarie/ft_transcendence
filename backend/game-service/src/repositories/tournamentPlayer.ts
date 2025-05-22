@@ -62,6 +62,16 @@ export class TournamentPlayerRepo {
     stmt.run(username, tournament_id);
   }
 
+  incrementLosses(username: string, tournament_id: number, db?: Database) {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      UPDATE tournament_player
+      SET losses = losses + 1
+      WHERE player_username = ? AND tournament_id = ?
+    `);
+    stmt.run(username, tournament_id);
+  }
+
   unregisterAllPlayers(tournament_id: number, db?: Database): void {
     const database = db ?? this.db;
     database

@@ -211,6 +211,21 @@ export class MatchRepo {
     stmt.run(winner_username, match_id);
   }
 
+  updateMatchResult(
+    match_id: number,
+    winner: string,
+    score: { score_1: number; score_2: number },
+    db?: Database
+  ): void {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      UPDATE match
+      SET winner_username = ?, score_1 = ?, score_2 = ?, status = 'ended'
+      WHERE id = ?
+    `);
+    stmt.run(winner, score.score_1, score.score_2, match_id);
+  }
+
   updateMatchStatus(match_id: number, status: string, db?: Database): void {
     const database = db ?? this.db;
     const stmt = database.prepare(`
@@ -227,5 +242,14 @@ export class MatchRepo {
       DELETE FROM match WHERE tournament_id = ?
     `);
     stmt.run(tournament_id);
+  }
+
+  getById(match_id: number, db?: Database): Match | null {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      SELECT * FROM match WHERE id = ?
+    `);
+    const row = stmt.get(match_id);
+    return row ? (row as Match) : null;
   }
 }
