@@ -16,3 +16,7 @@ function isValidPassword(password: string): boolean {
 		!/\s/.test(password)
 	);
 }
+
+function isValidAvatar(imgURL: string): boolean {
+	return /\.(jpe?g|png|gif|webp)$/i.test(imgURL);
+}

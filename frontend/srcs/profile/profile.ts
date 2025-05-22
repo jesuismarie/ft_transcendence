@@ -27,10 +27,12 @@ function initAvatarUpload(username: string | null = null) {
 	const fileInput = document.getElementById("avatar-input") as HTMLInputElement | null;
 	const avatarImage = document.getElementById("avatar-image") as HTMLImageElement | null;
 
+	clearErrors();
+
 	if (!uploadBtn || !fileInput || !avatarImage)
 		return;
 
-	if ("me" !== username) {
+	if (username !== "me") { // change cuttentUsername
 		uploadBtn.remove();
 		fileInput.remove();
 		return;
@@ -44,9 +46,21 @@ function initAvatarUpload(username: string | null = null) {
 		if (!fileInput.files || fileInput.files.length === 0) return;
 		const file = fileInput.files[0];
 
+		if (!file.type.startsWith("image/")) {
+			showError("avatar", "Please select a valid image file.");
+			return;
+		}
+
 		const reader = new FileReader();
 		reader.onload = () => {
-			avatarImage.src = reader.result as string;
+			const result = reader.result as string;
+
+			if (!isValidAvatar(result)) {
+				showError("avatar", "Unsupported image format.");
+				return;
+			}
+
+			avatarImage.src = result;
 		};
 		reader.readAsDataURL(file);
 
@@ -58,12 +72,16 @@ function initAvatarUpload(username: string | null = null) {
 				method: "POST",
 				body: formData,
 			});
-			if (!res.ok) throw new Error("Upload failed");
+
+			if (!res.ok) {
+				throw new Error("Upload failed");
+			}
 
 			const data = await res.json();
 			console.log("Avatar uploaded:", data);
 		} catch (err) {
 			console.error("Avatar upload error:", err);
+			showError("avatar", "Failed to upload avatar. Please try again.");
 		}
 	});
 }
