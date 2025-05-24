@@ -4,6 +4,8 @@
 // Keep them in a small workspace package (e.g. packages/api-types) so both
 // the SPA and the back‑end can import the same source of truth.
 
+import { ApiError } from "./common-types";
+
 /* Common Objects */
 
 export interface User {
@@ -49,13 +51,6 @@ export interface PaginationQuery {
 	offset?:	number; // default 0
 	limit?:		number;  // default 50
 	q?:			string;      // search string
-}
-
-// Error envelope for API responses
-export interface ApiError {
-	status: 'error';
-	code: string;   // machine‑readable, e.g. EMAIL_EXISTS
-	message: string;
 }
 
 // Generic API response type

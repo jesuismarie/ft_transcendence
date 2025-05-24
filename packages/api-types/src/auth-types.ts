@@ -1,17 +1,57 @@
 /**
- * Payload for user login.
+ * API types for authentication-related requests.
  */
-export interface LoginRequest {
-	/** TODO: replace with “email” if you only accept emails */
-	username: string;
-	/** TODO: define password constraints (min length, chars) */
-	password: string;
+
+export interface RegisterRequest {
+	email		:	string;		// RFC-5322
+	username	:	string;		// optional public name
+	password	:	string;		// min-8, same rules as login
 }
 
-/**
- * Payload to invalidate a session on logout.
- */
-export interface LogoutRequest {
-	/** TODO: if you track sessions, include sessionId or token */
-	token: string;
+export interface LoginRequest {
+	email: string;        // RFC-5322
+	password: string;     // min 8 chars
 }
+
+// ---------- Response payloads ----------
+export interface TokenPair {
+	accessToken: string;
+	refreshToken: string;
+	/** numeric user-id as allocated by UserService */
+	userId: number;
+}
+
+export interface LoginSuccess extends TokenPair {}
+
+export interface Login2FARequired {
+	requires2fa: true;
+	loginTicket: string;
+}
+
+export interface Login2FARequest {
+	loginTicket: string;  // uuid v4
+	otp: string;          // "123456"
+}
+
+export interface TwoFAEnableResponse {
+	otpauthUrl: string;
+	qrSvg: string;
+}
+
+export interface TwoFAVerifyRequest {
+	otp: string;          // "123456"
+}
+export interface TwoFAVerifyResponse { verified: true; }
+
+export interface OAuthCallbackResponse extends TokenPair {}
+
+export interface RefreshRequest  { refreshToken: string; }
+export interface RefreshResponse extends TokenPair {}
+
+export interface LogoutRequest   { refreshToken: string; }
+export interface LogoutResponse  { revoked: true; }
+
+
+// Discriminated union for callers
+export type LoginResponse = LoginSuccess | Login2FARequired;
+export type RegisterResponse = TokenPair;
