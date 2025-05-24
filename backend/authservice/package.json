@@ -8,7 +8,10 @@
 		"build": "tsc --build",
 		"start": "node dist/app.js",
 		"migrate": "npx prisma migrate dev",
-		"generate": "npx prisma generate"
+		"migrate:deploy": "npx prisma migrate deploy",
+		"generate": "npx prisma generate",
+		"db:reset": "npx prisma migrate reset --force --skip-seed",
+		"prisma:studio": "npx prisma studio"
 	},
 	"dependencies": {
 		"@fastify/ajv-compiler": "^4.0.2",
