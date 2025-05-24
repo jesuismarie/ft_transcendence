@@ -1,22 +1,27 @@
-import Fastify from 'fastify';
+// AuthService entry point
+
+// Core Imports
+import Fastify, {FastifyInstance} from 'fastify';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
-import prismaPlugin from './plugins/prisma';
-import dotenv from 'dotenv';
 
-// dotenv
-dotenv.config();
+// Plugins
+import envPlugin from './plugins/env';
+import jwtPlugin from './plugins/jwt';
+import prismaPlugin from './plugins/prisma';
 
 // Import routes
 import healthRoute from './routes/health';
 
 // Build the Fastify server
 const buildServer = () => {
-	const app = Fastify({ logger: true });
+	const app:FastifyInstance = Fastify({ logger: true });
 	
+	app.register(envPlugin);
 	app.register(helmet);
 	app.register(rateLimit, { max: 10, timeWindow: '1 minute' });
 	app.register(prismaPlugin);
+	app.register(jwtPlugin);
 	
 	// Register routes
 	app.register(healthRoute);
