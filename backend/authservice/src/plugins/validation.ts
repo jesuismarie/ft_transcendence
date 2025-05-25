@@ -1,9 +1,20 @@
-import fp from 'fastify-plugin';
+import {FastifyInstance} from "fastify";
 import Ajv from 'ajv';
+import fp from 'fastify-plugin';
 import addFormats from 'ajv-formats';
-import { globSync } from 'glob';
-import { pathToFileURL } from 'url';
-import { dirname, join } from 'path';
+
+import errorSchema from "../schemas/errorSchema";
+import loginRequestSchema from "../schemas/loginRequestSchema";
+import loginSuccessSchema from "../schemas/loginSuccessSchema";
+import registerRequestSchema from "../schemas/registerRequestSchema";
+import registerResponseSchema from "../schemas/registerResponseSchema";
+
+
+// Helper to add schemas to both Ajv and Fastify
+function addSchema(app: FastifyInstance, ajv: Ajv, schema: any) {
+	app.addSchema(schema);
+	ajv.addSchema(schema);
+}
 
 export default fp(async (app) => {
 	const ajv = new Ajv({
@@ -11,14 +22,12 @@ export default fp(async (app) => {
 	});
 	addFormats(ajv);
 	
-	// Register schemas
-	const __dirname = dirname(__filename);
-	const schemaDir = join(__dirname, '..', 'schemas');
-	for (const tsFile of globSync(`${schemaDir}/*.schema.ts`)) {
-		const mod = await import(pathToFileURL(tsFile).href);
-		const schema = mod.default ?? mod.Schema;
-		ajv.addSchema(schema);
-	}
+	// TODO: add schemas on demand
+	addSchema(app, ajv, errorSchema);
+	addSchema(app, ajv, loginRequestSchema);
+	addSchema(app, ajv, loginSuccessSchema);
+	addSchema(app, ajv, registerRequestSchema);
+	addSchema(app, ajv, registerResponseSchema);
 	
 	app.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 });
