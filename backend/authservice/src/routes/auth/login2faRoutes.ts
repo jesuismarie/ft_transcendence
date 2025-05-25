@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { AuthTypes } from '@ft-transcendence/api-types';
 import { apiError } from '../../lib/error';
+import { issueTokenPair } from "../../lib/token";
 
 export default async function login2faRoutes(app: FastifyInstance) {
 	// 2FA verification route
