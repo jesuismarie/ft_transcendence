@@ -9,6 +9,7 @@ import rateLimit from '@fastify/rate-limit';
 import envPlugin from './plugins/env';
 import jwtPlugin from './plugins/jwt';
 import prismaPlugin from './plugins/prisma';
+import validationPlugin from './plugins/validation';
 
 // Import routes
 import healthRoute from './routes/health';
@@ -22,6 +23,7 @@ const buildServer = () => {
 	app.register(rateLimit, { max: 10, timeWindow: '1 minute' });
 	app.register(prismaPlugin);
 	app.register(jwtPlugin);
+	app.register(validationPlugin);
 	
 	// Register routes
 	app.register(healthRoute);
