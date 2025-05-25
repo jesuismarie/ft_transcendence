@@ -38,6 +38,13 @@ export interface TwoFAEnableResponse {
 	qrSvg: string;
 }
 
+/** Admin/Service request to revoke a refresh token by DB id */
+export interface InternalRevokeTokenRequest {
+	/** Primary-key id of the refresh-token row to revoke */
+	tokenId: string;
+}
+
+
 export interface TwoFAVerifyRequest {
 	otp: string;          // "123456"
 }
