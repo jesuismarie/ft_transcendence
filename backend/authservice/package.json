@@ -25,7 +25,8 @@
 		"fastify": "^5.3.2",
 		"speakeasy": "^2.0.0",
 		"ts-node": "^10.9.2",
-		"@fastify/env": "^5.0.2"
+		"@fastify/env": "^5.0.2",
+		"undici": "^6.21.3"
 	},
 	"devDependencies": {
 		"prisma": "^6.8.2",
