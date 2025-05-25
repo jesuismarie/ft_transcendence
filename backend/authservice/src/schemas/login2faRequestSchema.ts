@@ -1,4 +1,4 @@
-export const login2faRequestSchema = {
+const login2faRequestSchema = {
 	$id: 'auth.login2faRequest',
 	type: 'object',
 	required: ['loginTicket', 'otp'],
@@ -8,3 +8,5 @@ export const login2faRequestSchema = {
   },
   additionalProperties: false
 }
+
+export default login2faRequestSchema;

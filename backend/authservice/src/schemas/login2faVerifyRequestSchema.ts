@@ -1,4 +1,4 @@
-export const login2faVerifyRequestSchema = {
+const login2faVerifyRequestSchema = {
 	$id: 'auth.login2faVerifyRequest',
 	type: 'object',
 	required: ['otp'],
@@ -7,3 +7,5 @@ export const login2faVerifyRequestSchema = {
 	},
 	additionalProperties: false
 }
+
+export default login2faVerifyRequestSchema;

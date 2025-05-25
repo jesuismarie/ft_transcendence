@@ -1,4 +1,4 @@
-export const login2faEnableResponseSchema = {
+const login2faEnableResponseSchema = {
 	$id: 'auth.login2faEnableResponse',
 	type: 'object',
 	required: ['otpauthUrl', 'qrSvg'],
@@ -8,3 +8,5 @@ export const login2faEnableResponseSchema = {
 	},
 	additionalProperties: false
 }
+
+export default login2faEnableResponseSchema;

@@ -1,4 +1,4 @@
-export const registerRequestSchema = {
+const registerRequestSchema = {
 	$id: 'auth.registerRequest',
 	type: 'object',
 	required: ['email', 'password'],
@@ -8,9 +8,6 @@ export const registerRequestSchema = {
 		username:	{ type: 'string', minLength: 2, maxLength: 32, pattern: '^[a-zA-Z0-9_-]+$' }
 	},
 	additionalProperties: false
-} as const;
-
-export const registerResponseSchema = {
-	$id: 'auth.registerResponse',
-	$ref: 'auth.loginSuccess'
 }
+
+export default registerRequestSchema;

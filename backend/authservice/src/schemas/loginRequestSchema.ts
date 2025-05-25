@@ -1,5 +1,5 @@
 // Schema to validate login requests
-export const loginRequestSchema = {
+const loginRequestSchema = {
 	$id: 'auth.loginRequest',
 	type: 'object',
 	required: ['username', 'password'],
@@ -9,3 +9,5 @@ export const loginRequestSchema = {
 	},
 	additionalProperties: false
 }
+
+export default loginRequestSchema;
