@@ -5,5 +5,10 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13"
-  }
+  },
+  "workspaces": [
+    "packages/*",
+    "backend/*",
+    "frontend"
+  ]
 }
