@@ -8,4 +8,5 @@ data
 public
 *.db*
 migrations
+*.tsbuildinfo
 
