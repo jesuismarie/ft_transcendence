@@ -1,8 +1,8 @@
-import loginSuccessSchema from './loginSuccessSchema';
+// import loginSuccessSchema from './loginSuccessSchema';
 
 const registerResponseSchema = {
 	$id: 'auth.registerResponse',
-	loginSuccessSchema
+	$ref: 'auth.loginSuccess#'
 }
 
 export default registerResponseSchema;
