@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { MatchRepo } from "../../repositories/match.ts";
 import type { Status } from "../../types/index.ts";
 
-interface GetMatchHistoryRequestBody {
+interface GetMatchHistoryRequest {
   username: string;
   limit?: number;
   offset?: number;
@@ -17,23 +17,23 @@ interface MatchHistory {
   id: number;
   opponent: string;
   status: Status;
-  is_won: boolean | null;
+  is_won: boolean;
   score: {
     user: number;
     opponent: number;
   };
-  date: string | null;
+  date: string;
 }
 
 export default async function getMatchHistoryByUserRoute(app: FastifyInstance) {
   const matchRepo = new MatchRepo(app);
 
-  app.post("/get-match-history-by-user", async (request, reply) => {
+  app.get("/get-match-history-by-user", async (request, reply) => {
     const {
       username,
       limit = 10,
       offset = 0,
-    } = request.body as GetMatchHistoryRequestBody;
+    } = request.query as GetMatchHistoryRequest;
 
     if (!username || limit < 0 || offset < 0) {
       return reply.status(400).send({ message: "Invalid input parameters" });
@@ -63,10 +63,14 @@ export default async function getMatchHistoryByUserRoute(app: FastifyInstance) {
             opponent: opponent_score,
           },
           date: match.started_at,
-        };
+        } as MatchHistory;
       });
 
-      return reply.send({ totalCount, matches: formattedMatches });
+      const response: GetMatchHistoryResponse = {
+        totalCount,
+        matches: formattedMatches,
+      };
+      return reply.send(response);
     } catch (err) {
       app.log.error(err);
       return reply

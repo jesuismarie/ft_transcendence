@@ -110,7 +110,7 @@ export class MatchRepo {
       FROM match
       WHERE 
         (player_1 = ? OR player_2 = ?)
-        AND status IN ('ended', 'error')
+        AND status IN ('ended')
       ORDER BY started_at DESC
       LIMIT ? OFFSET ?
     `);
