@@ -21,9 +21,11 @@ export interface User {
 /* Request Bodies */
 
 export interface CreateUserRequest {
-	email:		string;
-	password:	string;
-	username:	string;
+	email:			string;
+	password:		string;
+	username:		string;
+	authProvider?:	string; // e.g. "google", "github"
+	providerSub?:	string; // e.g. "1234567890" for Google
 }
 
 export interface PatchUserRequest {
