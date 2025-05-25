@@ -11,6 +11,7 @@ import jwtPlugin from './plugins/jwt';
 import prismaPlugin from './plugins/prisma';
 import validationPlugin from './plugins/validation';
 import errorEnvelope from "./plugins/errorEnvelope";
+import userserviceClient from "./plugins/userserviceClient";
 
 // Import routes
 import healthRoute from './routes/health';
@@ -26,6 +27,7 @@ const buildServer = () => {
 	app.register(prismaPlugin);
 	app.register(jwtPlugin);
 	app.register(validationPlugin);
+	app.register(userserviceClient);
 	
 	// Register routes
 	app.register(healthRoute);
