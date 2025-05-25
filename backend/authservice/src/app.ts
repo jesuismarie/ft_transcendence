@@ -17,6 +17,7 @@ import userserviceClient from "./plugins/userserviceClient";
 import healthRoute from './routes/health';
 import registerRoutes from "./routes/register";
 import authRoutes from "./routes/auth/routes";
+import oauthGoogle from "./plugins/oauth-google";
 
 // Build the Fastify server
 const buildServer = () => {
@@ -28,6 +29,7 @@ const buildServer = () => {
 	app.register(prismaPlugin);
 	app.register(jwtPlugin);
 	app.register(userserviceClient);
+	app.register(oauthGoogle);
 	app.register(helmet);
 	app.register(rateLimit, { max: 10, timeWindow: '1 minute' });
 	
