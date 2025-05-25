@@ -15,6 +15,7 @@ import userserviceClient from "./plugins/userserviceClient";
 
 // Import routes
 import healthRoute from './routes/health';
+import registerRoutes from "./routes/register";
 
 // Build the Fastify server
 const buildServer = () => {
@@ -31,6 +32,7 @@ const buildServer = () => {
 	
 	// Register routes
 	app.register(healthRoute);
+	app.register(registerRoutes);
 	
 	return app;
 };
