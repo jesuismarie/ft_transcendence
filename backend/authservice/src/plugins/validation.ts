@@ -8,6 +8,12 @@ import loginRequestSchema from "../schemas/loginRequestSchema";
 import loginSuccessSchema from "../schemas/loginSuccessSchema";
 import registerRequestSchema from "../schemas/registerRequestSchema";
 import registerResponseSchema from "../schemas/registerResponseSchema";
+import login2faRequiredSchema from "../schemas/login2faRequiredSchema";
+import login2faVerifyRequestSchema from "../schemas/login2faVerifyRequestSchema";
+import login2faRequestSchema from "../schemas/login2faRequestSchema";
+import login2faEnableResponseSchema from "../schemas/login2faEnableResponseSchema";
+import {logoutRequestSchema, logoutResponseSchema} from "../schemas/logoutSchemas";
+import {refreshRequestSchema, refreshResponseSchema} from "../schemas/refreshSchemas";
 
 
 // Helper to add schemas to both Ajv and Fastify
@@ -28,6 +34,13 @@ export default fp(async (app) => {
 	addSchema(app, ajv, loginSuccessSchema);
 	addSchema(app, ajv, registerRequestSchema);
 	addSchema(app, ajv, registerResponseSchema);
-	
+	addSchema(app, ajv, login2faRequiredSchema);
+	addSchema(app, ajv, login2faVerifyRequestSchema);
+	addSchema(app, ajv, login2faRequestSchema);
+	addSchema(app, ajv, login2faEnableResponseSchema);
+	addSchema(app, ajv, logoutRequestSchema);
+	addSchema(app, ajv, logoutResponseSchema);
+	addSchema(app, ajv, refreshRequestSchema);
+	addSchema(app, ajv, refreshResponseSchema);
 	app.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 });

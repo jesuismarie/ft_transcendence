@@ -23,12 +23,12 @@ const buildServer = () => {
 	
 	app.register(envPlugin);
 	app.register(errorEnvelope);
-	app.register(helmet);
-	app.register(rateLimit, { max: 10, timeWindow: '1 minute' });
+	app.register(validationPlugin);
 	app.register(prismaPlugin);
 	app.register(jwtPlugin);
-	app.register(validationPlugin);
 	app.register(userserviceClient);
+	app.register(helmet);
+	app.register(rateLimit, { max: 10, timeWindow: '1 minute' });
 	
 	// Register routes
 	app.register(healthRoute);
