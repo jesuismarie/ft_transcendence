@@ -9,7 +9,7 @@
   },
   "scripts": {
     "tailwind": "tailwindcss -i ./public/css/styles.css -o ./dist/output.css --minify",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx tsc && npm run tailwind"
   },
   "keywords": [],
   "author": "",
