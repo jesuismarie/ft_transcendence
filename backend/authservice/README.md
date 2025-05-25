@@ -72,7 +72,7 @@ All error replies use the unified `ApiError` envelope.
   app.setValidatorCompiler(({ schema }) => ajv.compile(schema));
   ```
 
-  The plugin auto‑loads every `*.schema.ts` file under `src/schemas` and registers its `default` export (`$id` must be unique).
+  The plugin auto‑loads every `*Schema.ts` file under `src/schemas` and registers its `default` export (`$id` must be unique).
 * **Strict mode** – `additionalProperties: false`, coercion off, built‑in `format` keywords via `ajv-formats`.
 * **Error handler** – any thrown `ApiError` passes through the global handler which serialises `{ status:'error', code, message }`.
 
