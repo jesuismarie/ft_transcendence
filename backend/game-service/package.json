@@ -1,7 +1,6 @@
 {
   "name": "game-service",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "nodemon --watch src --ext ts --exec \"ts-node --esm\" src/index.ts",
     "build": "tsc",

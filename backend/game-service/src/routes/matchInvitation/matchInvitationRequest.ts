@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { MatchInvitationRequestRepo } from "../../repositories/matchInvitation.ts";
+import { MatchInvitationRequestRepo } from "../../repositories/matchInvitation";
 
 interface MatchInvitationRequestBody {
   user1: string;

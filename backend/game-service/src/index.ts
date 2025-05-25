@@ -1,9 +1,9 @@
 // src/index.ts
 import Fastify from "fastify";
-import initDb from "./db/index.ts";
-import matchInvitationRoutes from "./routes/matchInvitation/routes.ts";
-import matchRoutes from "./routes/match/routes.ts";
-import tournamentRoutes from "./routes/tournament/routes.ts";
+import initDb from "./db/index";
+import matchInvitationRoutes from "./routes/matchInvitation/routes";
+import matchRoutes from "./routes/match/routes";
+import tournamentRoutes from "./routes/tournament/routes";
 
 const app = Fastify({ logger: true });
 

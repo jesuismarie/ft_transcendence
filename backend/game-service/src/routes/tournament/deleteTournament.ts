@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { TournamentRepo } from "../../repositories/tournament.ts";
-import { MatchRepo } from "../../repositories/match.ts";
-import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
+import { TournamentRepo } from "../../repositories/tournament";
+import { MatchRepo } from "../../repositories/match";
+import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
 
 interface DeleteTournamentRequestBody {
   tournament_id: number;

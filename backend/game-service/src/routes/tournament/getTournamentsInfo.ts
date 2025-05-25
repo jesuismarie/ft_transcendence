@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { TournamentRepo } from "../../repositories/tournament.ts";
-import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
-import type { Tournament } from "../../types/index.ts";
+import { TournamentRepo } from "../../repositories/tournament";
+import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import type { Tournament } from "../../types/index";
 
 interface GetTournamentsInfoRequest {
   limit?: number;

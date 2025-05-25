@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import { MatchRepo } from "../../repositories/match.ts";
-import type { Status } from "../../types/index.ts";
+import { MatchRepo } from "../../repositories/match";
+import type { Status } from "../../types/index";
 
 interface GetMatchHistoryByTournamentRequestBody {
   tournament_id: number;

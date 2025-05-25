@@ -1,6 +1,6 @@
-import type { Status, Tournament } from "../types/index.ts";
+import type { Status, Tournament } from "../types/index";
 import type { Database } from "better-sqlite3";
-import { BaseRepo } from "./base.ts";
+import { BaseRepo } from "./base";
 
 export class TournamentRepo extends BaseRepo {
   // Все методы принимают в качестве опционального параметра объект с методом prepare

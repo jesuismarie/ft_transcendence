@@ -1,13 +1,13 @@
 import type { FastifyInstance } from "fastify";
-import createTournamentRoute from "./createTournament.ts";
-import registerToTournamentRoute from "./registerToTournament.ts";
-import unregisterFromTournamentRoute from "./unregisterFromTournament.ts";
-import startTournamentRoute from "./startTournament.ts";
-import leaveTournamentRoute from "./leaveTournament.ts";
-import deleteTournamentRoute from "./deleteTournament.ts";
-import getTournamentsInfoRoute from "./getTournamentsInfo.ts";
-import tournamentNextStepRoute from "./tournamentNextStep.ts";
-import getTournamentParticipantsRoute from "./getTournamentParticipants.ts";
+import createTournamentRoute from "./createTournament";
+import registerToTournamentRoute from "./registerToTournament";
+import unregisterFromTournamentRoute from "./unregisterFromTournament";
+import startTournamentRoute from "./startTournament";
+import leaveTournamentRoute from "./leaveTournament";
+import deleteTournamentRoute from "./deleteTournament";
+import getTournamentsInfoRoute from "./getTournamentsInfo";
+import tournamentNextStepRoute from "./tournamentNextStep";
+import getTournamentParticipantsRoute from "./getTournamentParticipants";
 
 export default async function tournamentRoutes(app: FastifyInstance) {
   await createTournamentRoute(app);

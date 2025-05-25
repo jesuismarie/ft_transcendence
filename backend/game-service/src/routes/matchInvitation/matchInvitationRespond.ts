@@ -1,6 +1,6 @@
 // src/routes/respondToMatchInvitationRequest.ts
 import type { FastifyInstance } from "fastify";
-import { MatchInvitationRequestRepo } from "../../repositories/matchInvitation.ts";
+import { MatchInvitationRequestRepo } from "../../repositories/matchInvitation";
 
 interface RespondMatchInvitationRequestBody {
   request_id: number;

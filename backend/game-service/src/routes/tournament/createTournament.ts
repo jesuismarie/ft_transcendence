@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import { TournamentRepo } from "../../repositories/tournament.ts";
-import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
+import { TournamentRepo } from "../../repositories/tournament";
+import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
 
 export interface CreateTournamentRequestBody {
   name: string;

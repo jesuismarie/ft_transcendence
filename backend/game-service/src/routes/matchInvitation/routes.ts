@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import respondToMatchInvitationRequestRoute from "./matchInvitationRespond.ts";
-import matchInvitationRequestRoute from "./matchInvitationRequest.ts";
+import respondToMatchInvitationRequestRoute from "./matchInvitationRespond";
+import matchInvitationRequestRoute from "./matchInvitationRequest";
 
 export default async function matchInvitationRoutes(app: FastifyInstance) {
   await respondToMatchInvitationRequestRoute(app);

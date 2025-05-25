@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
-import createMatchRoute from "./createMatch.ts";
-import getMatchHistoryByUserRoute from "./getMatchHistoryByUser.ts";
-import getTournamentMatchHistoryRoute from "./getTournamentMatchHistory.ts";
-import saveMatchResultRoute from "./saveMatchResult.ts";
+import createMatchRoute from "./createMatch";
+import getMatchHistoryByUserRoute from "./getMatchHistoryByUser";
+import getTournamentMatchHistoryRoute from "./getTournamentMatchHistory";
+import saveMatchResultRoute from "./saveMatchResult";
 
 export default async function matchRoutes(app: FastifyInstance) {
   await createMatchRoute(app);
