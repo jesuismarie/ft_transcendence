@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { AuthTypes } from '@ft-transcendence/api-types';
-import { apiError } from '../lib/error.js';
+import { apiError } from '../lib/error';
 import { issueTokenPair } from '../lib/token';
 
 export default async function registerRoutes(app: FastifyInstance) {
@@ -8,10 +8,10 @@ export default async function registerRoutes(app: FastifyInstance) {
 		'/auth/register',
 		{
 			schema: {
-				body: 'auth.registerRequest#',
+				body: { $ref: 'auth.registerRequest#' },
 				response: {
-					200: 'auth.registerResponse#',
-					409: 'api.error#'
+					200: { $ref: 'auth.registerResponse#' },
+					409: { $ref: 'api.error#' }
 				}
 			}
 		},
