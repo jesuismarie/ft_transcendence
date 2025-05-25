@@ -10,6 +10,7 @@ import envPlugin from './plugins/env';
 import jwtPlugin from './plugins/jwt';
 import prismaPlugin from './plugins/prisma';
 import validationPlugin from './plugins/validation';
+import errorEnvelope from "./plugins/errorEnvelope";
 
 // Import routes
 import healthRoute from './routes/health';
@@ -19,6 +20,7 @@ const buildServer = () => {
 	const app:FastifyInstance = Fastify({ logger: true });
 	
 	app.register(envPlugin);
+	app.register(errorEnvelope);
 	app.register(helmet);
 	app.register(rateLimit, { max: 10, timeWindow: '1 minute' });
 	app.register(prismaPlugin);
