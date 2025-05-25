@@ -11,6 +11,7 @@ export interface EnvConfig {
 	GOOGLE_CLIENT_ID: string;
 	GOOGLE_CLIENT_SECRET: string;
 	GOOGLE_CALLBACK_URL: string;
+	USER_SERVICE_URL?: string; // Optional, for `userservice` client
 }
 
 const schema = {
