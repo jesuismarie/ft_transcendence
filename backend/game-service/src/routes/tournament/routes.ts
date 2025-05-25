@@ -7,6 +7,7 @@ import leaveTournamentRoute from "./leaveTournament.ts";
 import deleteTournamentRoute from "./deleteTournament.ts";
 import getTournamentsInfoRoute from "./getTournamentsInfo.ts";
 import tournamentNextStepRoute from "./tournamentNextStep.ts";
+import getTournamentParticipantsRoute from "./getTournamentParticipants.ts";
 
 export default async function tournamentRoutes(app: FastifyInstance) {
   await createTournamentRoute(app);
@@ -17,4 +18,5 @@ export default async function tournamentRoutes(app: FastifyInstance) {
   await deleteTournamentRoute(app);
   await getTournamentsInfoRoute(app);
   await tournamentNextStepRoute(app);
+  await getTournamentParticipantsRoute(app);
 }
