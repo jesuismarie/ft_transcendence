@@ -31,7 +31,7 @@ export default async function getMatchHistoryByUserRoute(app: FastifyInstance) {
   app.get("/get-match-history-by-user", async (request, reply) => {
     const {
       username,
-      limit = 10,
+      limit = 50,
       offset = 0,
     } = request.query as GetMatchHistoryRequest;
 

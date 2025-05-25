@@ -111,7 +111,7 @@ export class MatchRepo {
       WHERE 
         (player_1 = ? OR player_2 = ?)
         AND status IN ('ended')
-      ORDER BY started_at DESC
+      ORDER BY id DESC
       LIMIT ? OFFSET ?
     `);
 

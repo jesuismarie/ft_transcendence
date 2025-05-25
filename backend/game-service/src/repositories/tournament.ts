@@ -170,4 +170,27 @@ export class TournamentRepo extends BaseRepo {
     `);
     return stmt.all() as Tournament[];
   }
+
+  getAllCreated(limit: number, offset: number, db?: Database): Tournament[] {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      SELECT id, name, created_by, max_players_count, current_players_count, status, winner
+      FROM tournament
+      WHERE status = 'created'
+      ORDER BY id DESC
+      LIMIT ? OFFSET ?
+    `);
+    return stmt.all(limit, offset) as Tournament[];
+  }
+
+  countAllCreated(db?: Database): number {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      SELECT COUNT(*) as count
+      FROM tournament
+      WHERE status = 'created'
+    `);
+    const row = stmt.get() as { count: number };
+    return row.count;
+  }
 }
