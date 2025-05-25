@@ -42,3 +42,14 @@ model OAuthAccount {
   createdAt       DateTime @default(now())
   @@unique([provider, providerUserId])
 }
+
+model LoginTicket {
+	id        String   @id                 // UUIDv4
+	userId    Int                              // FK to external UserService id
+	expiresAt DateTime                         // when the ticket becomes invalid
+	used      Boolean  @default(false)         // set to true after successful /auth/login/2fa
+	createdAt DateTime  @default(now())
+
+	@@index([userId])
+	@@index([expiresAt])
+}
