@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament.ts";
 import { MatchRepo } from "../../repositories/match.ts";
+import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer.ts";
 
 interface NewMatch {
   id?: number; // Optional, as it will be auto-generated
@@ -12,12 +13,28 @@ interface NewMatch {
   status: string;
 }
 
+interface TournamentNextStepRequestBody {
+  id: number;
+}
+
+interface TournamentNextStepResponse {
+  match_id?: number;
+  player_1?: string;
+  player_2?: string;
+  participants?: string[];
+  status: string;
+}
+
 export default async function tournamentNextStepRoute(app: FastifyInstance) {
   const tournamentRepo = new TournamentRepo(app);
   const matchRepo = new MatchRepo(app);
+  const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
-  app.post("/tournament-next-step", async (request, reply) => {
-    const { tournament_id } = request.body as { tournament_id: number };
+  app.post<{
+    Body: { id: number };
+    Reply: TournamentNextStepResponse | { message: string };
+  }>("/tournament-next-step", async (request, reply) => {
+    const { id: tournament_id } = request.body as TournamentNextStepRequestBody;
 
     // 1. Validate tournament_id
     if (!tournament_id || tournament_id <= 0) {
@@ -29,6 +46,11 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
       return reply.status(404).send({ message: "Tournament not found" });
     }
 
+    if (tournament.status === "ended") {
+      return reply.status(200).send({
+        status: "ended",
+      });
+    }
     if (tournament.status !== "in_progress") {
       return reply
         .status(400)
@@ -51,21 +73,12 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
         ? endedMatches.sort((a, b) => b.id - a.id)[0] // Сортировка строго по id
         : null;
 
-    // Проверяем, является ли последний завершённый матч финальным
-    if (lastEndedMatch && lastEndedMatch.game_level === 1) {
-      return reply
-        .status(400)
-        .send({ message: "The tournament has already ended" });
-    }
-
     // 3. Check if there is a match in progress
     const inProgressMatch = allMatches.find(
       (match) => match.status === "in_progress"
     );
     if (inProgressMatch) {
-      return reply
-        .status(400)
-        .send({ message: "A match is already in progress" });
+      return reply.status(400).send({ message: "Match already in progress" });
     }
 
     // 4. Find the next created match after the last ended match
@@ -82,17 +95,23 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
 
     console.log("Next match:", nextMatch);
     if (nextMatch) {
-      // Set the next match to in_progress
       const tx = app.db.transaction((txn) => {
-        matchRepo.updateMatchStatus(nextMatch.id, "in_progress", txn); // Use updateMatchStatus
+        matchRepo.updateMatchStatus(nextMatch.id, "in_progress", txn);
+        const startedAt = new Date().toISOString();
+        matchRepo.updateMatchStartedAt(nextMatch.id, startedAt, txn); // Устанавливаем started_at
       }) as unknown as () => void;
 
       tx();
+
+      const tournamentParticipants =
+        tournamentPlayerRepo.getPlayersByTournament(tournament_id);
 
       return reply.status(200).send({
         match_id: nextMatch.id,
         player_1: nextMatch.player_1,
         player_2: nextMatch.player_2,
+        participants: tournamentParticipants,
+        status: tournament.status,
       });
     }
 
@@ -144,6 +163,8 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
       // Устанавливаем статус "in_progress" для первого матча нового уровня
       if (firstMatchId) {
         matchRepo.updateMatchStatus(firstMatchId, "in_progress", txn);
+        const startedAt = new Date().toISOString();
+        matchRepo.updateMatchStartedAt(firstMatchId, startedAt, txn);
       } else {
         throw new Error("Не удалось определить ID первого матча");
       }
@@ -152,10 +173,15 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
     tx();
 
     const firstMatch = newMatches[0];
+    const tournamentParticipants =
+      tournamentPlayerRepo.getPlayersByTournament(tournament_id);
+
     return reply.status(200).send({
       match_id: firstMatchId,
       player_1: firstMatch.player_1,
       player_2: firstMatch.player_2,
+      participants: tournamentParticipants,
+      status: tournament.status,
     });
   });
 }

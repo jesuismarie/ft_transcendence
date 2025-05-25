@@ -236,6 +236,20 @@ export class MatchRepo {
     stmt.run(status, match_id);
   }
 
+  updateMatchStartedAt(
+    match_id: number,
+    started_at: string,
+    db?: Database
+  ): void {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      UPDATE match
+      SET started_at = ?
+      WHERE id = ?
+    `);
+    stmt.run(started_at, match_id);
+  }
+
   deleteMatchesByTournamentId(tournament_id: number, db?: Database): void {
     const database = db ?? this.db;
     const stmt = database.prepare(`
