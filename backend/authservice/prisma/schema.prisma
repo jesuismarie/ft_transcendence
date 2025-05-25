@@ -16,7 +16,7 @@ generator client {
 model RefreshToken {
   id            String   @id @default(cuid())
   userId        Int
-  tokenHash     String   // SHA‑256 of the raw refresh token
+  tokenHash     String   @unique// SHA‑256 of the raw refresh token
   expiresAt     DateTime
   createdAt     DateTime @default(now())
   rotatedAt     DateTime?
