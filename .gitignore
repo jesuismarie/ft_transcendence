@@ -6,7 +6,7 @@ node_modules
 .idea
 data
 public
-*.db*
 migrations
+*.db*
 *.tsbuildinfo
 
