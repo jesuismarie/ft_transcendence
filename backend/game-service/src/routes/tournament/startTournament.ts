@@ -1,0 +1,121 @@
+import type { FastifyInstance } from "fastify";
+import { TournamentRepo } from "../../repositories/tournament";
+import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import { MatchRepo } from "../../repositories/match";
+
+interface StartTournamentRequestBody {
+  tournament_id: number;
+}
+
+interface StartTournamentResponse {
+  match_id?: number;
+  player_1?: string;
+  player_2?: string;
+  participants?: string[];
+  status: string;
+}
+
+export default async function startTournamentRoute(app: FastifyInstance) {
+  const tournamentRepo = new TournamentRepo(app);
+  const tournamentPlayerRepo = new TournamentPlayerRepo(app);
+  const matchRepo = new MatchRepo(app);
+
+  app.post("/start-tournament", async (request, reply) => {
+    const { tournament_id } = request.body as StartTournamentRequestBody;
+
+    if (!tournament_id || tournament_id <= 0) {
+      return reply.status(400).send({ message: "Invalid tournament_id" });
+    }
+
+    const tournament = await tournamentRepo.getById(tournament_id);
+    if (!tournament) {
+      return reply.status(404).send({ message: "Tournament not found" });
+    }
+
+    if (tournament.status !== "created") {
+      return reply.status(400).send({ message: "Tournament already started" });
+    }
+
+    if (tournament.current_players_count !== tournament.max_players_count) {
+      return reply.status(400).send({ message: "Tournament is not full yet" });
+    }
+
+    const players = await tournamentPlayerRepo.getPlayersByTournament(
+      tournament_id
+    );
+
+    const db = app.db;
+
+    const tx = db.transaction((txn) => {
+      // Перемешиваем игроков
+      const shuffled = [...players].sort(() => Math.random() - 0.5);
+
+      const totalPlayers = shuffled.length;
+
+      if (![2, 4, 8, 16].includes(totalPlayers)) {
+        throw new Error("Invalid number of players for tournament bracket");
+      }
+
+      const matchesToCreate = totalPlayers / 2;
+      let firstMatchId: number | undefined; // Инициализация переменной
+
+      for (let i = 0; i < matchesToCreate; i++) {
+        const player1 = shuffled[i * 2];
+        const player2 = shuffled[i * 2 + 1];
+
+        const createdMatchId = matchRepo.createTournamentMatch(
+          {
+            tournament_id,
+            group_id: Math.floor(i / 2) + 1, // Каждые 2 матча в одной группе
+            game_level: totalPlayers / 2, // Уровень игры соответствует количеству матчей
+            player_1: player1,
+            player_2: player2,
+          },
+          txn
+        );
+
+        if (!firstMatchId) {
+          firstMatchId = createdMatchId; // Сохраняем ID первого созданного матча
+        }
+      }
+
+      // Устанавливаем статус "in_progress" для первого матча
+      if (firstMatchId !== undefined) {
+        matchRepo.updateMatchStatus(firstMatchId, "in_progress", txn);
+        const startedAt = new Date().toISOString();
+        matchRepo.updateMatchStartedAt(firstMatchId, startedAt, txn);
+      } else {
+        throw new Error("Не удалось определить ID первого матча");
+      }
+
+      tournamentRepo.updateStatus(tournament_id, "in_progress", txn);
+
+      return firstMatchId;
+    }) as unknown as () => void;
+
+    try {
+      const firstMatchId = tx();
+
+      if (firstMatchId === undefined) {
+        throw new Error("Не удалось определить ID первого матча");
+      }
+
+      const firstMatch = matchRepo.getById(firstMatchId);
+      const participants =
+        tournamentPlayerRepo.getPlayersByTournament(tournament_id);
+
+      const response: StartTournamentResponse = {
+        match_id: firstMatch?.id,
+        player_1: firstMatch?.player_1,
+        player_2: firstMatch?.player_2,
+        participants,
+        status: "in_progress",
+      };
+
+      return reply.status(200).send(response);
+    } catch (err) {
+      app.log.error(err);
+      return reply.status(500).send({ message: "Failed to start tournament" });
+    }
+  });
+}
