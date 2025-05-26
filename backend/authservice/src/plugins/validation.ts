@@ -15,6 +15,7 @@ import login2faEnableResponseSchema from "../schemas/login2faEnableResponseSchem
 import {logoutRequestSchema, logoutResponseSchema} from "../schemas/logoutSchemas";
 import {refreshRequestSchema, refreshResponseSchema} from "../schemas/refreshSchemas";
 import internalRevokeTokenRequestSchema from "../schemas/internalRevokeTokenRequestSchema";
+import login2faVerifyResponseSchema from "../schemas/login2faVerifyResponseSchema";
 
 
 // Helper to add schemas to both Ajv and Fastify
@@ -44,5 +45,6 @@ export default fp(async (app) => {
 	addSchema(app, ajv, refreshRequestSchema);
 	addSchema(app, ajv, refreshResponseSchema);
 	addSchema(app, ajv, internalRevokeTokenRequestSchema);
+	addSchema(app, ajv, login2faVerifyResponseSchema);
 	app.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 });
