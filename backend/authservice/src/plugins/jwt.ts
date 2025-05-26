@@ -5,7 +5,6 @@ import { FastifyInstance } from 'fastify';
 export default fp(async (app: FastifyInstance) => {
 	app.register(fastifyJwt, {
 		secret: app.config.JWT_SECRET,       // provided by env plugin
-		sign: { expiresIn: '15m' }
 	});
 	
 	app.decorate('authenticate', async (request) => {
