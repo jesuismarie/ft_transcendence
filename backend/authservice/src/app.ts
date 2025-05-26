@@ -23,6 +23,7 @@ import oauthGoogle from "./plugins/oauth-google";
 const buildServer = () => {
 	const app:FastifyInstance = Fastify({ logger: true });
 	
+	// Register plugins
 	app.register(envPlugin);
 	app.register(errorEnvelope);
 	app.register(validationPlugin);
@@ -30,14 +31,43 @@ const buildServer = () => {
 	app.register(jwtPlugin);
 	app.register(userserviceClient);
 	app.register(oauthGoogle);
-	app.register(helmet);
-	app.register(rateLimit, { max: 10, timeWindow: '1 minute' });
+	
+	// Security and performance plugins
+	app.register(helmet, {
+		crossOriginOpenerPolicy: { policy: 'same-origin' }
+	});
+	// Rate limiting to prevent abuse
+	app.register(rateLimit, {
+		max: 10, // Limit each IP to 10 requests per minute
+		timeWindow: '1 minute', // Time window for the limit
+		ban: 2, // Ban IPs after 2 violations
+		keyGenerator: (req) => req.ip
+	});
 	
 	// Register routes
 	app.register(healthRoute);
 	app.register(registerRoutes);
 	app.register(authRoutes);
 	
+	
+	// Handle 404 Not Found
+	app.setNotFoundHandler((_req, reply) =>
+		reply.status(404).send({ status: 'error', code: 'NOT_FOUND', message: 'Route not found' })
+	);
+	
+	// Global error handler
+	app.setErrorHandler((err, _req, reply) => {
+		// Hide stack traces in production
+		const isProd = process.env.NODE_ENV === 'production';
+		if (!isProd) app.log.error(err);
+		
+		const status = err.statusCode ?? 500;
+		reply.status(status).send({
+			status: 'error',
+			code: (err as any).code ?? 'INTERNAL',
+			message: isProd && status === 500 ? 'Internal server error' : err.message
+		});
+	});
 	return app;
 };
 
