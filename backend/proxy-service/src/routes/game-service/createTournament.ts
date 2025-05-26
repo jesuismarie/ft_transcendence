@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import axios from "axios";
+import { microserviceRequestHandler } from "../helpers";
 import { services } from "../../config";
 import { createTournamentSchema } from "./schemas";
 
@@ -18,33 +18,11 @@ export default async function createTournamentRoute(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      try {
-        const response = await axios.post(
-          `${services.gameService}/create-tournament`,
-          request.body
-        );
-
-        reply.send(response.data);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          app.log.error(`Microservice request error: ${error.message}`);
-
-          if (error.response) {
-            reply.sendError({
-              statusCode: error.response.status,
-              message: error.response.data?.message || "Microservice error",
-            });
-          }
-        } else {
-          app.log.error(
-            `Requst error: ${services.gameService}/create-tournament: internal server error`
-          );
-          reply.sendError({
-            statusCode: 500,
-            message: "Internal Server Error",
-          });
-        }
-      }
+      await microserviceRequestHandler(app, request, reply, {
+        method: "POST",
+        url: `${services.gameService}/create-tournament`,
+        data: request.body,
+      });
     }
   );
 }

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import axios from "axios";
 import { services } from "../../config";
+import { microserviceRequestHandler } from "../helpers";
 import { getTournamentParticipantsSchema } from "./schemas";
 
 interface GetTournamentParticipantsQuery {
@@ -18,35 +18,11 @@ export default async function getTournamentParticipantsRoute(
       },
     },
     async (request, reply) => {
-      try {
-        const response = await axios.get(
-          `${services.gameService}/get-tournament-participants`,
-          {
-            params: request.query as GetTournamentParticipantsQuery,
-          }
-        );
-
-        reply.send(response.data);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          app.log.error(`Microservice request error: ${error.message}`);
-
-          if (error.response) {
-            reply.sendError({
-              statusCode: error.response.status,
-              message: error.response.data?.message || "Microservice error",
-            });
-          }
-        } else {
-          app.log.error(
-            `Requst error: ${services.gameService}/get-tournament-participants: internal server error`
-          );
-          reply.sendError({
-            statusCode: 500,
-            message: "Internal Server Error",
-          });
-        }
-      }
+      await microserviceRequestHandler(app, request, reply, {
+        method: "GET",
+        url: `${services.gameService}/get-tournament-participants`,
+        params: request.query as GetTournamentParticipantsQuery,
+      });
     }
   );
 }

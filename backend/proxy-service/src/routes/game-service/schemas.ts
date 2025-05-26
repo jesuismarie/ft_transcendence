@@ -24,3 +24,21 @@ export const getTournamentParticipantsSchema = {
     id: { type: "number" },
   },
 };
+
+export const getTournamentsInfoSchema = {
+  type: "object",
+  properties: {
+    limit: { type: "number", default: 50 },
+    offset: { type: "number", default: 0 },
+  },
+};
+
+export const registerToTournamentSchema = {
+  type: "object",
+  required: ["username", "tournament_id"],
+  properties: {
+    username: { type: "string" },
+    tournament_id: { type: "number" },
+  },
+  additionalProperties: false,
+};
