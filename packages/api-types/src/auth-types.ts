@@ -44,6 +44,14 @@ export interface InternalRevokeTokenRequest {
 	tokenId: string;
 }
 
+export interface InternalVerifyTokenRequest {
+	token: string;  // JWT access token
+}
+
+export interface InternalVerifyTokenResponse {
+	userId: number;
+	username: string;
+}
 
 export interface TwoFAVerifyRequest {
 	otp: string;          // "123456"
