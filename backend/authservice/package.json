@@ -26,7 +26,8 @@
 		"speakeasy": "^2.0.0",
 		"ts-node": "^10.9.2",
 		"@fastify/env": "^5.0.2",
-		"undici": "^6.21.3"
+		"undici": "^6.21.3",
+		"qrcode": "^1.5.4"
 	},
 	"devDependencies": {
 		"prisma": "^6.8.2",
