@@ -16,7 +16,7 @@ app.register(matchRoutes)
 app.register(tournamentRoutes)
 
 
-app.listen({ port: 3000 }, (err) => {
+app.listen({ port: 5001 }, (err) => {
   if (err) {
     app.log.error(err);
     process.exit(1);

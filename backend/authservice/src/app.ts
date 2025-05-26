@@ -74,7 +74,7 @@ const buildServer = () => {
 // Start the server if launched as a standalone application
 if (require.main === module) {
 	const server = buildServer();
-	server.listen({ port: 3000, host: '0.0.0.0' }).catch((err) => {
+	server.listen({ port: 5000, host: 'localhost' }).catch((err) => {
 		server.log.error(err);
 		process.exit(1);
 	});
