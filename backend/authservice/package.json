@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "ts-node-dev --respawn --pretty src/app.ts",
 		"build": "tsc --build",
-		"start": "node dist/app.js",
+		"start:prod": "node dist/app.js",
 		"migrate": "npx prisma migrate dev",
 		"migrate:deploy": "npx prisma migrate deploy",
 		"generate": "npx prisma generate",
