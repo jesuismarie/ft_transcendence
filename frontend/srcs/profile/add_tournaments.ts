@@ -50,7 +50,7 @@ async function fetchAddTournament(
 		return ;
 	}
 	try {
-		const response = await fetch("/api/tournaments", {
+		const response = await fetch("/create-tournament", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -60,20 +60,38 @@ async function fetchAddTournament(
 				name,
 				capacity,
 			}),
+			credentials: "include",
 		});
 
-		if (!response.ok) {
+		if (!response.ok)
 			throw new Error(`Server responded with status ${response.status}`);
-		}
 		hideModal("add-tournament-modal");
 	} catch (err) {
 		console.error("Error adding tournament:", err);
-		showError("tournament1", "Faild to add tournament. Please try again.");
+		showError("tournament1", "Failed to add tournament. Please try again.");
 	}
 	nameInput.value = "";
 	capacityInput.selectedIndex = 0;
 }
 
-// function deleteTournament() {
-	
-// }
+async function deleteTournament(id: number, createdBy: string) {
+	try {
+		const response = await fetch('/delete-tournament', {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				tournament_id: id,
+				created_by: createdBy
+			}),
+			credentials: "include"
+		});
+		
+		if (!response.ok)
+			throw new Error(`Server responded with status ${response.status}`);
+	} catch (err) {
+		console.error("Error deleting tournament:", err);
+		showError("tournament1", "Failed to delete tournament. Please try again.");
+	}
+}

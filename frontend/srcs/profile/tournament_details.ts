@@ -45,7 +45,7 @@ function updateTournamentUI(tournaments: TournamentInfo[], username: string | nu
 					<div align="right">
 						${isCreator ? `
 							<button data-id="${tournament.id}" class="start-tournament-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full bg-hover text-white">Start</button>
-							<button data-id="${tournament.id}" class="start-tournament-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full bg-hover text-white">Delete</button>
+							<button data-id="${tournament.id}" onclick="deleteTournament(${tournament.id}, ${username})" class="start-tournament-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full bg-hover text-white">Delete</button>
 						` : ""}
 						<button data-id="${tournament.id}" class="register-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full ${regBtnClass}">
 							${regBtnText}
