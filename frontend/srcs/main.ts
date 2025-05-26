@@ -1,9 +1,14 @@
 const mainWrapper = document.getElementById("wrapper") as HTMLElement | null;
 
+function getCurrentUserId(): number {
+	return Number(localStorage.getItem("currentUserId"));
+}
+
 function getCurrentUser(): string | null {
 	return localStorage.getItem("currentUser");
 }
 
+const currentUserId = getCurrentUserId();
 const currentUser = getCurrentUser();
 
 function loadTemplate(templateId: string, title: string) {
@@ -55,7 +60,7 @@ function loadProfilePage(username: string | null = null) {
 		}
 	}
 	loadTemplate("profile-template", "Pong Profile");
-	initPersonalData(username ?? getCurrentUser());
+	initPersonalData(currentUserId);
 }
 
 const routes: { [key: string]: () => void } = {

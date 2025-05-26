@@ -1,84 +1,121 @@
-interface UserProfile {
-	id: number;
-	username: string;
-	email: string;
-	wins: number;
-	losses: number;
-	avatar?: string | null;
+interface PaginationInfo {
+	pageInfo:		HTMLElement;
+	paginatioBtns:	HTMLElement;
+	prevPageBtn:	HTMLButtonElement;
+	nextPageBtn:	HTMLButtonElement;
+}
+
+interface ModalInfo {
+	previewContainer?:	HTMLElement;
+	openModalBtn:		HTMLButtonElement;
+	listContainer?:		HTMLElement;
+	closeModalBtn:		HTMLButtonElement;
+	saveBtn?:			HTMLButtonElement;
+}
+
+interface EditProfileElements {
+	usernameInput:			HTMLInputElement;
+	emailInput:				HTMLInputElement;
+	oldPasswordInput:		HTMLInputElement;
+	passwordInput:			HTMLInputElement;
+	confirmPasswordInput:	HTMLInputElement;
+}
+
+interface AvatarElements {
+	uploadBtn: HTMLButtonElement;
+	fileInput: HTMLInputElement;
+	avatarImage: HTMLImageElement;
+}
+
+const ALLOWED_IMAGE_TYPES = [
+	'image/jpeg',
+	'image/jpg',
+	'image/png',
+	'image/gif',
+	'image/webp'
+] as const;
+
+
+
+// API Types
+interface User {
+	id:			number;
+	username:	string;
+	email:		string;
+	wins:		number;
+	losses:		number;
+	avatar?:	string | null;
+}
+
+interface PatchUserRequest {
+	displayName?:	string;
+	email?:			string;
+}
+
+interface ChangePasswordRequest {
+	currentPwd:	string;
+	newPwd:		string;
 }
 
 interface SearchUserResponse {
-	users: UserProfile[];
-	total: number;
+	totalCount:	number;
+	users:		User[];
 }
 
 interface Friend {
-	id: number;
-	username: string;
-	avatar?: string | null;
+	id:			number;
+	username:	string;
+	avatar?:	string | null;
 }
 
 interface FriendResponse {
-	total: number;
-	friends: Friend[];
+	totalCount:		number;
+	friends:		Friend[];
 }
 
-interface FriendRequest {
-	id: number;
-	fromUser: {
-		id: number;
-		username: string;
-		avatar?: string | null;
-	};
+interface GetMatchHistoryResponse {
+	totalCount:	number;
+	matches:	MatchHistory[];
 }
 
-interface Match {
-	id: number;
-	opponent: {
-		id: number;
-		username: string;
-	};
-	status: "Win" | "Loss" | "Draw";
+interface MatchHistory {
+	id: 			number;
+	opponent:		string;
+	status:			number;
+	is_won:			boolean;
 	score: {
-		user: number;
-		opponent: number;
+		user:		number;
+		opponent:	number;
 	};
-	date: string;
+	date:			string;
 }
 
-interface MatchResponse {
-	total: number;
-	matches: Match[];
+interface GetTournamentsInfoResponse {
+	totalCount:	number;
+	tournament:	TournamentInfo[];
 }
 
-interface Tournament {
-	id: number;
-	name: string;
-	created_by: string;
-	max_players_count: number;
-	current_players_count: number;
-	status: "created" | "in_progress" | "ended" | "error";
-	participants: string[];
+interface TournamentInfo {
+	id:						number;
+	name:					string;
+	created_by:				string;
+	max_players_count:		number;
+	current_players_count:	number;
+	status:					string;
+	participants:			string[];
 }
 
-interface TournamentResponse {
-	total: number;
-	tournament: Tournament[];
+interface RegisterRequest {
+	email:		string;
+	username:	string;
+	password:	string;
 }
 
-interface TournamentParticipant {
-	id: number;
-	username: string;
-	avatar?: string | null;
+interface LoginRequest {
+	email:		string;
+	password:	string;
 }
 
-interface RegistrationFormData {
-	username: string;
-	email: string;
-	password: string;
-}
+// Tournament status
 
-interface LoginFormData {
-	username: string;
-	password: string;
-}
+// Error message

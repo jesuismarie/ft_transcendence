@@ -2,104 +2,138 @@ const MATCHS_LIMIT = 10;
 let currentMatchOffset = 0;
 let totalMatchResults = 0;
 
-function viewMatches(username: string | null = null) {
-	const previewContainer = document.getElementById("matches-preview") as HTMLElement | null;
-	const modalListContainer = document.getElementById("match-modal-list") as HTMLElement | null;
-	const viewAllBtn = document.getElementById("match-list-btn") as HTMLButtonElement | null;
-	const closeModalBtn = document.getElementById("close-matches-modal") as HTMLButtonElement | null;
-	const prevPageBtn = document.getElementById("prev-matches-page") as HTMLButtonElement | null;
-	const nextPageBtn = document.getElementById("next-matches-page") as HTMLButtonElement | null;
-	const pageInfo = document.getElementById("match-page-info") as HTMLElement | null;
-	const paginatioBtns = document.getElementById("match-pagination") as HTMLButtonElement | null;
-
-	if (!previewContainer || !modalListContainer || !viewAllBtn || !closeModalBtn || !prevPageBtn || !nextPageBtn || !pageInfo || !paginatioBtns) {
-		console.error("One or more required elements are missing in the DOM.");
+function viewMatches(id: number, username: string | null) {
+	const elements = getMatchElements();
+	if (!elements)
 		return;
-	}
 
-	const renderMatchItem = (match: Match): string => {
-		return `
+	const { modalInfo, paginationInfo } = elements;
+
+	addModalEvents(modalInfo, "matches-modal");
+	addMatchPaginationEvents(username, paginationInfo, modalInfo);
+	fetchMatchList(username, currentMatchOffset, modalInfo, paginationInfo);
+}
+
+function getMatchElements(): {
+	modalInfo: ModalInfo;
+	paginationInfo: PaginationInfo;
+} | null {
+	const previewContainer = document.getElementById("matches-preview") as HTMLElement;
+	const listContainer = document.getElementById("match-modal-list") as HTMLElement;
+	const openModalBtn = document.getElementById("match-list-btn") as HTMLButtonElement;
+	const closeModalBtn = document.getElementById("close-matches-modal") as HTMLButtonElement;
+	const prevPageBtn = document.getElementById("prev-matches-page") as HTMLButtonElement;
+	const nextPageBtn = document.getElementById("next-matches-page") as HTMLButtonElement;
+	const pageInfo = document.getElementById("match-page-info") as HTMLElement;
+	const paginatioBtns = document.getElementById("match-pagination") as HTMLElement;
+
+	if (!previewContainer || !listContainer || !openModalBtn || !closeModalBtn || !prevPageBtn || !nextPageBtn || !pageInfo || !paginatioBtns)
+		return null;
+
+	return {
+		modalInfo: {
+			previewContainer,
+			openModalBtn,
+			listContainer,
+			closeModalBtn,
+		},
+		paginationInfo: {
+			pageInfo,
+			paginatioBtns,
+			prevPageBtn,
+			nextPageBtn,
+		}
+	};
+}
+
+function renderMatchItem(match: MatchHistory, username: string | null): string {
+	return `
 		<div class="px-4 py-3 shadow-sm hover:bg-gray-50 transition duration-300">
 			<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
 				<div class="text-lg font-semibold text-gray-800 flex items-center flex-wrap gap-2 sm:gap-4">
-					<span >${username}</span>
+					<span>${username}</span>
 					<span class="font-normal">vs</span>
-					<span >${match.opponent.username}</span>
+					<span>${match.opponent}</span>
 					<span class="ml-auto px-3 py-1 text-xs font-semibold rounded-full
-						${match.status === 'Win' ? 'bg-green-100 text-green-800' : match.status === 'Draw' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} shadow-sm">
-						${match.status}
+						${match.is_won === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} shadow-sm">
+						${match.is_won ? "Win" : "Lose"}
 					</span>
 				</div>
 				<div class="mt-2 sm:mt-0 text-sm text-gray-500 text-right">
-					<div class="font-medium text-gray-700">${match.score.user} - ${match.score.opponent}</div>
+					<div class="font-semibold text-lg text-gray-700">${match.score.user} - ${match.score.opponent}</div>
 					<div>${match.date}</div>
 				</div>
 			</div>
 		</div>
+	`;
+}
 
-		`;
-	};
+function renderMatchResults(data: GetMatchHistoryResponse, modalInfo: ModalInfo, offset: number, username: string | null) {
+	if (data.totalCount === 0 && modalInfo.previewContainer) {
+		modalInfo.previewContainer.innerHTML = `<p class="text-gray-500 p-4">No matches yet.</p>`;
+		return;
+	}
 
-	const loadMatchList = async (offset: number = 0) => {
-		try {
-			const res = await fetch(`/api/matches?offset=${offset}&limit=${MATCHS_LIMIT}`);
-			if (!res.ok)
-				throw new Error("Failed to fetch matches");
+	if (offset === 0 && modalInfo.previewContainer) {
+		modalInfo.previewContainer.innerHTML = "";
+		const previewMatches = data.matches.slice(0, 5);
+		previewMatches.forEach(match => {
+			modalInfo.previewContainer!.insertAdjacentHTML("beforeend", renderMatchItem(match, username));
+		});
+	}
 
-			const data: MatchResponse = await res.json();
-			if (data.total === 0) {
-				previewContainer.innerHTML = `<p class="text-gray-500 p-4">No matches yet.</p>`;
-				return ;
-			}
-			if (currentMatchOffset === 0)
-			{
-				previewContainer.innerHTML = "";
-				const previewMathes = data.matches.slice(0, 5);
-				previewMathes.forEach(match => {
-					previewContainer.insertAdjacentHTML("beforeend", renderMatchItem(match));
-				});
-			}
+	if (data.totalCount > 5)
+		modalInfo.openModalBtn.classList.remove("hidden");
+	if (modalInfo.listContainer)
+		modalInfo.listContainer.innerHTML = data.matches.map(match => renderMatchItem(match, username)).join("");
+}
 
-			if (data.total > 5)
-				viewAllBtn.classList.remove("hidden");
-			modalListContainer.innerHTML = data.matches.map(renderMatchItem).join("");
-			totalMatchResults = data.total;
-			currentMatchOffset = offset;
+async function fetchMatchList(
+	username: string | null,
+	offset: number,
+	modalInfo: ModalInfo,
+	paginationInfo: PaginationInfo
+) {
+	try {
+		const res = await fetch(`/get-match-history-by-user?username${username}offset=${offset}&limit=${MATCHS_LIMIT}`);
+		if (!res.ok)
+			throw new Error("Failed to fetch matches");
 
-			const totalPages = Math.ceil(totalMatchResults / MATCHS_LIMIT);
-			const currentPage = Math.floor(offset / MATCHS_LIMIT) + 1;
-			pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+		const data: GetMatchHistoryResponse = await res.json();
 
-			prevPageBtn.disabled = offset === 0;
-			nextPageBtn.disabled = offset + MATCHS_LIMIT >= totalMatchResults;
+		renderMatchResults(data, modalInfo, offset, username);
+		totalMatchResults = data.totalCount;
+		currentMatchOffset = offset;
 
-			if (data.total > MATCHS_LIMIT) {
-				paginatioBtns.classList.remove("hidden");
-			}
-		} catch (err) {
-			console.error("Error loading matches:", err);
-			modalListContainer.innerHTML = `<p class="text-red-500 p-4">Failed to load matches list.</p>`;
+		updatePaginationControls(paginationInfo, totalMatchResults, currentMatchOffset, MATCHS_LIMIT);
+
+		if (data.totalCount > MATCHS_LIMIT) {
+			paginationInfo.paginatioBtns.classList.remove("hidden");
+		} else {
+			paginationInfo.paginatioBtns.classList.add("hidden");
 		}
-	};
+	} catch (err) {
+		console.error("Error loading matches:", err);
+		if (modalInfo.listContainer)
+			modalInfo.listContainer.innerHTML = `<p class="text-red-500 p-4">Failed to load matches list.</p>`;
+	}
+}
 
-	prevPageBtn.onclick = () => {
+function addMatchPaginationEvents(
+	username: string | null,
+	paginationInfo: PaginationInfo,
+	modalInfo: ModalInfo
+) {
+	paginationInfo.prevPageBtn.onclick = () => {
 		if (currentMatchOffset >= MATCHS_LIMIT) {
-			loadMatchList(currentMatchOffset - MATCHS_LIMIT);
+			fetchMatchList(username, currentMatchOffset - MATCHS_LIMIT, modalInfo, paginationInfo);
 		}
 	};
 
-	nextPageBtn.onclick = () => {
+	paginationInfo.nextPageBtn.onclick = () => {
 		if (currentMatchOffset + MATCHS_LIMIT < totalMatchResults) {
-			loadMatchList(currentMatchOffset + MATCHS_LIMIT);
+			fetchMatchList(username, currentMatchOffset + MATCHS_LIMIT, modalInfo, paginationInfo);
 		}
-	};
-
-	viewAllBtn.onclick = () => {
-		showModal("matches-modal");
-	};
-	loadMatchList(currentMatchOffset);
-
-	closeModalBtn.onclick = () => {
-		hideModal("matches-modal");
 	};
 }
+
