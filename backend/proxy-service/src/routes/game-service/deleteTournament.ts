@@ -1,27 +1,28 @@
 import type { FastifyInstance } from "fastify";
 import axios from "axios";
 import { services } from "../../config";
-import { createTournamentSchema } from "./schemas";
+import { deleteTournamentSchema } from "./schemas";
 
-export interface CreateTournamentRequestBody {
-  name: string;
-  max_players_count: number;
+interface DeleteTournamentRequestBody {
+  tournament_id: number;
   created_by: string;
 }
 
-export default async function createTournamentRoute(app: FastifyInstance) {
-  app.post<{ Body: CreateTournamentRequestBody }>(
-    "/game-service/create-tournament",
+export default async function deleteTournamentRoute(app: FastifyInstance) {
+  app.delete<{ Body: DeleteTournamentRequestBody }>(
+    "/game-service/delete-tournament",
     {
       schema: {
-        body: createTournamentSchema,
+        body: deleteTournamentSchema,
       },
     },
     async (request, reply) => {
       try {
-        const response = await axios.post(
-          `${services.gameService}/create-tournament`,
-          request.body
+        const response = await axios.delete(
+          `${services.gameService}/delete-tournament`,
+          {
+            data: request.body,
+          }
         );
 
         reply.send(response.data);
@@ -37,7 +38,7 @@ export default async function createTournamentRoute(app: FastifyInstance) {
           }
         } else {
           app.log.error(
-            `Requst error: ${services.gameService}/create-tournament: internal server error`
+            `Requst error: ${services.gameService}/delete-tournament: internal server error`
           );
           reply.sendError({
             statusCode: 500,
