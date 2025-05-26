@@ -1,361 +1,494 @@
-# Game Service
+# Game Service API
 
-The `game-service` is a backend service for managing tournaments, matches, and player interactions in the Pong game. It is built using Fastify and SQLite, providing a lightweight and efficient solution for handling game-related operations.
-
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Setup](#setup)
-- [Database Schema](#database-schema)
-- [API Endpoints](#api-endpoints)
-  - [Tournament Routes](#tournament-routes)
-  - [Match Routes](#match-routes)
-  - [Match Invitation Routes](#match-invitation-routes)
-- [Logic Overview](#logic-overview)
-- [Development](#development)
-- [License](#license)
+Game Service предоставляет API для управления турнирами и матчами. Ниже описаны основные ручки, их контракты, примеры запросов и ответов.
 
 ---
 
-## Features
+## 1. Create Tournament
 
-- Create, start, and manage tournaments.
-- Register and unregister players from tournaments.
-- Handle match creation and history retrieval.
-- Manage match invitations between players.
-- SQLite database for persistent storage.
+### **POST** `/create-tournament`
+
+Создает новый турнир.
+
+### Request Body
+
+```json
+{
+  "name": "string",
+  "max_players_count": 4,
+  "created_by": "string"
+}
+```
+
+### Response
+
+- **201 Created**
+
+```json
+{
+  "message": "Tournament created successfully",
+  "tournament_id": 1,
+  "name": "Tournament Name"
+}
+```
+
+- **400 Bad Request**
+
+```json
+{ "message": "Tournament name is required" }
+```
+
+```json
+{ "message": "max_players_count must be one of the following: 2, 4, 8, 16" }
+```
+
+```json
+{
+  "message": "Creator is already registered in another active tournament and cannot create a new one."
+}
+```
+
+```json
+{
+  "message": "A tournament created by this user already exists in 'created' or 'in_progress' status."
+}
+```
+
+- **500 Internal Server Error**
+
+```json
+{ "message": "Error creating tournament" }
+```
 
 ---
 
-## Setup
+## 2. Delete Tournament
 
-### Prerequisites
+### **DELETE** `/delete-tournament`
 
-- Node.js (v16 or higher)
-- npm (v8 or higher)
+Удаляет турнир.
 
-### Installation
+### Request Body
 
-1. Clone the repository:
+```json
+{
+  "tournament_id": 1,
+  "created_by": "string"
+}
+```
 
-   ```bash
-   git clone <repository-url>
-   cd backend/game-service
-   ```
+### Response
 
-2. Install dependencies:
+- **200 OK**
 
-   ```bash
-   npm install
-   ```
+```json
+{ "message": "Tournament deleted successfully" }
+```
 
-3. Set up the database:
+- **400 Bad Request**
 
-   - The database is automatically initialized on service startup.
-   - By default, the SQLite database is stored in `data/users.db`.
+```json
+{ "message": "Invalid tournament_id" }
+```
 
-4. Start the development server:
+```json
+{ "message": "Only tournaments with status 'created' can be deleted" }
+```
 
-   ```bash
-   npm run dev
-   ```
+```json
+{ "message": "Only the tournament creator can delete the tournament" }
+```
 
-5. Access the service at `http://localhost:3000`.
+- **404 Not Found**
 
----
-
-## Database Schema
-
-The database consists of the following tables:
-
-1. **tournament**: Stores tournament details.
-2. **tournament_player**: Tracks players registered in tournaments.
-3. **match**: Stores match details, including scores and statuses.
-4. **match_invitation_request**: Handles match invitations between players.
+```json
+{ "message": "Tournament not found" }
+```
 
 ---
 
-## API Endpoints
+## 3. Get Tournament Participants
 
-### Tournament Routes
+### **GET** `/get-tournament-participants`
 
-#### Create Tournament
+Возвращает участников турнира.
 
-- **Endpoint**: `POST /create-tournament`
-- **Request Body**:
-  ```json
-  {
-    "name": "Tournament Name",
-    "max_players_count": 8,
-    "created_by": 1
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "message": "Tournament created successfully",
-    "tournament_id": 1,
-    "name": "Tournament Name"
-  }
-  ```
+### Query Parameters
 
-#### Start Tournament
+```json
+{ "id": 1 }
+```
 
-- **Endpoint**: `POST /start-tournament`
-- **Request Body**:
-  ```json
-  {
-    "tournament_id": 1
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "message": "Tournament started"
-  }
-  ```
+### Response
 
-#### Get Tournaments Info
+- **200 OK**
 
-- **Endpoint**: `POST /get-tournaments-info`
-- **Request Body**:
-  ```json
-  {
-    "tournament_id": 1
-  }
-  ```
-- **Response**:
-  ```json
-  [
+```json
+{
+  "maxPlayersCount": 4,
+  "currentPlayersCount": 2,
+  "participants": ["player1", "player2"]
+}
+```
+
+- **400 Bad Request**
+
+```json
+{ "message": "Invalid tournament ID" }
+```
+
+- **404 Not Found**
+
+```json
+{ "message": "Tournament not found" }
+```
+
+- **500 Internal Server Error**
+
+```json
+{ "message": "Failed to fetch participants" }
+```
+
+---
+
+## 4. Get Tournaments Info
+
+### **GET** `/get-tournaments-info`
+
+Возвращает информацию о турнирах.
+
+### Query Parameters
+
+```json
+{ "limit": 10, "offset": 0 }
+```
+
+### Response
+
+- **200 OK**
+
+```json
+{
+  "totalCount": 2,
+  "tournaments": [
     {
       "id": 1,
-      "name": "Tournament Name",
-      "created_by": 1,
-      "max_players_count": 8,
-      "current_players_count": 8,
-      "status": "in_progress",
-      "participants": [1, 2, 3, 4]
+      "name": "Tournament 1",
+      "created_by": "user1",
+      "max_players_count": 4,
+      "current_players_count": 2,
+      "status": "created",
+      "participants": ["player1", "player2"]
     }
   ]
-  ```
+}
+```
 
-#### Register to Tournament
+- **500 Internal Server Error**
 
-- **Endpoint**: `POST /register-to-tournament`
-- **Request Body**:
-  ```json
-  {
-    "user_id": 2,
-    "tournament_id": 1
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "message": "User registered to tournament"
-  }
-  ```
-
-#### Unregister from Tournament
-
-- **Endpoint**: `POST /unregister-from-tournament`
-- **Request Body**:
-  ```json
-  {
-    "user_id": 2,
-    "tournament_id": 1
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "message": "User unregistered from tournament"
-  }
-  ```
-
-#### Delete Tournament
-
-- **Endpoint**: `DELETE /delete-tournament`
-- **Request Body**:
-  ```json
-  {
-    "tournament_id": 1
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "message": "Tournament deleted successfully"
-  }
-  ```
+```json
+{ "message": "Failed to fetch tournaments info" }
+```
 
 ---
 
-### Match Routes
+## 5. Register to Tournament
 
-#### Create Match
+### **POST** `/register-to-tournament`
 
-- **Endpoint**: `POST /create-match`
-- **Request Body**:
-  ```json
-  {
-    "player_1": 1,
-    "player_2": 2,
-    "tournament_id": 1,
-    "group_id": 1,
-    "game_level": 1
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "message": "Tournament match created"
-  }
-  ```
+Регистрирует игрока в турнире.
 
-#### Get Match History by User
+### Request Body
 
-- **Endpoint**: `POST /get-match-history-by-user`
-- **Request Body**:
-  ```json
-  {
-    "user_id": 1,
-    "limit": 10,
-    "offset": 0
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "totalCount": 5,
-    "matches": [
-      {
-        "id": 1,
-        "opponent": 2,
-        "status": "ended",
-        "is_won": true,
-        "score": {
-          "user": 10,
-          "opponent": 5
-        },
-        "date": "2023-10-01T12:00:00Z"
-      }
-    ]
-  }
-  ```
+```json
+{
+  "username": "string",
+  "tournament_id": 1
+}
+```
 
-#### Get Tournament Match History
+### Response
 
-- **Endpoint**: `POST /get-tournament-match-history`
-- **Request Body**:
-  ```json
-  {
-    "tournament_id": 1,
-    "limit": 10,
-    "offset": 0,
-    "statuses": ["ended"]
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "total_count": 3,
-    "matches": [
-      {
-        "id": 1,
-        "user1_id": 1,
-        "user2_id": 2,
-        "status": "ended",
-        "winner_id": 1,
-        "score": {
-          "score_1": 10,
-          "score_2": 5
-        },
-        "date": "2023-10-01T12:00:00Z"
-      }
-    ]
-  }
-  ```
+- **201 Created**
+
+```json
+{ "message": "User registered to tournament" }
+```
+
+- **400 Bad Request**
+
+```json
+{ "message": "Invalid username or tournament_id" }
+```
+
+```json
+{ "message": "User is already registered in another active tournament" }
+```
+
+- **500 Internal Server Error**
+
+```json
+{ "message": "Registration failed" }
+```
 
 ---
 
-### Match Invitation Routes
+## 6. Start Tournament
 
-#### Create Match Invitation
+### **POST** `/start-tournament`
 
-- **Endpoint**: `POST /create-match-invitation-request`
-- **Request Body**:
-  ```json
-  {
-    "user_id1": 1,
-    "user_id2": 2
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "message": "Match invitation request created"
-  }
-  ```
+Запускает турнир.
 
-#### Respond to Match Invitation
+### Request Body
 
-- **Endpoint**: `PATCH /respond-to-match-invitation-request`
-- **Request Body**:
-  ```json
-  {
-    "request_id": 1,
-    "is_accepted": true
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "message": "Invitation response recorded"
-  }
-  ```
+```json
+{
+  "tournament_id": 1,
+  "created_by": "string"
+}
+```
 
----
+### Response
 
-## Logic Overview
+- **200 OK**
 
-### Tournament Management
+```json
+{
+  "match_id": 1,
+  "player_1": "player1",
+  "player_2": "player2",
+  "participants": ["player1", "player2"],
+  "status": "in_progress"
+}
+```
 
-- Tournaments can only be started when the maximum number of players is reached.
-- Players can register or unregister from tournaments before they start.
-- The tournament creator is automatically registered upon creation.
+- **400 Bad Request**
 
-### Match Management
+```json
+{ "message": "Invalid tournament_id" }
+```
 
-- Matches can be created as part of a tournament or as friendly matches.
-- Tournament matches are grouped and follow a bracket system.
+```json
+{ "message": "Tournament already started" }
+```
 
-### Match Invitations
+```json
+{ "message": "Tournament is not full yet" }
+```
 
-- Players can send match invitations to other players.
-- Invitations can be accepted or rejected.
+- **403 Forbidden**
 
----
+```json
+{ "message": "Only the tournament creator can start the tournament" }
+```
 
-## Development
+- **404 Not Found**
 
-### Scripts
+```json
+{ "message": "Tournament not found" }
+```
 
-- **Start Development Server**: `npm run dev`
-- **Build for Production**: `npm run build`
-- **Start Production Server**: `npm start`
+- **500 Internal Server Error**
 
-### Folder Structure
-
-- `src/routes`: Contains API route handlers.
-- `src/repositories`: Handles database interactions.
-- `src/db`: Database initialization and schema definitions.
-- `src/types`: TypeScript type definitions.
+```json
+{ "message": "Failed to start tournament" }
+```
 
 ---
 
-## License
+## 7. Tournament Next Step
 
-This project is licensed under the MIT License.
+### **POST** `/tournament-next-step`
+
+Переходит к следующему этапу турнира.
+
+### Request Body
+
+```json
+{ "id": 1 }
+```
+
+### Response
+
+- **200 OK**
+
+```json
+{
+  "match_id": 2,
+  "player_1": "player3",
+  "player_2": "player4",
+  "participants": ["player1", "player2", "player3", "player4"],
+  "status": "in_progress"
+}
+```
+
+- **400 Bad Request**
+
+```json
+{ "message": "Invalid tournament_id" }
+```
+
+```json
+{ "message": "Match already in progress" }
+```
+
+```json
+{ "message": "Not all matches in the current level are finished" }
+```
+
+- **404 Not Found**
+
+```json
+{ "message": "Tournament not found" }
+```
+
+- **500 Internal Server Error**
+
+```json
+{ "message": "Failed to proceed to the next step" }
+```
+
+---
+
+## 8. Unregister from Tournament
+
+### **POST** `/unregister-from-tournament`
+
+Удаляет игрока из турнира.
+
+### Request Body
+
+```json
+{
+  "username": "string",
+  "tournament_id": 1
+}
+```
+
+### Response
+
+- **200 OK**
+
+```json
+{ "message": "User unregistered from tournament" }
+```
+
+- **400 Bad Request**
+
+```json
+{ "message": "Invalid username or tournament_id" }
+```
+
+```json
+{ "message": "Cannot unregister from a tournament that has already started" }
+```
+
+```json
+{ "message": "User is not registered in the tournament" }
+```
+
+- **500 Internal Server Error**
+
+```json
+{ "message": "Unregistration failed" }
+```
+
+---
+
+## 9. Get Match History by User
+
+### **GET** `/get-match-history-by-user`
+
+Возвращает историю матчей игрока.
+
+### Query Parameters
+
+```json
+{ "username": "string", "limit": 10, "offset": 0 }
+```
+
+### Response
+
+- **200 OK**
+
+```json
+{
+  "totalCount": 2,
+  "matches": [
+    {
+      "id": 1,
+      "opponent": "player2",
+      "status": "ended",
+      "is_won": true,
+      "score": { "user": 3, "opponent": 2 },
+      "date": "2023-10-01T12:00:00Z"
+    }
+  ]
+}
+```
+
+- **400 Bad Request**
+
+```json
+{ "message": "Invalid input parameters" }
+```
+
+- **500 Internal Server Error**
+
+```json
+{ "message": "Failed to fetch match history" }
+```
+
+---
+
+## 10. Save Match Result
+
+### **POST** `/save-match-result`
+
+Сохраняет результат матча.
+
+### Request Body
+
+```json
+{
+  "match_id": 1,
+  "winner": "player1",
+  "score": { "score_1": 3, "score_2": 2 }
+}
+```
+
+### Response
+
+- **200 OK**
+
+```json
+{ "message": "Match result saved successfully" }
+```
+
+- **400 Bad Request**
+
+```json
+{ "message": "Invalid input parameters" }
+```
+
+```json
+{ "message": "Match is not in progress" }
+```
+
+```json
+{ "message": "Invalid winner" }
+```
+
+- **404 Not Found**
+
+```json
+{ "message": "Match not found" }
+```
+
+- **500 Internal Server Error**
+
+```json
+{ "message": "Failed to save match result" }
+```
+
+---
