@@ -20,14 +20,14 @@ function unregisterFromTournament(tournamentId: number, username: string) {
 	});
 }
 
-function updateTournamentUI(tournaments: Tournament[], username: string | null) {
+function updateTournamentUI(tournaments: TournamentInfo[], username: string | null) {
 	const previewContainer = document.getElementById("tournament-preview");
 	const modalListContainer = document.getElementById("tournament-modal-list");
 
 	if (!previewContainer || !modalListContainer)
 		return;
 
-	const renderTournamentItem = (tournament: Tournament): string => {
+	const renderTournamentItem = (tournament: TournamentInfo): string => {
 		const isRegistered = tournament.participants.includes(username ?? "");
 		const isCreator = tournament.created_by === username;
 
@@ -43,11 +43,9 @@ function updateTournamentUI(tournaments: Tournament[], username: string | null) 
 						<p class="font-semibold">${tournament.name}</p>
 					</div>
 					<div align="right">
-						${isRegistered ? `
-							<button data-id="${tournament.id}" class="view-details-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full bg-gray-300">Join to Room</button>
-						` : ""}
 						${isCreator ? `
 							<button data-id="${tournament.id}" class="start-tournament-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full bg-hover text-white">Start</button>
+							<button data-id="${tournament.id}" class="start-tournament-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full bg-hover text-white">Delete</button>
 						` : ""}
 						<button data-id="${tournament.id}" class="register-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full ${regBtnClass}">
 							${regBtnText}
@@ -71,7 +69,7 @@ function updateTournamentUI(tournaments: Tournament[], username: string | null) 
 	handleTournamentRegistration(username, tournaments);
 }
 
-function handleTournamentRegistration(username: string | null, tournaments: Tournament[]) {
+function handleTournamentRegistration(username: string | null, tournaments: TournamentInfo[]) {
 	const registerButtons = document.querySelectorAll<HTMLButtonElement>(".register-btn");
 
 	registerButtons.forEach((button) => {
@@ -107,11 +105,15 @@ function handleTournamentRegistration(username: string | null, tournaments: Tour
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
-						tournament_id: tournamentId,
 						username,
+						tournament_id: tournamentId,
 					}),
 				});
-
+				// if (response.status === 400)
+				// {
+				// 	showError("tournament1", response.body.message || "Registration failed.");
+				// 	showError("tournament2", response.body.message || "Registration failed.");
+				// }
 				if (!response.ok) {
 					const err = await response.json();
 					showError("tournament1", err.message || "Registration failed.");

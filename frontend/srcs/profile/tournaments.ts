@@ -7,7 +7,7 @@ function initTournaments(username: string | null = null) {
 		return;
 	}
 
-	const tournaments: Tournament[] = [];
+	const tournaments: TournamentInfo[] = [];
 
 	if (tournaments.length === 0) {
 		const previewContainer = document.getElementById("tournament-preview");
