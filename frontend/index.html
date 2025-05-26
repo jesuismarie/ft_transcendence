@@ -40,12 +40,11 @@
 					<a href="#" class="w-9 h-9 grid place-items-center p-1 border border-gray-300 rounded-full hover:shadow-neon">
 						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
 					</a>
-					<span>or use your username password</span>
-					<input type="text" name="login_username" placeholder="Username"/>
-					<p class="error-msg text-red-500 text-sm" data-error-for="login_username"></p>
+					<span>or use your email password</span>
+					<input type="text" name="login_email" placeholder="Email"/>
+					<p class="error-msg text-red-500 text-sm" data-error-for="login_email"></p>
 					<input type="password" name="login_password" placeholder="Password"/>
 					<p class="error-msg text-red-500 text-sm" data-error-for="login_password"></p>
-					<a href="#">Forgot your password?</a>
 					<button type="submit">Sign In</button>
 				</form>
 			</div>
@@ -71,12 +70,12 @@
 					<span>or use your email for registration</span>
 					<input type="text" name="reg_username" placeholder="Username"/>
 					<p class="error-msg text-red-500 text-sm" data-error-for="reg_username"></p>
-					<input type="text" name="email" placeholder="Email"/>
-					<p class="error-msg text-red-500 text-sm" data-error-for="email"></p>
-					<input type="password" name="reg_assword" placeholder="Password"/>
+					<input type="text" name="reg_email" placeholder="Email"/>
+					<p class="error-msg text-red-500 text-sm" data-error-for="reg_email"></p>
+					<input type="password" name="reg_password" placeholder="Password"/>
 					<p class="error-msg text-red-500 text-sm" data-error-for="reg_password"></p>
-					<input type="password" name="confirm_password" placeholder="Confirm Password"/>
-					<p class="error-msg text-red-500 text-sm" data-error-for="confirm_password"></p>
+					<input type="password" name="reg_confirm_password" placeholder="Confirm Password"/>
+					<p class="error-msg text-red-500 text-sm" data-error-for="reg_confirm_password"></p>
 					<button type="submit">Sign Up</button>
 				</form>
 			</div>
@@ -237,17 +236,22 @@
 						<div>
 							<label for="edit-username" class="block text-sm font-medium">Username</label>
 							<input type="text" id="edit-username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-							<p class="error-msg text-red-500 text-sm" data-error-for="username"></p>
+							<p class="error-msg text-red-500 text-sm" data-error-for="edit_username"></p>
 						</div>
 						<div>
 							<label for="edit-email" class="block text-sm font-medium">Email</label>
 							<input type="email" id="edit-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-							<p class="error-msg text-red-500 text-sm" data-error-for="email"></p>
+							<p class="error-msg text-red-500 text-sm" data-error-for="edit_email"></p>
 						</div>
 						<div>
-							<label for="edit-password" class="block text-sm font-medium">Password</label>
+							<label for="edit-old-password" class="block text-sm font-medium">Old Password</label>
+							<input type="password" id="edit-old-password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+							<p class="error-msg text-red-500 text-sm" data-error-for="old_password"></p>
+						</div>
+						<div>
+							<label for="edit-password" class="block text-sm font-medium">New Password</label>
 							<input type="password" id="edit-password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-							<p class="error-msg text-red-500 text-sm" data-error-for="password"></p>
+							<p class="error-msg text-red-500 text-sm" data-error-for="new_password"></p>
 						</div>
 						<div>
 							<label for="edit-confirm-password" class="block text-sm font-medium">Confirm Password</label>
@@ -335,6 +339,7 @@
 					<div class="mt-4 space-y-4">
 						<label for="tournament-name" class="block text-sm font-medium">Tournament Name</label>
 						<input type="text" id="tournament-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+						<p class="error-msg text-red-500 text-sm" data-error-for="add_tournament"></p>
 						<label for="tournament-capacity" class="block text-sm font-medium text-gray-700">Tournament Capacity</label>
 						<select id="tournament-capacity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
 							<option value="2">2</option>
@@ -357,6 +362,7 @@
 	<script src="./dist/profile/login.js" defer></script>
 	<script src="./dist/profile/register.js" defer></script>
 	<script src="./dist/profile/profile.js" defer></script>
+	<script src="./dist/profile/avatar.js" defer></script>
 	<script src="./dist/profile/edit.js" defer></script>
 	<script src="./dist/profile/twofa.js" defer></script>
 	<script src="./dist/profile/search.js" defer></script>
@@ -370,5 +376,6 @@
 	<script src="./dist/utils/validation.js" defer></script>
 	<script src="./dist/utils/error_messages.js" defer></script>
 	<script src="./dist/utils/modal_utils.js" defer></script>
+	<script src="./dist/utils/pagination.js" defer></script>
 </body>
 </html>
