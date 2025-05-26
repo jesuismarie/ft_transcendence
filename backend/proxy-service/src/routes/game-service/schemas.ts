@@ -16,3 +16,11 @@ export const deleteTournamentSchema = {
     created_by: { type: "string" },
   },
 };
+
+export const getTournamentParticipantsSchema = {
+  type: "object",
+  required: ["id"],
+  properties: {
+    id: { type: "number" },
+  },
+};
