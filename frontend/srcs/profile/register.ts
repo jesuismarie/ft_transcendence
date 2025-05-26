@@ -6,16 +6,16 @@ function initRegistrationForm() {
 
 	registrationForm.addEventListener('submit', async (event: Event) => {
 		event.preventDefault();
-		clearErrors();
 
 		const formData = new FormData(registrationForm);
 
 		const username = (formData.get('reg_username') as string)?.trim();
-		const email = (formData.get('email') as string)?.trim();
-		const password = (formData.get('reg_assword') as string)?.trim();
-		const confirmPassword = (formData.get('confirm_password') as string)?.trim();
+		const email = (formData.get('reg_email') as string)?.trim();
+		const password = (formData.get('reg_password') as string)?.trim();
+		const confirmPassword = (formData.get('reg_confirm_password') as string)?.trim();
 
 		let hasError = false;
+		clearErrors();
 
 		if (!username) {
 			showError('reg_username', 'Username is required.');
@@ -26,10 +26,10 @@ function initRegistrationForm() {
 		}
 
 		if (!email) {
-			showError('email', 'Email is required.');
+			showError('reg_email', 'Email is required.');
 			hasError = true;
 		} else if (!isValidEmail(email)) {
-			showError('email', 'Invalid email address.');
+			showError('reg_email', 'Invalid email address.');
 			hasError = true;
 		}
 
@@ -39,7 +39,7 @@ function initRegistrationForm() {
 		}
 
 		if (!confirmPassword) {
-			showError('confirm_password', 'Please confirm your password.');
+			showError('reg_confirm_password', 'Please confirm your password.');
 			hasError = true;
 		}
 
@@ -50,7 +50,7 @@ function initRegistrationForm() {
 		}
 
 		if (password !== confirmPassword) {
-			showError('confirm_password', 'Passwords do not match.');
+			showError('reg_confirm_password', 'Passwords do not match.');
 			hasError = true;
 		}
 
@@ -63,14 +63,14 @@ function initRegistrationForm() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ username, email, password }),
+				body: JSON.stringify({ email, username, password }),
 			});
 
 			const result = await response.json();
 
 			if (!response.ok) {
 				console.error('Registration failed:', result);
-				showError('email', result?.message || 'Server error');
+				showError('reg_email', result?.message || 'Server error');
 				return;
 			}
 
@@ -78,7 +78,7 @@ function initRegistrationForm() {
 			// window.location.href = '/login';
 		} catch (error) {
 			console.error('Network error during registration:', error);
-			showError('email', 'Network or server error.');
+			showError('reg_email', 'Network or server error.');
 		}
 	});
 }

@@ -9,13 +9,17 @@ function initLoginForm() {
 		clearErrors();
 
 		const formData = new FormData(loginForm);
-		const username = (formData.get('login_username') as string)?.trim();
+		const email = (formData.get('login_email') as string)?.trim();
 		const password = (formData.get('login_password') as string)?.trim();
 
 		let hasError = false;
+		clearErrors();
 
-		if (!username) {
-			showError('login_username', 'Username is required.');
+		if (!email) {
+			showError('login_email', 'Email is required.');
+			hasError = true;
+		} else if (!isValidEmail(email)) {
+			showError('login_email', 'Invalid email format.');
 			hasError = true;
 		}
 
@@ -33,7 +37,7 @@ function initLoginForm() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ username, password }),
+				body: JSON.stringify({ email, password }),
 			});
 
 			const result = await response.json();
