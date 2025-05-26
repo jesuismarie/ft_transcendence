@@ -9,7 +9,7 @@
   },
   "scripts": {
     "tailwind": "tailwindcss -i ./public/css/styles.css -o ./dist/output.css --minify",
-    "dev": "npx tsc && npm run tailwind"
+    "build": "npx tsc && npm run tailwind"
   },
   "keywords": [],
   "author": "",

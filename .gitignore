@@ -9,4 +9,4 @@ public
 migrations
 *.db*
 *.tsbuildinfo
-
+package-lock.json

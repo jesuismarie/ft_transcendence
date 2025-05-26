@@ -1,4 +1,4 @@
-function initData(username: string | null = null, wins: number = 0, losses: number = 0) {
+function initData(user: User) {
 	const playerName = document.getElementById("player-name") as HTMLElement | null;
 	const playerWins = document.getElementById("player-wins") as HTMLElement | null;
 	const playerLosses = document.getElementById("player-losses") as HTMLElement | null;
@@ -9,9 +9,9 @@ function initData(username: string | null = null, wins: number = 0, losses: numb
 		return;
 	}
 
-	playerName.innerHTML = username || "Player";
-	playerWins.innerHTML = wins.toString();
-	playerLosses.innerHTML = losses.toString();
+	playerName.innerHTML = user.username || "Player";
+	playerWins.innerHTML = user.wins.toString();
+	playerLosses.innerHTML = user.losses.toString();
 	// onlineStatus.innerHTML = `
 	// <div class="w-2 h-2 bg-red-500 rounded-full inline-block mr-1"></div>
 	// <span class="text-red-500">Offline</span>
@@ -22,114 +22,62 @@ function initData(username: string | null = null, wins: number = 0, losses: numb
 	`;
 }
 
-function initAvatarUpload(username: string | null = null) {
-	const uploadBtn = document.getElementById("avatar-upload-btn");
-	const fileInput = document.getElementById("avatar-input") as HTMLInputElement | null;
-	const avatarImage = document.getElementById("avatar-image") as HTMLImageElement | null;
-
-	clearErrors();
-
-	if (!uploadBtn || !fileInput || !avatarImage)
-		return;
-
-	if (username !== "me") { // change cuttentUsername
-		uploadBtn.remove();
-		fileInput.remove();
-		return;
-	}
-
-	uploadBtn.addEventListener("click", () => {
-		fileInput?.click();
-	});
-
-	fileInput?.addEventListener("change", async () => {
-		if (!fileInput.files || fileInput.files.length === 0) return;
-		const file = fileInput.files[0];
-
-		if (!file.type.startsWith("image/")) {
-			showError("avatar", "Please select a valid image file.");
-			return;
-		}
-
-		const reader = new FileReader();
-		reader.onload = () => {
-			const result = reader.result as string;
-
-			if (!isValidAvatar(result)) {
-				showError("avatar", "Unsupported image format.");
-				return;
-			}
-
-			avatarImage.src = result;
-		};
-		reader.readAsDataURL(file);
-
-		const formData = new FormData();
-		formData.append("avatar", file);
-
-		try {
-			const res = await fetch("/api/upload-avatar", {
-				method: "POST",
-				body: formData,
-			});
-
-			if (!res.ok) {
-				throw new Error("Upload failed");
-			}
-
-			const data = await res.json();
-			console.log("Avatar uploaded:", data);
-		} catch (err) {
-			console.error("Avatar upload error:", err);
-			showError("avatar", "Failed to upload avatar. Please try again.");
-		}
-	});
-}
-
-async function initPersonalData(username: string | null = null) {
+async function initPersonalData(id: number) {
 	initWipeText();
-	searchUsers();
-	viewFriends(username);
-	viewMatches(username);
-	initData(username, 0, 0);
 
 	const editProfileBtn = document.getElementById("edit-profile-btn") as HTMLButtonElement | null;
 	const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLElement | null;
 	const friendRequestBtn = document.getElementById("friend-request-btn") as HTMLButtonElement | null;
-	const friendRequestListBtn = document.getElementById("friend-request-list-btn") as HTMLButtonElement | null;
 	const addTournamentPreviewBtn = document.getElementById("add-tournament-preview-btn") as HTMLButtonElement | null;
 
-	if (!editProfileBtn || !upcomingTournaments || !friendRequestBtn || !friendRequestListBtn || !addTournamentPreviewBtn) {
+	if (!editProfileBtn || !upcomingTournaments || !friendRequestBtn || !addTournamentPreviewBtn) {
 		console.error("One or more required elements are missing in the DOM.");
 		return;
 	}
 
 	try {
-		const currentUsername = getCurrentUser();
-		const targetUsername = username || currentUsername;
+		// const currentUserId = getCurrentUserId();
+		// const targetUserId = username || currentUserId;
 
-		if (!targetUsername) {
+		let currentUserId;
+		let targetUserId = id || currentUserId;
+		if (!targetUserId)
+			targetUserId = 1; // For testing purposes
+		currentUserId = 1; // For testing purposes
+		
+		if (!targetUserId)
 			throw new Error("Username is required to load user profile");
-		}
 
-		const res = await fetch(`/api/users/${targetUsername}`);
-		if (!res.ok)
-			throw new Error("Failed to load user profile");
-		const user: UserProfile = await res.json();
+		// const res = await fetch(`/users/${targetUserId}`);
+		// if (!res.ok)
+		// 	throw new Error("Failed to load user profile");
+		// const user: User = await res.json();
 
-		if (targetUsername === currentUsername) {
-			initAvatarUpload(targetUsername);
+		const user: User = {
+			id: 1,
+			username: "hello",
+			email: "hey@gmail.com",
+			wins: 10,
+			losses: 5,
+			avatar: "https://example.com/avatar.png",
+		};
+		searchUsers();
+		viewFriends(user.id);
+		viewMatches(user.id, user.username);
+		initData(user);
+
+		if (targetUserId === currentUserId) {
+			initAvatarUpload(targetUserId);
 			editProfileBtn.classList.remove("hidden");
 			editProfile(user);
-			upcomingTournaments.classList.remove("hidden");
-			initFriendRequests(targetUsername);
-			initTournaments(targetUsername);
+			// setup2FA();
+			// upcomingTournaments.classList.remove("hidden");
+			// initTournaments(targetUserId);
 			addTournament();
 		} else {
 			editProfileBtn.classList.add("hidden");
 			upcomingTournaments.classList.add("hidden");
 			friendRequestBtn.classList.remove("hidden");
-			friendRequestListBtn.classList.add("hidden");
 			addTournamentPreviewBtn.classList.add("hidden");
 		}
 	} catch (err) {

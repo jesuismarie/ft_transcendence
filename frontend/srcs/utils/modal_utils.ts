@@ -11,3 +11,12 @@ function hideModal(modalId: string) {
 		modal.classList.add("hidden");
 	}
 }
+
+function addModalEvents(modalInfo: ModalInfo, modalName: string) {
+	modalInfo.openModalBtn.addEventListener("click", () => {
+		showModal(modalName);
+	});
+	modalInfo.closeModalBtn.addEventListener("click", () => {
+		hideModal(modalName);
+	});
+}

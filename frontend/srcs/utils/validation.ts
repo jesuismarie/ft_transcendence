@@ -17,6 +17,6 @@ function isValidPassword(password: string): boolean {
 	);
 }
 
-function isValidAvatar(imgURL: string): boolean {
-	return /\.(jpe?g|png|gif|webp)$/i.test(imgURL);
+function isValidAvatar(dataUrl: string): boolean {
+	return /^data:image\/(jpe?g|png|gif|webp);base64,/.test(dataUrl);
 }
