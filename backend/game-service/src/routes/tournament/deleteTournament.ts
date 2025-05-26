@@ -5,6 +5,7 @@ import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
 
 interface DeleteTournamentRequestBody {
   tournament_id: number;
+  created_by: string; // Добавлено поле created_by
 }
 
 export default async function deleteTournamentRoute(app: FastifyInstance) {
@@ -13,10 +14,15 @@ export default async function deleteTournamentRoute(app: FastifyInstance) {
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
   app.delete("/delete-tournament", async (request, reply) => {
-    const { tournament_id } = request.body as DeleteTournamentRequestBody;
+    const { tournament_id, created_by } =
+      request.body as DeleteTournamentRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
       return reply.status(400).send({ message: "Invalid tournament_id" });
+    }
+
+    if (!created_by) {
+      return reply.status(400).send({ message: "Missing created_by field" });
     }
 
     try {
@@ -25,6 +31,12 @@ export default async function deleteTournamentRoute(app: FastifyInstance) {
 
         if (!tournament) {
           throw new Error("Tournament not found");
+        }
+
+        if (tournament.created_by !== created_by) {
+          throw new Error(
+            "Only the tournament creator can delete the tournament"
+          );
         }
 
         if (tournament.status !== "created") {
