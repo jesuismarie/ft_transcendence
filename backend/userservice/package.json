@@ -8,8 +8,7 @@
 		"dev": "ts-node-dev --respawn --pretty src/index.ts",
 		"build": "tsc",
 		"start": "node dist/index.js",
-		"build:prod": "tsc",
-		"start:prod": "node dist/index.js"
+		"build:prod": "tsc"
 	},
 	"dependencies": {
 		"ajv": "^8.17.1",

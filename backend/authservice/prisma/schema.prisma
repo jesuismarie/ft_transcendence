@@ -4,7 +4,7 @@
 // SQLite + `DATABASE_URL` path to the database file.
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./auth.db"
 }
 
 // Configures the Prisma Client generator.

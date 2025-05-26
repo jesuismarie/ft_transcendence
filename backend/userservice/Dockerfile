@@ -1,23 +1,27 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS build
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
+COPY backend/userservice/package.json ./backend/userservice/
+COPY packages/api-types/package.json ./packages/api-types/
 
-RUN npm ci
+RUN npm install
 
 COPY . .
 
-RUN npm run build:prod
+RUN npm run --workspace=packages/api-types build
+RUN npm run --workspace=backend/userservice build:prod
 
-FROM node:18-alpine AS production
+FROM node:20-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-RUN rm -rf ./*
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/backend/userservice/node_modules ./backend/userservice/node_modules
+COPY --from=build /app/backend/userservice/package.json ./backend/userservice/package.json
+COPY --from=build /app/backend/userservice/dist ./backend/userservice/dist
+COPY --from=build /app/packages/api-types/dist ./packages/api-types/dist
 
-COPY --from=builder /usr/src/app/package*.json /usr/src/app/
-COPY --from=builder /usr/src/app/dist /usr/src/app/dist
-COPY --from=builder /usr/src/app/node_modules /usr/src/app/node_modules
+CMD ["node", "backend/userservice/dist/index.js"]
 
-CMD ["npm", "run", "start:prod"]
