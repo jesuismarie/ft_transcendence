@@ -1,5 +1,5 @@
 const login2faVerifyRequestSchema = {
-	$id: 'auth.login2faVerifyRequest',
+	$id: 'auth.2faVerifyRequest',
 	type: 'object',
 	required: ['otp'],
 	properties: {

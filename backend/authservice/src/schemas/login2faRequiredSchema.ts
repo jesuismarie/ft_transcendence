@@ -1,5 +1,5 @@
 const login2faRequiredSchema = {
-	$id: 'auth.login2faRequired',
+	$id: 'auth.2faRequired',
 	type: 'object',
 	required: ['requires2fa', 'loginTicket'],
 	properties: {

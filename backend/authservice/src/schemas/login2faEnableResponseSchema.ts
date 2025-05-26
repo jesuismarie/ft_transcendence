@@ -1,5 +1,5 @@
 const login2faEnableResponseSchema = {
-	$id: 'auth.login2faEnableResponse',
+	$id: 'auth.2faEnableResponse',
 	type: 'object',
 	required: ['otpauthUrl', 'qrSvg'],
 	properties: {
