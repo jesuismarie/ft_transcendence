@@ -5,6 +5,7 @@ import { MatchRepo } from "../../repositories/match";
 
 interface StartTournamentRequestBody {
   tournament_id: number;
+  created_by: string; // Добавлено поле created_by
 }
 
 interface StartTournamentResponse {
@@ -21,15 +22,26 @@ export default async function startTournamentRoute(app: FastifyInstance) {
   const matchRepo = new MatchRepo(app);
 
   app.post("/start-tournament", async (request, reply) => {
-    const { tournament_id } = request.body as StartTournamentRequestBody;
+    const { tournament_id, created_by } =
+      request.body as StartTournamentRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
       return reply.status(400).send({ message: "Invalid tournament_id" });
     }
 
+    if (!created_by || created_by.trim().length === 0) {
+      return reply.status(400).send({ message: "Invalid created_by" });
+    }
+
     const tournament = await tournamentRepo.getById(tournament_id);
     if (!tournament) {
       return reply.status(404).send({ message: "Tournament not found" });
+    }
+
+    if (tournament.created_by !== created_by) {
+      return reply.status(403).send({
+        message: "Only the tournament creator can start the tournament",
+      });
     }
 
     if (tournament.status !== "created") {
