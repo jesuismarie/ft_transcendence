@@ -19,3 +19,11 @@ export const listFriendsQuery = {
     },
     additionalProperties: false,
 } as const;
+
+export const relationshipResponseSchema = {
+    type: 'object',
+    properties: {
+        status: { type: 'boolean', default: false },
+    },
+    additionalProperties: false,
+}
