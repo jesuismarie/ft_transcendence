@@ -6,8 +6,20 @@ export const createUserSchema = {
         email: { type: 'string', format: 'email' },
         password: { type: 'string', minLength: 8 },
         username: { type: 'string', minLength: 1 },
+        authProvider: { type: 'string', enum: ['local', 'google', 'github'], default: 'local' },
+        providerSub: { type: 'string', minLength: 1, nullable: true }
     },
 } as const;
+
+export const createUserResponseSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        id: { type: 'number' },
+        email: { type: 'string', format: 'email' },
+        username: { type: 'string', minLength: 1 },
+    }
+}
 
 export const updateUserSchema = {
     type: 'object',
