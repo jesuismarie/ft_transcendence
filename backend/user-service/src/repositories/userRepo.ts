@@ -123,4 +123,11 @@ export class UserRepo implements UserRepoInterface {
 			online: false
 		};
 	}
+	toQuickView(user: User): UserTypes.QuickUserResponse {
+		return {
+			id: user.id,
+			username: user.username,
+			avatarPath: user.avatarPath,
+		};
+	}
 }

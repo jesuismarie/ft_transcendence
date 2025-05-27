@@ -34,11 +34,19 @@ export const updateUserSchema = {
 
 export const updatePasswordSchema = {
     type: 'object',
-    required: ['oldPassword', 'newPassword'],
+    required: ['currentPwd', 'newPwd'],
     additionalProperties: false,
     properties: {
-        oldPassword: { type: 'string', minLength: 8 },
-        newPassword: { type: 'string', minLength: 8 },
+        currentPwd: { type: 'string', minLength: 8 },
+        newPwd: { type: 'string', minLength: 8 },
+    }
+}
+
+export const updatePasswordResponseSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        modified: { type: 'boolean' }
     }
 }
 
