@@ -4,6 +4,8 @@
 // Keep them in a small workspace package (e.g. packages/api-types) so both
 // the SPA and the back‑end can import the same source of truth.
 
+import { ApiError } from "./common-types";
+
 /* Common Objects */
 
 export interface User {
@@ -19,9 +21,11 @@ export interface User {
 /* Request Bodies */
 
 export interface CreateUserRequest {
-	email:		string;
-	password:	string;
-	username:	string;
+	email:			string;
+	password:		string;
+	username:		string;
+	authProvider?:	string; // e.g. "google", "github"
+	providerSub?:	string; // e.g. "1234567890" for Google
 }
 
 export interface PatchUserRequest {
@@ -49,13 +53,6 @@ export interface PaginationQuery {
 	offset?:	number; // default 0
 	limit?:		number;  // default 50
 	q?:			string;      // search string
-}
-
-// Error envelope for API responses
-export interface ApiError {
-	status: 'error';
-	code: string;   // machine‑readable, e.g. EMAIL_EXISTS
-	message: string;
 }
 
 // Generic API response type
