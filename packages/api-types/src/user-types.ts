@@ -72,7 +72,10 @@ export interface UserUpdateResponse {
 	modified:		boolean;
 }
 
-export type UserListResponse = QuickUserResponse[];
+export interface UserListView {
+	total: number; // total number of users matching the query
+	users: QuickUserResponse[];
+}
 
 // Generic API response type
 export type ApiResponse<T> = T | ApiError;
