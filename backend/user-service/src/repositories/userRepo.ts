@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
-import {PaginationQuery} from "@ft-transcendence/api-types/dist/user-types";
+import { UserTypes } from '@ft-transcendence/api-types';
+import {UserView} from "@ft-transcendence/api-types/dist/user-types";
 
 
 // This is not a view model, but a repository interface for user data.
@@ -19,7 +20,7 @@ interface UserRepoInterface {
 	findByEmail(email: string): User | null;
 	findById(id: number): User | null;
 	findByUsername(username: string): User | null;
-	findAll({ offset, limit, q }: PaginationQuery): User[];
+	findAll({ offset, limit, q }: UserTypes.PaginationQuery): User[];
 	update(
 		id: number,
 		fields: {
@@ -30,6 +31,7 @@ interface UserRepoInterface {
 		},
 	): boolean
 	delete(id: number): number;
+	toView(user: User): UserTypes.UserView;
 }
 
 export class UserRepo implements UserRepoInterface {
@@ -70,7 +72,7 @@ export class UserRepo implements UserRepoInterface {
 		return stmt.get(username) as User ?? null;
 	}
 	
-	findAll({ offset, limit, q }: PaginationQuery): User[] {
+	findAll({ offset, limit, q }: UserTypes.PaginationQuery): User[] {
 		const stmt = this.app.db.prepare(`
 			SELECT id, email, passwordHash, authProvider, providerSub, username, avatarPath, createdAt
 			FROM users
@@ -108,5 +110,17 @@ export class UserRepo implements UserRepoInterface {
 	
 	delete(id: number) {
 		return this.app.db.prepare('DELETE FROM users WHERE id = ?').run(id).changes;
+	}
+	
+	toView(user: User): UserView {
+		return {
+			id: user.id,
+			email: user.email,
+			username: user.username,
+			avatarPath: user.avatarPath,
+			wins: 0,
+			losses: 0,
+			online: false
+		};
 	}
 }
