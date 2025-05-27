@@ -77,7 +77,15 @@ async function initPersonalData(id: number) {
 		} else {
 			editProfileBtn.classList.add("hidden");
 			upcomingTournaments.classList.add("hidden");
-			friendRequestBtn.classList.remove("hidden");
+			const isAlreadyFriend = await checkIfFriend(currentUserId, targetUserId);
+			if (!isAlreadyFriend) {
+				friendRequestBtn.classList.remove("hidden");
+				friendRequestBtn.addEventListener("click", () => {
+					addFriend(currentUserId, targetUserId, friendRequestBtn);
+				});
+			} else {
+				friendRequestBtn.classList.add("hidden");
+			}
 			addTournamentPreviewBtn.classList.add("hidden");
 		}
 	} catch (err) {

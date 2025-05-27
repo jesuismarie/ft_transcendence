@@ -73,6 +73,11 @@ interface FriendResponse {
 	friends:		Friend[];
 }
 
+interface AddFriendRequest {
+	userId:		number;
+	friendId:	number;
+}
+
 interface GetMatchHistoryResponse {
 	totalCount:	number;
 	matches:	MatchHistory[];
