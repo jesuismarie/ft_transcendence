@@ -6,18 +6,6 @@
 
 import { ApiError } from "./common-types";
 
-/* Common Objects */
-
-export interface User {
-	id:			number;
-	email:		string;
-	username:	string;
-	avatarPath:	string | null;
-	wins:		number;
-	losses:		number;
-	createdAt:	string; // ISO timestamp
-}
-
 /* Request Bodies */
 
 export interface CreateUserRequest {
@@ -28,32 +16,63 @@ export interface CreateUserRequest {
 	providerSub?:	string; // e.g. "1234567890" for Google
 }
 
-export interface PatchUserRequest {
-	displayName?:	string;
+export interface UpdateUserRequest {
+	username?:		string;
 	email?:			string;
-	password?:		string; // plain text; server will hash
-	avatarPath?:	string; // used only by internal avatar route
 }
 
+export interface UpdateAvatarRequest {
+	avatarPath:		string; // can't be empty
+}
+
+export interface UpdatePasswordRequest {
+	currentPwd:		string;
+	newPwd:			string;
+}
+
+
 export interface AddFriendRequest {
-	userId:		number;
-	friendId:	number;
+	userId:			number;
+	friendId:		number;
 }
 
 export interface DeleteFriendRequest extends AddFriendRequest {}
 
-export interface ChangePasswordRequest {
-	currentPwd:	string;
-	newPwd:		string;
-}
-
-/* Query string helpers */
-
+/* Query Parameters */
 export interface PaginationQuery {
-	offset?:	number; // default 0
-	limit?:		number;  // default 50
-	q?:			string;      // search string
+	offset?:		number; 	// default 0
+	limit?:			number;  	// default 50
+	q?:				string;     // search string
 }
+
+/* Responses */
+export interface UserView {
+	id:				number;
+	email:			string;
+	username:		string;
+	avatarPath:		string | null;
+	wins:			number;
+	losses:			number;
+	online:			boolean;
+}
+
+export interface CreateUserResponse {
+	id:			number;
+	email:		string;
+	username:	string;
+}
+
+export interface QuickUserResponse {
+	id:			number;
+	username:	string;
+	avatarPath:	string | null;
+}
+
+export interface UserUpdateResponse {
+	modified:		boolean;
+}
+
+export type UserListResponse = QuickUserResponse[];
 
 // Generic API response type
 export type ApiResponse<T> = T | ApiError;
