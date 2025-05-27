@@ -83,7 +83,9 @@ async function fetchFriendList(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`users/${id}/friends?offset=${offset}&limit=${FRIENDS_LIMIT}`);
+		const res = await fetch(`users/${id}/friends?offset=${offset}&limit=${FRIENDS_LIMIT}`, {
+			credentials: 'include'
+		});
 		if (!res.ok)
 			throw new Error("Failed to fetch friends");
 

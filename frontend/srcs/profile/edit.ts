@@ -106,6 +106,7 @@ async function updateProfile(elements: EditProfileElements, currentUser: User) {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(patchRequest),
+				credentials: "include"
 			});
 
 			if (!response.ok) {
@@ -129,6 +130,7 @@ async function updateProfile(elements: EditProfileElements, currentUser: User) {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(passwordRequest),
+				credentials: "include"
 			});
 
 			if (!response.ok) {

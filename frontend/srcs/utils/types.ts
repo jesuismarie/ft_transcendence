@@ -121,6 +121,12 @@ interface LoginRequest {
 	password:	string;
 }
 
+interface ApiError {
+	status: 'error';
+	code: string;
+	message: string;
+}
+
 // Tournament status
 
 // Error message

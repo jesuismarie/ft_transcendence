@@ -75,7 +75,9 @@ async function fetchSearchResults(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`/api/users?query=${encodeURIComponent(query)}&offset=${offset}&limit=${SEARCH_LIMIT}`);
+		const res = await fetch(`/api/users?query=${encodeURIComponent(query)}&offset=${offset}&limit=${SEARCH_LIMIT}`, {
+			credentials: 'include'
+		});
 		if (!res.ok)
 			throw new Error("Failed to fetch users");
 

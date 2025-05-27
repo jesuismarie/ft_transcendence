@@ -36,31 +36,29 @@ async function initPersonalData(id: number) {
 	}
 
 	try {
-		// const currentUserId = getCurrentUserId();
-		// const targetUserId = username || currentUserId;
+		const currentUserId = getCurrentUserId();
+		const targetUserId = id || currentUserId;
 
-		let currentUserId;
-		let targetUserId = id || currentUserId;
-		if (!targetUserId)
-			targetUserId = 1; // For testing purposes
-		currentUserId = 1; // For testing purposes
-		
 		if (!targetUserId)
 			throw new Error("Username is required to load user profile");
 
-		// const res = await fetch(`/users/${targetUserId}`);
-		// if (!res.ok)
-		// 	throw new Error("Failed to load user profile");
-		// const user: User = await res.json();
+		const res = await fetch(`/users/${targetUserId}`, {
+			credentials: 'include'
+		});
+		if (!res.ok)
+			throw new Error("Failed to load user profile");
+		const user: User = await res.json();
 
-		const user: User = {
-			id: 1,
-			username: "hello",
-			email: "hey@gmail.com",
-			wins: 10,
-			losses: 5,
-			avatar: "https://example.com/avatar.png",
-		};
+		// let targetUserId = 1;
+		// let currentUserId = 1;
+		// const user: User = {
+		// 	id: 1,
+		// 	email: "test@test.com",
+		// 	username: "test",
+		// 	wins: 10,
+		// 	losses: 5,
+		// 	avatar: "https://example.com/avatar.png"
+		// };
 		searchUsers();
 		viewFriends(user.id);
 		viewMatches(user.id, user.username);
@@ -72,7 +70,7 @@ async function initPersonalData(id: number) {
 			editProfile(user);
 			// setup2FA();
 			// upcomingTournaments.classList.remove("hidden");
-			// initTournaments(targetUserId);
+			initTournaments(currentUser);
 			addTournament();
 		} else {
 			editProfileBtn.classList.add("hidden");

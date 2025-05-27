@@ -7,21 +7,13 @@ async function setup2FA() {
 		return;
 	}
 
-	const jwt = localStorage.getItem("jwt");
-	if (!jwt) {
-		console.error("You must be logged in.");
-		return;
-	}
-
 	enable2faBtn.addEventListener("click", async () => {
 		twofaContainer.innerHTML = "Loading QR code...";
 
 		try {
 			const res = await fetch("/2fa/setup", {
 				method: "GET",
-				headers: {
-					"Authorization": `Bearer ${jwt}`,
-				},
+				credentials: "include"
 			});
 			if (!res.ok)
 				throw new Error("Failed to fetch QR code");
@@ -39,15 +31,13 @@ async function setup2FA() {
 				const token = tokenInput?.value.trim();
 
 				if (!token || token.length !== 6) {
-					alert("Please enter a valid 6-digit code.");
+					twofaContainer.innerHTML = `<p class="text-red-500">Please enter a valid 6-digit code.</p>`;
 					return;
 				}
 
 				const verifyRes = await fetch("/2fa/verify", {
 					method: "POST",
-					headers: {
-						"Authorization": `Bearer ${jwt}`,
-					},
+					credentials: "include",
 					body: JSON.stringify({ token }),
 				});
 
@@ -70,21 +60,15 @@ async function setup2FA() {
 
 function addDisable2FAHandler() {
 	const disableBtn = document.getElementById("disable-2fa-btn") as HTMLButtonElement | null;
-	if (!disableBtn) return;
+	if (!disableBtn)
+		return;
 
 	disableBtn.addEventListener("click", async () => {
-		const jwt = localStorage.getItem("jwt");
-		if (!jwt) {
-			alert("You must be logged in.");
-			return;
-		}
 
 		try {
 			const res = await fetch("/2fa/disable", {
 				method: "POST",
-				headers: {
-					"Authorization": `Bearer ${jwt}`,
-				},
+				credentials: "include"
 			});
 			const result = await res.json();
 			if (result.success) {
@@ -94,7 +78,6 @@ function addDisable2FAHandler() {
 			}
 		} catch (err) {
 			console.error("Error disabling 2FA:", err);
-			alert("Something went wrong.");
 		}
 	});
 }

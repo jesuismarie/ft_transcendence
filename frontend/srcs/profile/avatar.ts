@@ -52,6 +52,7 @@ async function uploadAvatar(file: File): Promise<boolean> {
 		const response = await fetch("/api/upload-avatar", {
 			method: "POST",
 			body: formData,
+			credentials: "include"
 		});
 
 		if (!response.ok) {

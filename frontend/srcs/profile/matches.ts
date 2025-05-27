@@ -95,7 +95,9 @@ async function fetchMatchList(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`/get-match-history-by-user?username${username}offset=${offset}&limit=${MATCHS_LIMIT}`);
+		const res = await fetch(`/get-match-history-by-user?username${username}offset=${offset}&limit=${MATCHS_LIMIT}`, {
+			credentials: 'include'
+		});
 		if (!res.ok)
 			throw new Error("Failed to fetch matches");
 
