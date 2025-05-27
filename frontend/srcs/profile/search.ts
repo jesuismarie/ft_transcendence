@@ -55,7 +55,7 @@ function getSearchElements(): {
 function renderSearchItem(user: User): string {
 	const targetHash = user.username === currentUser ? "#profile" : `#profile/${user.username}`;
 	return `
-		<div onclick="location.hash = '${targetHash}'; initPersonalData('${user.username}');" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
+		<div onclick="location.hash = '${targetHash}'; initPersonalData(${user.id});" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
 			<img src="${user.avatar}" alt="${user.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
 			<span>${user.username}</span>
 		</div>

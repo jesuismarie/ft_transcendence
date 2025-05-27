@@ -12,6 +12,7 @@ function getAddTournamentElements(): {
 
 	if (!openModalBtn || !closeModalBtn || !saveBtn || !nameInput || !capacityInput)
 		return null;
+
 	return { 
 		modalInfo: {
 			openModalBtn,
@@ -27,6 +28,7 @@ function addTournament() {
 	const elements = getAddTournamentElements();
 	if (!elements)
 		return;
+
 	const { modalInfo, nameInput, capacityInput } = elements;
 
 	addModalEvents(modalInfo, "add-tournament-modal");
@@ -42,7 +44,6 @@ async function fetchAddTournament(
 	nameInput: HTMLInputElement,
 	capacityInput: HTMLSelectElement
 ) {
-
 	const name = nameInput.value.trim();
 	const capacity = parseInt(capacityInput.value);
 	if (!name) {
@@ -69,6 +70,7 @@ async function fetchAddTournament(
 	} catch (err) {
 		console.error("Error adding tournament:", err);
 		showError("tournament1", "Failed to add tournament. Please try again.");
+		showError("tournament2", "Failed to add tournament. Please try again.");
 	}
 	nameInput.value = "";
 	capacityInput.selectedIndex = 0;
@@ -93,5 +95,6 @@ async function deleteTournament(id: number, createdBy: string) {
 	} catch (err) {
 		console.error("Error deleting tournament:", err);
 		showError("tournament1", "Failed to delete tournament. Please try again.");
+		showError("tournament2", "Failed to delete tournament. Please try again.");
 	}
 }
