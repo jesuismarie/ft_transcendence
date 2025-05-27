@@ -9,7 +9,8 @@
   },
   "scripts": {
     "tailwind": "tailwindcss -i ./public/css/styles.css -o ./dist/output.css --minify",
-    "build": "npx tsc && npm run tailwind"
+    "styles": "mkdir -p ./dist/assets && cp ./public/images/* ./dist/assets/ && npm run tailwind",
+    "build": "npx tsc && npm run styles"
   },
   "keywords": [],
   "author": "",
