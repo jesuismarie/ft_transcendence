@@ -1,3 +1,13 @@
+function initGoogleRegister() {
+	const googleRegisterButton = document.getElementById('google-register-btn');
+	if (!googleRegisterButton)
+		return;
+
+	googleRegisterButton.addEventListener('click', () => {
+		window.location.href = '/auth/oauth/google';
+	});
+}
+
 function initRegistrationForm() {
 	const registrationForm = document.getElementById('registrationForm') as HTMLFormElement | null;
 
@@ -58,12 +68,11 @@ function initRegistrationForm() {
 			return;
 
 		try {
-			const response = await fetch('https://pong/register', {
+			const response = await fetch("/auth/register", {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ email, username, password }),
+				credentials: 'include'
 			});
 
 			const result = await response.json();
