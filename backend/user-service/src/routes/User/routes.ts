@@ -11,9 +11,7 @@ import updateUserPasswordRoute from "./updateUserPasswordRoute";
 import updateUserRoute from "./updateUserRoute";
 
 
-export default async function userRoutes(app: FastifyInstance) {
-    const userRepo = new UserRepo(app);
-
+export default async function userRoutes(app: FastifyInstance, userRepo: UserRepo) {
     await createUserRoute(app, userRepo);
     await getUsersRoute(app, userRepo);
     await getUserByIdRoute(app, userRepo);
