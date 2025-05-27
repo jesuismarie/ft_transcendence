@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { services } from "../../config";
 import { microserviceRequestHandler } from "../helpers";
-import { deleteTournamentSchema } from "./schemas";
+import { deleteTournamentSchema } from "../../schemas/game-service/schemas";
 
 interface DeleteTournamentRequestBody {
   tournament_id: number;

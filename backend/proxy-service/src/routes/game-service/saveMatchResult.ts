@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { microserviceRequestHandler } from "../helpers";
 import { services } from "../../config";
-import { saveMatchResultSchema } from "./schemas";
+import { saveMatchResultSchema } from "../../schemas/game-service/schemas";
 
 export interface SaveMatchResultBody {
   match_id: number;

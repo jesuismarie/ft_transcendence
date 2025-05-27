@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { microserviceRequestHandler } from "../helpers";
 import { services } from "../../config";
-import { getTournamentsInfoSchema } from "./schemas";
+import { getTournamentsInfoSchema } from "../../schemas/game-service/schemas";
 
 export interface GetTournamentsInfoRequest {
   limit?: number;

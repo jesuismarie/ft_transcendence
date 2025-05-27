@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { microserviceRequestHandler } from "../helpers";
 import { services } from "../../config";
-import { unregisterFromTournamentSchema } from "./schemas";
+import { unregisterFromTournamentSchema } from "../../schemas/game-service/schemas";
 
 interface UnregisterRequestBody {
   username: string;
