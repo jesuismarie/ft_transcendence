@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { services } from "../../config";
 import { microserviceRequestHandler } from "../helpers";
-import { getTournamentParticipantsSchema } from "./schemas";
+import { getTournamentParticipantsSchema } from "../../schemas/game-service/schemas";
 
 interface GetTournamentParticipantsQuery {
   id: number;
