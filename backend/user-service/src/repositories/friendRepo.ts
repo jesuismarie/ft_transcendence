@@ -45,4 +45,13 @@ export class FriendRepo {
             LIMIT ? OFFSET ?`);
         return stmt.all(userId, `%${q ?? ''}%`, limit, offset);
     }
+    
+    getRelationship(userId: number, friendId: number) {
+        const stmt = this.app.db.prepare(`
+            SELECT 1 FROM friends
+            WHERE (userId = ? AND friendId = ?) OR (userId = ? AND friendId = ?)
+            LIMIT 1`
+        );
+        return !!stmt.get(userId, friendId);
+    }
 }
