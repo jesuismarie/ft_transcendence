@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"composite": true,
+		"declaration": true,
+		"declarationMap": true,
+		"emitDeclarationOnly": true,
+		"outDir": "dist",
+		"rootDir": "src",
+		"strict": true,
+		"moduleResolution": "node",
+		"target": "es2016",
+		"module": "commonjs",
+		"resolveJsonModule": true   // if you share JSON schemas
+	},
+	"include": ["src/**/*"]
+}
