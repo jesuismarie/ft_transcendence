@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "webpack --watch & node dist/server/server.js",
-    "start:server": "node dist/server/server.js"
+    "start:server": "node dist/server/server.js",
+    "build:prod":   "webpack --mode production",
+    "start:prod":   "node /app/pong_canvas/dist/server/server.js"
   },
   "keywords": [],
   "author": "Ruzanna Grigoryan",

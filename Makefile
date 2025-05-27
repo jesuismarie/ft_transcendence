@@ -30,6 +30,4 @@ fclean: clean
 	docker volume prune -f
 	docker network rm $(TRANSCENDENCE_NETWORK_NAME) 2>/dev/null || true
 
-
-
 .PHONY: network monitor up down clean fclean

@@ -47,6 +47,23 @@ services:
 #      restart: always
 
 
+    pong_canvas:
+      image: pong_canvas
+      container_name: pong_canvas
+      build:
+        context: ./
+        dockerfile: pong_canvas/Dockerfile
+      ports:
+        - "4000:4000"
+      networks:
+        - bridge-network-transcendence
+      env_file:
+        - secrets/pong_canvas/pong-canvas-secrets.txt
+#      volumes:
+#        - pong_canvas-db-date:/example/path
+#      restart: always
+
+
 volumes:
     auth-service-db-data:
     game-service-db-date:
