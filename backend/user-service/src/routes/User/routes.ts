@@ -13,11 +13,11 @@ import updateUserRoute from "./updateUserRoute";
 
 export default async function userRoutes(app: FastifyInstance, userRepo: UserRepo) {
     await createUserRoute(app, userRepo);
-    await getUsersRoute(app, userRepo);
-    await getUserByIdRoute(app, userRepo);
-    await updateUserPasswordRoute(app, userRepo);
-    await deleteUserRoute(app, userRepo);
-    await updateUserRoute(app, userRepo);
-    await getUserByUsernameRoute(app, userRepo);
-    await updateUserAvatarRoute(app, userRepo);
+    // await getUsersRoute(app, userRepo);
+    // await getUserByIdRoute(app, userRepo);
+    // await updateUserPasswordRoute(app, userRepo);
+    // await deleteUserRoute(app, userRepo);
+    // await updateUserRoute(app, userRepo);
+    // await getUserByUsernameRoute(app, userRepo);
+    // await updateUserAvatarRoute(app, userRepo);
 }

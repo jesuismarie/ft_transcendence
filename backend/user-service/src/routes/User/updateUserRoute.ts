@@ -3,7 +3,7 @@ import { UserRepo } from "../../repositories/userRepo";
 import { updateUserSchema } from "../../schemas/userSchemas";
 
 
-export default function updateUserRoute(app: FastifyInstance, userRepo: UserRepo) {
+export default async function updateUserRoute(app: FastifyInstance, userRepo: UserRepo) {
 	app.put(
 		'/users/:id',
 		{ schema: {body: updateUserSchema}},

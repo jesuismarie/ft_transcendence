@@ -4,7 +4,7 @@ import { updatePasswordSchema } from "../../schemas/userSchemas";
 import argon2 from "argon2";
 
 
-export default function updateUserPasswordRoute(app: FastifyInstance, userRepo: UserRepo) {
+export default async function updateUserPasswordRoute(app: FastifyInstance, userRepo: UserRepo) {
 	app.put('/users/:id/password', { schema: { body: updatePasswordSchema } },
 		async (req, reply: FastifyReply) => {
 			const id = Number((req.params as any).id);

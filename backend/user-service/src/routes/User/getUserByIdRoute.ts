@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply } from "fastify";
 import { UserRepo } from "../../repositories/userRepo";
 
-export default function getUserByIdRoute(app: FastifyInstance, userRepo: UserRepo) {
+export default async function getUserByIdRoute(app: FastifyInstance, userRepo: UserRepo) {
 	app.get('/users/:id', async (req, reply: FastifyReply) => {
 		const id = Number((req.params as any).id);
 		const user = userRepo.findById(id);
