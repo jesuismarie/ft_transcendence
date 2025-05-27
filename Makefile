@@ -19,6 +19,17 @@ down:
 	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) down
 	docker-compose -f $(MONITOR_COMPOSE) down
 
+clean: down
+	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) stop
+	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) rm -f
+	docker-compose -f $(MONITOR_COMPOSE) stop
+	docker-compose -f $(MONITOR_COMPOSE) rm -f
+
+fclean: clean
+	docker image prune -f
+	docker volume prune -f
+	docker network rm $(TRANSCENDENCE_NETWORK_NAME) 2>/dev/null || true
+
 
 
 .PHONY: network monitor up down clean fclean
