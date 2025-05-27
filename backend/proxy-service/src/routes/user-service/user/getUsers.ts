@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { userServiceRequestHandler } from "./helpers";
-import { listUsersQuery } from "../../schemas/user-service/userSchemas";
-import { services } from "../../config";
+import { userServiceRequestHandler } from "../helpers";
+import { listUsersQuery } from "../../../schemas/user-service/userSchemas";
+import { services } from "../../../config";
 
 export interface ListUsersQuery {
   offset?: number;

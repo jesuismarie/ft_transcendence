@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import { userServiceRequestHandler } from "./helpers";
-import { services } from "../../config";
+import { userServiceRequestHandler } from "../helpers";
+import { services } from "../../../config";
 
 export default async function getUserByUsernameRoute(app: FastifyInstance) {
   app.get<{ Params: { username: string } }>(
