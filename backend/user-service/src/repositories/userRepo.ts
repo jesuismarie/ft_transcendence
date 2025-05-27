@@ -37,6 +37,14 @@ export class UserRepo {
         return (stmt.get(id) as User | undefined) ?? null;
     }
     
+    findByUsername(username: string): User | null {
+        const stmt = this.app.db.prepare(`
+            SELECT id, email, displayName, avatarPath, rating, createdAt
+            FROM users
+            WHERE displayName = ? COLLATE NOCASE`);
+        return (stmt.get(username) as User | undefined) ?? null;
+    }
+    
     // Finds all user data. WARNING: Use only in the backend, as it returns sensitive data.
     findByIdAll(id: number): UserAll | null {
         const stmt = this.app.db.prepare(`

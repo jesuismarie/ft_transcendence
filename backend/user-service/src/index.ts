@@ -14,9 +14,7 @@ import dbPlugin from './plugins/db';
 import errorEnvelope from "./plugins/errorEnvelope";
 
 // Routes
-import healthRoute from './routes/health';
-import userRoutes from './routes/User/routes';
-import friendRoutes from "./routes/Friend/routes";
+import routes from './routes/routes';
 
 const app = Fastify({ logger: true });
 
@@ -36,9 +34,7 @@ app.register(multipart, { limits: {fileSize: 1_000_000} });
 app.register(errorEnvelope);
 app.register(dbPlugin);
 
-app.register(healthRoute);
-app.register(userRoutes);
-app.register(friendRoutes);
+app.register(routes);
 
 app.listen({ port: Number(process.env.PORT) ?? 3000, host: '0.0.0.0' }).catch((err) => {
 	app.log.error(err);
