@@ -1,16 +1,16 @@
 {
-	"workspaces": [
-		"packages/*",
-		"backend/*",
-		"frontend"
-	],
+  "workspaces": [
+    "packages/*",
+    "backend/*",
+    "frontend"
+  ],
   "dependencies": {
     "better-sqlite3": "^11.10.0",
     "fastify-plugin": "^5.0.1"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13"
-		"@types/qrcode": "^1.5.5",
-		"@types/speakeasy": "^2.0.10"
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/qrcode": "^1.5.5",
+    "@types/speakeasy": "^2.0.10"
   }
 }
