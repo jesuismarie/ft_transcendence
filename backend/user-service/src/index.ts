@@ -15,8 +15,8 @@ import errorEnvelope from "./plugins/errorEnvelope";
 
 // Routes
 import healthRoute from './routes/health';
-import userRoutes from './routes/users';
-import friendRoutes from "./routes/friends";
+import userRoutes from './routes/User/routes';
+import friendRoutes from "./routes/Friend/routes";
 
 const app = Fastify({ logger: true });
 

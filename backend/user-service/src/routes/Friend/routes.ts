@@ -1,8 +1,8 @@
 import {FastifyInstance, FastifyReply} from "fastify";
-import { UserRepo } from "../repositories/userRepo";
-import { FriendRepo } from "../repositories/friendRepo";
-import { addFriendSchema, removeFriendSchema } from "../schemas/friendSchemas";
-import { listFriendsQuery } from "../schemas/friendSchemas";
+import { UserRepo } from "../../repositories/userRepo";
+import { FriendRepo } from "../../repositories/friendRepo";
+import { addFriendSchema, removeFriendSchema } from "../../schemas/friendSchemas";
+import { listFriendsQuery } from "../../schemas/friendSchemas";
 
 
 /* --- Friends --- */
