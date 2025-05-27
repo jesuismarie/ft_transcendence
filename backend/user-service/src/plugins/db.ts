@@ -12,9 +12,9 @@ export default fp(async function dbPlugin(app: FastifyInstance) {
     // Make sure the directory exists
     const dbDir = path.dirname(dbPath);
     fs.mkdirSync(dbDir, { recursive: true });
+    const isNewDb = !fs.existsSync(dbPath);
     const db = new Database(dbPath);
     // Check if the database is new or existing
-    const isNewDb = !fs.existsSync(dbPath);
     db.pragma('journal_mode = WAL');
     db.pragma('foreign_keys = ON');
 
