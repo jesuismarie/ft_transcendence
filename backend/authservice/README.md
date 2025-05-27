@@ -148,7 +148,9 @@ All requests must include header `X‑Cluster‑Token: <CLUSTER_TOKEN>`.
 
 ---
 
-## 7 Sequence Diagram (registration path)
+## 7 Sequence Diagram
+
+### Register Flow
 
 ```mermaid
 sequenceDiagram
@@ -160,19 +162,94 @@ sequenceDiagram
   SPA->>AS: POST /auth/register (username, email, pw)
   AS->>US:  POST /internal/users/validate-unique
   US-->>AS: 409 conflict (field)
-  AS-->>SPA: ApiError (USERNAME_TAKEN)
+  AS-->>SPA: ApiError (USERNAME_EXISTS / EMAIL_EXISTS)
   Note over AS: or continue if ok
   AS->>US: POST /internal/users/create
   US-->>AS: 201 { userId }
   AS->>AS: issueTokenPair()
   AS-->>SPA: 200 { accessToken, refreshToken, userId }
 ```
+### Login Flow
+```mermaid
+sequenceDiagram
+  autonumber
+  participant FE as SPA
+  participant AS as AuthService
+  participant US as UserService
+  participant DB as Auth DB
 
-(Additional diagrams for login + 2FA and OAuth exist in separate canvas files.)
+  FE->>AS: POST /auth/login {email,password}
+  AS->>US: POST /internal/users/verify-password
+  US-->>AS: 200 { userId, has2fa:true }
+  AS->>DB: INSERT LoginTicket (uuid, userId, 5-min ttl)
+  AS-->>FE: 200 { requires2fa:true, loginTicket }
 
+  FE->>AS: POST /auth/login/2fa {loginTicket, otp}
+  AS->>DB: SELECT LoginTicket (check ttl & unused)
+  AS-->>FE: APIError (TICKET_INVALID, 'Login ticket expired or invalid')
+  AS->>DB: UPDATE LoginTicket.used = true
+  AS->>DB: INSERT RefreshToken (hashed)
+  AS-->>FE: 200 { accessToken, refreshToken, userId }
+```
+### Logout Flow
+```mermaid
+sequenceDiagram
+  autonumber
+  participant FE as SPA
+  participant AS as AuthService
+  participant DB as Auth DB
+
+  FE->>AS: POST /auth/logout { refreshToken }
+  AS->>DB: UPDATE RefreshToken SET revoked=true WHERE tokenHash = HMAC(refreshToken)
+  DB-->>AS: 1 row changed
+  AS-->>FE: 200 { revoked:true }
+```
+### Enable 2FA Flow
+```mermaid
+sequenceDiagram
+  autonumber
+  participant FE as SPA
+  participant AS as AuthService
+  participant DB as Auth DB
+
+  activate FE
+  FE->>AS: POST /auth/2fa/enable  (JWT auth header)
+  AS->>AS: speakeasy.generateSecret()
+  AS->>DB: INSERT TotpSecret { userId, secret, verified:false }
+  AS-->>FE: 200 { otpauthUrl, qrSvg }
+
+  FE->>AS: POST /auth/2fa/verify { otp } (JWT)
+  AS->>DB: SELECT TotpSecret
+  AS->>AS: speakeasy.totp.verify()
+  AS->>DB: UPDATE TotpSecret SET verified=true
+  AS-->>FE: 200 { verified:true }
+```
+### Google OAuth Flow
+```mermaid
+sequenceDiagram
+  autonumber
+  participant FE as SPA
+  participant AS as AuthService
+  participant Google as Google OAuth
+  participant US as UserService
+  participant DB as Auth DB
+
+  FE->>AS: GET /auth/oauth/google
+  AS-->>FE: 302 Redirect → Google
+  FE->>Google: OAuth consent
+  Google-->>FE: 302 → /auth/oauth/google/callback?code=...
+  FE->>AS: GET /auth/oauth/google/callback?code=...
+  AS->>Google: POST token exchange
+  Google-->>AS: 200 { id_token, email, sub }
+  AS->>US: POST /internal/users/find-or-create { email, googleSub }
+  US-->>AS: 200 { userId }
+  AS->>DB: INSERT (or ensure) OAuthAccount row
+  AS->>DB: INSERT RefreshToken (hashed)
+  AS-->>FE: 200 { accessToken, refreshToken, userId }
+```
 ---
 
-## 8  Migrations & Dev Workflow
+## 8 Migrations & Dev Workflow
 
 | Step               | Command                                                 |
 |--------------------|---------------------------------------------------------|
