@@ -1,10 +1,10 @@
-import { FastifyInstance, FastifyReply } from "fastify";
+import { FastifyInstance } from "fastify";
 import { UserRepo } from "../../repositories/userRepo";
 import { listUsersQuery } from "../../schemas/userSchemas";
 import { UserTypes } from "@ft-transcendence/api-types";
 
 export default async function getUsersRoute(app:FastifyInstance, userRepo:UserRepo) {
-	app.get(
+	app.get<{Reply: UserTypes.UserListView}>(
 		'/users',
 		{
 			schema: {
@@ -16,7 +16,7 @@ export default async function getUsersRoute(app:FastifyInstance, userRepo:UserRe
 			const users = userRepo.findAll({offset, limit, q});
 			const views = users.map(user => userRepo.toQuickView(user));
 			// TODO: Ask win/loss from game service
-			return views;
+			return {total: views.length, users: views};
 		}
 	);
 }
