@@ -1,21 +1,20 @@
 {
-  "name": "proxy-service",
+  "name": "game-service",
   "version": "1.0.0",
-  "description": "Proxy service for routing requests to different services",
   "scripts": {
     "dev": "nodemon --watch src --ext ts --exec \"ts-node\" src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "axios": "^1.9.0",
-    "dotenv": "^16.5.0",
+    "better-sqlite3": "^11.10.0",
     "fastify": "^4.26.1",
+    "fastify-plugin": "^5.0.1",
     "sqlite": "^4.2.1",
-    "sqlite3": "^5.1.6",
-    "@ft-transcendence/api-types": "*"
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20.11.30",
     "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",
