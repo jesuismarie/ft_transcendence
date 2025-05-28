@@ -1,7 +1,6 @@
 import Fastify from "fastify";
-import authServiceRoutes from "./routes/auth-service/routes";
 import gameServiceRoutes from "./routes/game-service/routes";
-import userServiceRoutes from "./routes/user-service/routes";
+import monitorningRoutes from "./routes/monitoring/routes";
 import errorEnvelope from "./plugins/errorEnvelope";
 import multipart from "@fastify/multipart";
 import httpProxy from "@fastify/http-proxy";
@@ -11,7 +10,7 @@ const app = Fastify({ logger: true });
 app.register(multipart, { limits: { fileSize: 1_000_000 } });
 
 // Регистрируем маршруты
-app.register(authServiceRoutes);
+// app.register(authServiceRoutes);
 app.register(gameServiceRoutes);
 // app.register(userServiceRoutes);
 app.register(errorEnvelope);
@@ -23,6 +22,7 @@ app.register(httpProxy, {
   upstream: services.authService,
   prefix: "/auth-service",
 });
+app.register(monitorningRoutes);
 
 app.listen(
   {

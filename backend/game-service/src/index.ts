@@ -1,10 +1,10 @@
-// src/index.ts
 import Fastify from "fastify";
 import initDb from "./db/index";
 import matchInvitationRoutes from "./routes/matchInvitation/routes";
 import matchRoutes from "./routes/match/routes";
 import tournamentRoutes from "./routes/tournament/routes";
 import internalRoutes from "./routes/internal/routes";
+import monitoringRoutes from "./routes/monitoring/routes";
 
 const app = Fastify({ logger: true });
 
@@ -16,6 +16,7 @@ app.register(matchInvitationRoutes);
 app.register(matchRoutes);
 app.register(tournamentRoutes);
 app.register(internalRoutes);
+app.register(monitoringRoutes);
 
 app.listen(
   {

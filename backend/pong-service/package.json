@@ -2,7 +2,7 @@
   "name": "pong-service",
   "version": "1.0.0",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec \"ts-node --esm\" src/index.ts",
+    "dev": "nodemon --watch src --ext ts --exec \"ts-node\" src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "build:prod": "tsc",
@@ -26,6 +26,7 @@
   "dependencies": {
     "@fastify/static": "^8.2.0",
     "fastify": "^5.3.3",
+    "prom-client": "^15.1.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "ws": "^8.18.2"
