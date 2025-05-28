@@ -54,12 +54,15 @@ async function fetchAddTournament(
 		const response = await fetch("/create-tournament", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ currentUser, name, capacity }),
+			body: JSON.stringify({ name, capacity, currentUser }),
 			credentials: "include",
 		});
 
-		if (!response.ok)
-			throw new Error(`Server responded with status ${response.status}`);
+		if (!response.ok) {
+			const result: ApiError = await response.json();
+			showError("add_tournament", result.message);
+			return;
+		}
 		hideModal("add-tournament-modal");
 	} catch (err) {
 		console.error("Error adding tournament:", err);
@@ -75,12 +78,16 @@ async function deleteTournament(id: number, createdBy: string) {
 		const response = await fetch("/delete-tournament", {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ tournament_id: id, created_by: createdBy }),
+			body: JSON.stringify({ id, createdBy }),
 			credentials: "include"
 		});
 		
-		if (!response.ok)
-			throw new Error(`Server responded with status ${response.status}`);
+		if (!response.ok) {
+			const result: ApiError = await response.json();
+			showError("tournament1", result.message);
+			showError("tournament2", result.message);
+			return;
+		}
 	} catch (err) {
 		console.error("Error deleting tournament:", err);
 		showError("tournament1", "Failed to delete tournament. Please try again.");
@@ -92,7 +99,7 @@ async function startTournament(tournamentId: number) {
 	const response = await fetch("/start-tournament", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ tournament_id: tournamentId }),
+		body: JSON.stringify({ tournamentId }),
 		credentials: "include"
 	});
 

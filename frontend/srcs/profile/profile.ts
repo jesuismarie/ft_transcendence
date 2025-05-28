@@ -35,22 +35,23 @@ async function initPersonalData(id: number) {
 		return;
 	}
 
-	// try {
-	// 	const currentUserId = getCurrentUserId();
-	// 	const targetUserId = id || currentUserId;
+	try {
+		// const currentUserId = getCurrentUserId();
+		// const targetUserId = id || currentUserId;
 
-	// 	if (!targetUserId)
-	// 		throw new Error("Username is required to load user profile");
+		// if (!targetUserId)
+		// 	throw new Error("Username is required to load user profile");
 
-	// 	const res = await fetch(`/users/${targetUserId}`, {
-	// 		credentials: 'include'
-	// 	});
-	// 	if (!res.ok)
-	// 		throw new Error("Failed to load user profile");
-	// 	const user: UserView = await res.json();
+		// const res = await fetch(`/users/:${targetUserId}`, {
+		// 	method: 'GET',
+		// 	credentials: 'include'
+		// });
+		// if (!res.ok)
+		// 	throw new Error("Failed to load user profile");
+		// const user: UserView = await res.json();
 
-		let targetUserId = 1;
-		let currentUserId = 1;
+		let targetUserId = 0;
+		let currentUserId = 0;
 		const user: UserView = {
 			id: 1,
 			email: "test@test.com",
@@ -86,7 +87,7 @@ async function initPersonalData(id: number) {
 			}
 			addTournamentPreviewBtn.classList.add("hidden");
 		}
-	// } catch (err) {
-	// 	console.error("Error loading personal data:", err);
-	// }
+	} catch (err) {
+		console.error("Error loading personal data:", err);
+	}
 }

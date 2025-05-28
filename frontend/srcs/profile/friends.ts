@@ -83,7 +83,8 @@ async function fetchFriendList(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`users/${id}/friends?offset=${offset}&limit=${FRIENDS_LIMIT}`, {
+		const res = await fetch(`friend/:${id}?offset=${offset}&limit=${FRIENDS_LIMIT}`, {
+			method: 'GET',
 			credentials: 'include'
 		});
 		if (!res.ok)

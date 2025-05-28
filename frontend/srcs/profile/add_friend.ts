@@ -1,12 +1,12 @@
 async function checkIfFriend(currentUserId: number, targetUserId: number): Promise<boolean> {
 	try {
-		const res = await fetch(`/api/friends/is_friend?userId=${currentUserId}&friendId=${targetUserId}`, {
+		const res = await fetch(`/users/:${currentUserId}/relationship/:${targetUserId}`, {
 			credentials: 'include'
 		});
 		if (!res.ok)
 			return false;
 		const data = await res.json();
-		return data.isFriend;
+		return data.status === 'true';
 	} catch {
 		return false;
 	}
@@ -18,7 +18,7 @@ async function addFriend(
 	friendRequestBtn: HTMLButtonElement
 ) {
 	try {
-		const response = await fetch("/api/friends/add", {
+		const response = await fetch("/friends", {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ userId: currentUserId, friendId: targetUserId }),

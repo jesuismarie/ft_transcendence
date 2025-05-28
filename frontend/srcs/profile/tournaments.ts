@@ -3,27 +3,44 @@ let currentTournamentOffset = 0;
 let totalTournamentResults = 0;
 
 async function registerToTournament(tournamentId: number, username: string) {
-	return fetch("register-to-tournament", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ tournament_id: tournamentId, username }),
-		credentials: "include"
-	}).then((res) => {
-		if (!res.ok)
-			throw new Error("Failed to register");
-	});
+	try {
+		const response = await fetch("/register-to-tournament", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ username, tournamentId }),
+			credentials: "include"
+		});
+
+		if (!response.ok) {
+			const result: ApiError = await response.json();
+			showError("tournament1", result.message);
+			showError("tournament2", result.message);
+		}
+	} catch (error) {
+		showError("tournament1", "An unexpected error occurred while registering.");
+		showError("tournament2", "An unexpected error occurred while registering.");
+
+	}
 }
 
 async function unregisterFromTournament(tournamentId: number, username: string) {
-	return fetch("unregister-from-tournament", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ tournament_id: tournamentId, username }),
-		credentials: "include"
-	}).then((res) => {
-		if (!res.ok)
-			throw new Error("Failed to unregister");
-	});
+	try {
+		const response = await fetch("/unregister-from-tournament", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ username, tournamentId }),
+			credentials: "include"
+		});
+
+		if (!response.ok) {
+			const result: ApiError = await response.json();
+			showError("tournament1", result.message);
+			showError("tournament2", result.message);
+		}
+	} catch (error) {
+		showError("tournament1", "An unexpected error occurred while unregistering.");
+		showError("tournament2", "An unexpected error occurred while unregistering.");
+	}
 }
 
 function initTournaments(username: string | null) {

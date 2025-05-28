@@ -95,31 +95,31 @@ function isValidToken(token: string | undefined): boolean {
 function showSuccessAndDisableButton(container: HTMLElement) {
 	container.innerHTML = `
 		<p class="text-green-500">2FA enabled successfully!</p>
-		<button id="disable-2fa-btn" class="bg-red-600 hover:bg-red-700 text-white py-1 px-4 mt-2 rounded">
-			Disable 2FA
-		</button>
-	`;
-	addDisable2FAHandler();
+		`;
+	// <button id="disable-2fa-btn" class="bg-red-600 hover:bg-red-700 text-white py-1 px-4 mt-2 rounded">
+	// 	Disable 2FA
+	// </button>
+	// addDisable2FAHandler();
 }
 
-function addDisable2FAHandler() {
-	const disableBtn = document.getElementById("disable-2fa-btn") as HTMLButtonElement | null;
-	if (!disableBtn) return;
+// function addDisable2FAHandler() {
+// 	const disableBtn = document.getElementById("disable-2fa-btn") as HTMLButtonElement | null;
+// 	if (!disableBtn) return;
 
-	disableBtn.addEventListener("click", async () => {
-		try {
-			const res = await fetch("/2fa/disable", {
-				method: "POST",
-				credentials: "include"
-			});
-			const result = await res.json();
+// 	disableBtn.addEventListener("click", async () => {
+// 		try {
+// 			const res = await fetch("/2fa/disable", {
+// 				method: "POST",
+// 				credentials: "include"
+// 			});
+// 			const result = await res.json();
 			
-			if (result.success) {
-				document.getElementById("twofa-container")!.innerHTML = 
-					`<p class="text-yellow-500">2FA has been disabled.</p>`;
-			}
-		} catch (err) {
-			console.error("Error disabling 2FA:", err);
-		}
-	});
-}
+// 			if (result.success) {
+// 				document.getElementById("twofa-container")!.innerHTML = 
+// 					`<p class="text-yellow-500">2FA has been disabled.</p>`;
+// 			}
+// 		} catch (err) {
+// 			console.error("Error disabling 2FA:", err);
+// 		}
+// 	});
+// }

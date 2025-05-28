@@ -81,7 +81,7 @@ interface UpdateAvatarRequest {
 	avatarPath:	string;
 }
 
-interface PatchUserRequest {
+interface UpdateUserRequest {
 	displayName?:	string;
 	email?:			string;
 }

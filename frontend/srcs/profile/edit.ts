@@ -96,16 +96,16 @@ async function updateProfile(elements: EditProfileElements, currentUser: UserVie
 
 	try {
 		if (updatedUsername !== currentUser.username || updatedEmail !== currentUser.email) {
-			const patchRequest: PatchUserRequest = {};
+			const updateUser: UpdateUserRequest = {};
 			if (updatedUsername !== currentUser.username)
-				patchRequest.displayName = updatedUsername;
+				updateUser.displayName = updatedUsername;
 			if (updatedEmail !== currentUser.email)
-				patchRequest.email = updatedEmail;
+				updateUser.email = updatedEmail;
 
-			const response = await fetch("/api/profile/update", {
-				method: "PATCH",
+			const response = await fetch(`/users/:${currentUser.id}`, {
+				method: "PUT",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(patchRequest),
+				body: JSON.stringify(updateUser),
 				credentials: "include"
 			});
 
@@ -126,7 +126,7 @@ async function updateProfile(elements: EditProfileElements, currentUser: UserVie
 				newPwd: updatedPassword
 			};
 
-			const response = await fetch("/api/profile/password", {
+			const response = await fetch(`/users/:${currentUser.id}/password`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(passwordRequest),
@@ -134,12 +134,8 @@ async function updateProfile(elements: EditProfileElements, currentUser: UserVie
 			});
 
 			if (!response.ok) {
-				const result = await response.json();
-				if (result?.field && result?.message) {
-					showError(result.field, result.message);
-				} else {
-					showError("old_password", "Failed to update password.");
-				}
+				const result: ApiError = await response.json();
+				showError("old_password", result.message);
 				return false;
 			}
 		}

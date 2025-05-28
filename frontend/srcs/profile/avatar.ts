@@ -44,33 +44,33 @@ function readImageFile(file: File): Promise<string | null> {
 	});
 }
 
-async function uploadAvatar(file: File): Promise<boolean> {
+async function uploadAvatar(id: number, file: File): Promise<boolean> {
 	try {
 		const formData = new FormData();
 		formData.append("avatar", file);
 
-		const response = await fetch("/api/upload-avatar", {
+		const response = await fetch(`/users/:${id}/avatar`, {
 			method: "POST",
 			body: formData,
 			credentials: "include"
 		});
 
 		if (!response.ok) {
-			showError("avatar", "Failed to upload avatar");
+			const result: ApiError = await response.json();
+			showError("old_password", result.message);
 			return false;
 		}
 
-		const data = await response.json();
-		console.log("Avatar uploaded:", data);
+		// const data = await response.json();
+		// console.log("Avatar uploaded:", data);
 		return true;
 	} catch (err) {
 		showError("avatar", "Failed to connect to server");
-		console.error("Avatar upload error:", err);
 		return false;
 	}
 }
 
-async function handleAvatarChange(elements: AvatarElements, file: File) {
+async function handleAvatarChange(id: number, elements: AvatarElements, file: File) {
 	clearErrors();
 	
 	const validationError = validateImageFile(file);
@@ -84,7 +84,7 @@ async function handleAvatarChange(elements: AvatarElements, file: File) {
 		return;
 
 	elements.avatarImage.src = imageDataUrl;
-	await uploadAvatar(file);
+	await uploadAvatar(id, file);
 }
 
 function initAvatarUpload(id: number) {
@@ -108,6 +108,6 @@ function initAvatarUpload(id: number) {
 		if (!elements.fileInput.files || elements.fileInput.files.length === 0)
 			return;
 
-		await handleAvatarChange(elements, elements.fileInput.files[0]);
+		await handleAvatarChange(id, elements, elements.fileInput.files[0]);
 	});
 }
