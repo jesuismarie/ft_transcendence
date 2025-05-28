@@ -6,7 +6,14 @@ export interface Friend {
     friendId: number;
 }
 
-export class FriendRepo {
+interface FriendRepoInterface {
+    add(userId: number, friendId: number): void;
+    delete(userId: number, friendId: number): number;
+    list(userId: number, opts?: { offset: number; limit: number; q?: string }): any;
+    getRelationship(userId: number, friendId: number): boolean;
+}
+
+export class FriendRepo implements FriendRepoInterface {
     private app: FastifyInstance;
     constructor(app: FastifyInstance) {
         this.app = app;
@@ -35,13 +42,13 @@ export class FriendRepo {
         const { offset = 0, limit = 10, q = '' } = opts ?? {};
         
         const stmt = this.app.db.prepare(`
-            SELECT u.id, u.email, u.displayName, u.avatarPath, u.rating, u.createdAt
+            SELECT u.id, u.username, u.avatarPath
             FROM friends f
             JOIN users u ON f.friendId = u.id
             WHERE f.userId = ?
             AND
-            u.displayName LIKE ? COLLATE NOCASE
-            ORDER BY u.displayName COLLATE NOCASE
+            u.username LIKE ? COLLATE NOCASE
+            ORDER BY u.username COLLATE NOCASE
             LIMIT ? OFFSET ?`);
         return stmt.all(userId, `%${q ?? ''}%`, limit, offset);
     }

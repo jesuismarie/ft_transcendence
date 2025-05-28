@@ -6,8 +6,20 @@ export const createUserSchema = {
         email: { type: 'string', format: 'email' },
         password: { type: 'string', minLength: 8 },
         username: { type: 'string', minLength: 1 },
+        authProvider: { type: 'string', enum: ['local', 'google', 'github'], default: 'local' },
+        providerSub: { type: 'string', minLength: 1, nullable: true }
     },
 } as const;
+
+export const createUserResponseSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        id: { type: 'number' },
+        email: { type: 'string', format: 'email' },
+        username: { type: 'string', minLength: 1 },
+    }
+}
 
 export const updateUserSchema = {
     type: 'object',
@@ -22,11 +34,19 @@ export const updateUserSchema = {
 
 export const updatePasswordSchema = {
     type: 'object',
-    required: ['oldPassword', 'newPassword'],
+    required: ['currentPwd', 'newPwd'],
     additionalProperties: false,
     properties: {
-        oldPassword: { type: 'string', minLength: 8 },
-        newPassword: { type: 'string', minLength: 8 },
+        currentPwd: { type: 'string', minLength: 8 },
+        newPwd: { type: 'string', minLength: 8 },
+    }
+}
+
+export const updatePasswordResponseSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        modified: { type: 'boolean' }
     }
 }
 
@@ -38,4 +58,23 @@ export const listUsersQuery = {
         q: { type: 'string', minLength: 1 },
     },
     additionalProperties: false,
+}
+
+// Internal request to verify a user's password
+export const verifyPasswordSchema = {
+    type: 'object',
+    required: ['email', 'password'],
+    additionalProperties: false,
+    properties: {
+        email: { type: 'string', format: 'email' },
+        password: { type: 'string', minLength: 8 },
+    }
+} as const;
+
+export const verifyPasswordResponseSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        userId: { type: 'number' },
+    }
 }

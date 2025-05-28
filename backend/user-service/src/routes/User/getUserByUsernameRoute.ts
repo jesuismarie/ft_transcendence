@@ -1,14 +1,24 @@
 import { FastifyInstance, FastifyReply } from "fastify";
 import { UserRepo } from "../../repositories/userRepo";
-import { UserTypes } from "@ft-transcendence/api-types"
+import { UserTypes } from "@KarenDanielyan/ft-transcendence-api-types"
 
 export default async function getUserByUsernameRoute(app: FastifyInstance, userRepo: UserRepo) {
-	app.get('/users/username/:username', async (req, reply: FastifyReply) => {
-		const { username } = req.params as any;
-		const user = userRepo.findByUsername(username);
-		if (!user) {
-			return reply.sendError({ statusCode: 404, message: 'User not found' });
+	app.get<{Params: {username: string}; Reply: UserTypes.UserView}>(
+		'/users/username/:username',
+		async (req, reply: FastifyReply) => {
+			const username = req.params.username;
+			const user = userRepo.findByUsername(username);
+			if (!user) {
+				return reply.sendError({ statusCode: 404, message: 'User not found' });
+			}
+			const view = userRepo.toView(user);
+			try {
+				const res = await app.gameService.getGamestats({ Params: { username: view.username } });
+				view.wins = res.wins;
+				view.losses = res.losses;
+			}
+			catch (err) {}
+			return view
 		}
-		return user as UserTypes.User;
-	});
+	);
 }

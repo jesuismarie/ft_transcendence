@@ -1,15 +1,31 @@
 import { FastifyInstance, FastifyReply } from "fastify";
 import { UserRepo } from "../../repositories/userRepo";
 import { updateUserSchema } from "../../schemas/userSchemas";
+import { errorSchema } from "../../schemas/errorSchema";
+import { UserTypes } from "@KarenDanielyan/ft-transcendence-api-types";
 
 
 export default async function updateUserRoute(app: FastifyInstance, userRepo: UserRepo) {
-	app.put(
+	app.put<{Body: UserTypes.UpdateUserRequest; Params: {id: string}; Reply: UserTypes.UserUpdateResponse}>(
 		'/users/:id',
-		{ schema: {body: updateUserSchema}},
+		{
+			schema: {
+				body: updateUserSchema,
+				response: {
+					200: {
+						type: 'object',
+						additionalProperties: false,
+						properties: {
+							modified: { type: 'boolean' }
+						}
+					},
+					'4xx': errorSchema
+				}
+			}
+		},
 		async (req, reply: FastifyReply) => {
-			const id = Number((req.params as any).id);
-			const { displayName, email } = req.body as any;
+			const id = Number(req.params.id);
+			const { username, email } = req.body;
 			
 			// fetch current row or 404
 			const user = userRepo.findById(id);
@@ -20,9 +36,10 @@ export default async function updateUserRoute(app: FastifyInstance, userRepo: Us
 			if (email && userRepo.findByEmail(email))
 				return reply.sendError({ statusCode: 409, code: 'EMAIL_EXISTS', message: 'Email already registered' });
 			
-			return userRepo.update(id, {
-				username: displayName,
-				email});
+			const updated = userRepo.update(id, {
+				username: username,
+				email: email});
+			return reply.send({"modified": updated});
 		}
 	);
 }
