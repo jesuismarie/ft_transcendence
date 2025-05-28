@@ -8,10 +8,6 @@
     "strict": true,
     "skipLibCheck": true,
     "typeRoots": ["src/types", "./node_modules/@types"],
-    "baseUrl": ".",
-    "paths": {
-      "@ft-transcendence/api-types": ["../api-types/src"]
-    }
   },
   "include": ["src/**/*", "src/types"],
 }

@@ -20,9 +20,9 @@
 		"@fastify/multipart": "^9.0.3",
 		"@fastify/helmet": "^13.0.1",
 		"@fastify/rate-limit": "^10.2.2",
+		"@KarenDanielyan/ft-transcendence-api-types": "^1.0.0",
 		"ts-node": "^10.9.2",
 		"dotenv": "^16.5.0",
-		"@ft-transcendence/api-types": "^1.0.0",
 		"undici": "^6.21.3"
 	},
 	"devDependencies": {
