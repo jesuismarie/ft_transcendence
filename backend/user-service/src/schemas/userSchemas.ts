@@ -59,3 +59,22 @@ export const listUsersQuery = {
     },
     additionalProperties: false,
 }
+
+// Internal request to verify a user's password
+export const verifyPasswordSchema = {
+    type: 'object',
+    required: ['email', 'password'],
+    additionalProperties: false,
+    properties: {
+        email: { type: 'string', format: 'email' },
+        password: { type: 'string', minLength: 8 },
+    }
+} as const;
+
+export const verifyPasswordResponseSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        userId: { type: 'number' },
+    }
+}
