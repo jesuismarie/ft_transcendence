@@ -1,3 +1,13 @@
+function initGoogleAuth() {
+	const googleLoginButton = document.getElementById('google-login-btn');
+	if (!googleLoginButton)
+		return;
+
+	googleLoginButton.addEventListener('click', () => {
+		window.location.href = '/auth/oauth/google';
+	});
+}
+
 function initLoginForm() {
 	const loginForm = document.getElementById('loginForm') as HTMLFormElement | null;
 
@@ -32,12 +42,11 @@ function initLoginForm() {
 			return;
 
 		try {
-			const response = await fetch('https://pong/login', {
+			const response = await fetch("/auth/login", {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ email, password }),
+				credentials: 'include'
 			});
 
 			const result = await response.json();
@@ -47,10 +56,10 @@ function initLoginForm() {
 				showError('login_password', result?.message || 'Invalid credentials');
 				return;
 			}
-
-			console.log('Login successful:', result);
-
-			// localStorage.setItem('token', result.token);
+			if (result.id) {
+				localStorage.setItem("currentUser", result.username);
+				localStorage.setItem("currentUserId", result.id.toString());
+			}
 		} catch (error) {
 			console.error('Login failed:', error);
 			showError('login_password', 'Network or server error.');

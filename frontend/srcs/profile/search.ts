@@ -52,17 +52,17 @@ function getSearchElements(): {
 	};
 }
 
-function renderSearchItem(user: User): string {
+function renderSearchItem(user: QuickUserResponse): string {
 	const targetHash = user.username === currentUser ? "#profile" : `#profile/${user.username}`;
 	return `
-		<div onclick="location.hash = '${targetHash}'; initPersonalData('${user.username}');" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
-			<img src="${user.avatar}" alt="${user.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
+		<div onclick="location.hash = '${targetHash}'; initPersonalData(${user.id});" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
+			<img src="${user.avatarPath}" alt="${user.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
 			<span>${user.username}</span>
 		</div>
 	`;
 }
 
-function renderSearchResults(users: User[], container: HTMLElement) {
+function renderSearchResults(users: QuickUserResponse[], container: HTMLElement) {
 	container.innerHTML = users.length === 0
 		? `<p class="text-gray-500 p-4">No users found.</p>`
 		: users.map(renderSearchItem).join("");
@@ -75,7 +75,10 @@ async function fetchSearchResults(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`/api/users?query=${encodeURIComponent(query)}&offset=${offset}&limit=${SEARCH_LIMIT}`);
+		const res = await fetch(`/users?q=${encodeURIComponent(query)}&limit=${SEARCH_LIMIT}&offset=${offset}`, {
+			method: 'GET',
+			credentials: 'include'
+		});
 		if (!res.ok)
 			throw new Error("Failed to fetch users");
 

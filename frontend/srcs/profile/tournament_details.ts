@@ -1,139 +1,110 @@
-function registerToTournament(tournamentId: number, username: string) {
-	return fetch("/api/regturnir", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ tournament_id: tournamentId, username }),
-	}).then((res) => {
-		if (!res.ok)
-			throw new Error("Failed to register");
-	});
+function getAddTournamentElements(): {
+	modalInfo: ModalInfo,
+	nameInput: HTMLInputElement;
+	capacityInput: HTMLSelectElement;
+} | null {
+	const openModalBtn = document.getElementById("add-tournament-preview-btn") as HTMLButtonElement | null;
+	const closeModalBtn = document.getElementById("close-add-tournament-modal") as HTMLButtonElement | null;
+	const saveBtn = document.getElementById("add-tournament-btn") as HTMLButtonElement | null;
+	const nameInput = document.getElementById("tournament-name") as HTMLInputElement | null;
+	const capacityInput = document.getElementById("tournament-capacity") as HTMLSelectElement | null;
+
+
+	if (!openModalBtn || !closeModalBtn || !saveBtn || !nameInput || !capacityInput)
+		return null;
+
+	return { 
+		modalInfo: {
+			openModalBtn,
+			closeModalBtn,
+			saveBtn,
+		},
+		nameInput,
+		capacityInput,
+	}
 }
 
-function unregisterFromTournament(tournamentId: number, username: string) {
-	return fetch("/api/unregister", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ tournament_id: tournamentId, username }),
-	}).then((res) => {
-		if (!res.ok)
-			throw new Error("Failed to unregister");
-	});
-}
-
-function updateTournamentUI(tournaments: TournamentInfo[], username: string | null) {
-	const previewContainer = document.getElementById("tournament-preview");
-	const modalListContainer = document.getElementById("tournament-modal-list");
-
-	if (!previewContainer || !modalListContainer)
+function addTournament() {
+	const elements = getAddTournamentElements();
+	if (!elements)
 		return;
 
-	const renderTournamentItem = (tournament: TournamentInfo): string => {
-		const isRegistered = tournament.participants.includes(username ?? "");
-		const isCreator = tournament.created_by === username;
+	const { modalInfo, nameInput, capacityInput } = elements;
 
-		const regBtnClass = isRegistered
-			? "bg-red-100 text-red-800"
-			: "bg-green-100 text-green-800";
-		const regBtnText = isRegistered ? "Unregister" : "Register";
-
-		return `
-			<div class="px-4 py-5 sm:px-6 hover:bg-gray-50 cursor-pointer">
-				<div class="flex flex-col sm:flex-row sm:justify-between">
-					<div align="left">
-						<p class="font-semibold">${tournament.name}</p>
-					</div>
-					<div align="right">
-						${isCreator ? `
-							<button data-id="${tournament.id}" class="start-tournament-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full bg-hover text-white">Start</button>
-							<button data-id="${tournament.id}" class="start-tournament-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full bg-hover text-white">Delete</button>
-						` : ""}
-						<button data-id="${tournament.id}" class="register-btn mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full ${regBtnClass}">
-							${regBtnText}
-						</button>
-					</div>
-				</div>
-			</div>
-		`;
-	};
-
-	previewContainer.innerHTML = "";
-	tournaments.slice(0, 3).forEach(t => {
-		previewContainer.insertAdjacentHTML("beforeend", renderTournamentItem(t));
-	});
-
-	modalListContainer.innerHTML = "";
-	tournaments.forEach(t => {
-		modalListContainer.insertAdjacentHTML("beforeend", renderTournamentItem(t));
-	});
-
-	handleTournamentRegistration(username, tournaments);
+	addModalEvents(modalInfo, "add-tournament-modal");
+	if (modalInfo.saveBtn) {
+		modalInfo.saveBtn.addEventListener("click", () => {
+			clearErrors();
+			fetchAddTournament(nameInput, capacityInput);
+		});
+	}
 }
 
-function handleTournamentRegistration(username: string | null, tournaments: TournamentInfo[]) {
-	const registerButtons = document.querySelectorAll<HTMLButtonElement>(".register-btn");
-
-	registerButtons.forEach((button) => {
-		button.addEventListener("click", async () => {
-			clearErrors();
-			if (!username) {
-				showError("tournament1", "You must be logged in to register.");
-				showError("tournament2", "You must be logged in to register.");
-				return;
-			}
-
-			const tournamentId = Number(button.getAttribute("data-id"));
-			const tournament = tournaments.find(t => t.id === tournamentId);
-			if (!tournament) {
-				showError("tournament1", "Tournament not found.");
-				showError("tournament2", "Tournament not found.");
-				return;
-			}
-
-			const isRegistered = tournament.participants.includes(username);
-			const isFull = tournament.participants.length >= tournament.max_players_count;
-
-			if (!isRegistered && isFull) {
-				showError("tournament1", "Tournament is full.");
-				showError("tournament2", "Tournament is full.");
-				return;
-			}
-
-			try {
-				const response = await fetch("/api/regturnir", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						username,
-						tournament_id: tournamentId,
-					}),
-				});
-				// if (response.status === 400)
-				// {
-				// 	showError("tournament1", response.body.message || "Registration failed.");
-				// 	showError("tournament2", response.body.message || "Registration failed.");
-				// }
-				if (!response.ok) {
-					const err = await response.json();
-					showError("tournament1", err.message || "Registration failed.");
-					showError("tournament2", err.message || "Registration failed.");
-					return;
-				}
-
-				if (isRegistered) {
-					tournament.participants = tournament.participants.filter(p => p !== username);
-				} else {
-					tournament.participants.push(username);
-				}
-
-				initTournaments(username);
-
-			} catch (error) {
-				console.error("Registration error:", error);
-				showError("tournament1", "Server error during registration.");
-				showError("tournament2", "Server error during registration.");
-			}
+async function fetchAddTournament(
+	nameInput: HTMLInputElement,
+	capacityInput: HTMLSelectElement
+) {
+	const name = nameInput.value.trim();
+	const capacity = parseInt(capacityInput.value);
+	if (!name) {
+		showError("add_tournament", "Please enter a tournament name.");
+		return ;
+	}
+	try {
+		const response = await fetch("/create-tournament", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ name, capacity, currentUser }),
+			credentials: "include",
 		});
+
+		if (!response.ok) {
+			const result: ApiError = await response.json();
+			showError("add_tournament", result.message);
+			return;
+		}
+		hideModal("add-tournament-modal");
+	} catch (err) {
+		console.error("Error adding tournament:", err);
+		showError("tournament1", "Failed to add tournament. Please try again.");
+		showError("tournament2", "Failed to add tournament. Please try again.");
+	}
+	nameInput.value = "";
+	capacityInput.selectedIndex = 0;
+}
+
+async function deleteTournament(id: number, createdBy: string) {
+	try {
+		const response = await fetch("/delete-tournament", {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ id, createdBy }),
+			credentials: "include"
+		});
+		
+		if (!response.ok) {
+			const result: ApiError = await response.json();
+			showError("tournament1", result.message);
+			showError("tournament2", result.message);
+			return;
+		}
+	} catch (err) {
+		console.error("Error deleting tournament:", err);
+		showError("tournament1", "Failed to delete tournament. Please try again.");
+		showError("tournament2", "Failed to delete tournament. Please try again.");
+	}
+}
+
+async function startTournament(tournamentId: number) {
+	const response = await fetch("/start-tournament", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ tournamentId }),
+		credentials: "include"
 	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(error.message || "Failed to start tournament");
+	}
 }

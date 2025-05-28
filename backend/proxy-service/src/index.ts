@@ -12,7 +12,7 @@ app.register(gameServiceRoutes);
 app.register(userServiceRoutes);
 app.register(errorEnvelope);
 
-app.listen({ port: 3000 }, (err) => {
+app.listen({ port: Number(process.env.PORT) ?? 3000, host: String(process.env.HOST_NAME) ?? "0.0.0.0"  }, (err) => {
   if (err) {
     app.log.error(err);
     process.exit(1);

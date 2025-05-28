@@ -35,11 +35,13 @@ function loadHomePage() {
 function loadSignInForm() {
 	loadTemplate("signin-template", "Sign In");
 	initLoginForm();
+	initGoogleAuth();
 }
 
 function loadSignUpForm() {
 	loadTemplate("signup-template", "Sign Up");
 	initRegistrationForm();
+	initGoogleRegister();
 }
 
 function loadGamePage() {

@@ -52,7 +52,7 @@ export class FriendRepo implements FriendRepoInterface {
             LIMIT ? OFFSET ?`);
         return stmt.all(userId, `%${q ?? ''}%`, limit, offset);
     }
-    
+
     getRelationship(userId: number, friendId: number) {
         const stmt = this.app.db.prepare(`
             SELECT 1 FROM friends
