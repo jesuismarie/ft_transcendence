@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "ES6",
+		"lib": ["es2020", "dom"],
+		"module": "ESNext",
+		"strict": true,
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+		"outDir": "./dist",
+		"rootDir": "./srcs"
+	},
+	"include": ["srcs/**/*"],
+	"exclude": ["node_modules", "dist"]
+}

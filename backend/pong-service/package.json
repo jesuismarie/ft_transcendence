@@ -1,0 +1,33 @@
+{
+  "name": "pong-service",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec \"ts-node --esm\" src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "build:prod": "tsc",
+    "start:prod": "node /app/dist/index.js"
+  },
+  "keywords": [],
+  "author": "Ruzanna Grigoryan",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/socket.io": "^3.0.1",
+    "@types/socket.io-client": "^1.4.36",
+    "@types/ws": "^8.18.1",
+    "eslint": "^9.26.0",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@fastify/static": "^8.2.0",
+    "fastify": "^5.3.3",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "ws": "^8.18.2"
+  }
+}
