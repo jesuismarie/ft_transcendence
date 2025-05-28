@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { microserviceRequestHandler } from "../helpers";
+import { microserviceRequestHandler } from "./helpers";
 import { services } from "../../config";
-import { createTournamentSchema } from "./schemas";
+import { createTournamentSchema } from "../../schemas/game-service/schemas";
 
 export interface CreateTournamentRequestBody {
   name: string;

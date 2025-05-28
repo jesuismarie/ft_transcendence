@@ -446,7 +446,7 @@ set -euo pipefail
 JWT_SECRET=$(openssl rand -base64 32)
 REFRESH_TOKEN_SALT=$(openssl rand -base64 32)
 CLUSTER_TOKEN=$(openssl rand -hex 16)
-cat > backend/auth-service/.env <<EOF
+cat > backend/authservice/.env <<EOF
 DATABASE_URL=file:./auth.db
 JWT_SECRET=$JWT_SECRET
 REFRESH_TOKEN_SALT=$REFRESH_TOKEN_SALT
@@ -491,13 +491,13 @@ Run `npm run init:env` once per dev machine.
 
 ```bash
 # from repo root
-docker build -f backend/auth-service/Dockerfile -t ft-auth-service:latest .
+docker build -f backend/authservice/Dockerfile -t ft-auth-service:latest .
 ```
 
 Run:
 
 ```bash
-docker run --rm -p 3000:3000 --env-file backend/auth-service/.env ft-auth-service:latest
+docker run --rm -p 3000:3000 --env-file backend/authservice/.env ft-auth-service:latest
 ```
 
 ### 13.2 docker‑compose snippet
@@ -506,8 +506,8 @@ docker run --rm -p 3000:3000 --env-file backend/auth-service/.env ft-auth-servic
 authservice:
   build:
     context: .
-    dockerfile: backend/auth-service/Dockerfile
-  env_file: backend/auth-service/.env
+    dockerfile: backend/authservice/Dockerfile
+  env_file: backend/authservice/.env
   ports:
     - "3000:3000"
 ```

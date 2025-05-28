@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { microserviceRequestHandler } from "../helpers";
+import { microserviceRequestHandler } from "./helpers";
 import { services } from "../../config";
-import { getMatchHistoryByUserSchema } from "./schemas";
+import { getMatchHistoryByUserSchema } from "../../schemas/game-service/schemas";
 
 interface GetMatchHistoryByUserQuery {
   username: string;
