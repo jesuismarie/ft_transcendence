@@ -34,28 +34,148 @@ AuthService is a standalone **Fastify** microservice that provides:
 
 ---
 
-## 3 Endpoint Matrix (public)
+## 3 Api Reference
 
-| Method | Path                          | Request DTO               | Success Response                            |
-|--------|-------------------------------|---------------------------|---------------------------------------------|
-| `POST` | `/auth/register`              | `Auth.RegisterRequest`    | `Auth.RegisterResponse` (token pair OR 2FA) |
-| `POST` | `/auth/login`                 | `Auth.LoginRequest`       | `Auth.LoginResponse`                        |
-| `POST` | `/auth/login/2fa`             | `Auth.Login2FARequest`    | `Auth.LoginSuccess`                         |
-| `POST` | `/auth/refresh`               | `Auth.RefreshRequest`     | `Auth.RefreshResponse`                      |
-| `POST` | `/auth/logout`                | `Auth.LogoutRequest`      | `Auth.LogoutResponse`                       |
-| `POST` | `/auth/2fa/enable`            | –                         | `Auth.TwoFAEnableResponse`                  |
-| `POST` | `/auth/2fa/verify`            | `Auth.TwoFAVerifyRequest` | `Auth.TwoFAVerifyResponse`                  |
-| `GET`  | `/auth/oauth/google`          | –                         | 302 redirect → Google                       |
-| `GET`  | `/auth/oauth/google/callback` | –                         | `Auth.OAuthCallbackResponse`                |
+### Table of Contents
 
-### Internal‑only
+1. [Health Check](#health-check)
+2. [Authentication](#authentication)
 
-| Method | Path                      | Body DTO                  | Purpose                       |
-|--------|---------------------------|---------------------------|-------------------------------|
-| `POST` | `/internal/tokens/verify` | `Auth.TokenVerifyRequest` | Validate JWT, return `userId` |
-| `POST` | `/internal/tokens/revoke` | `Auth.TokenRevokeRequest` | Revoke refresh token by ID    |
+  * [Register](#register)
+  * [Login](#login)
+  * [Login with 2FA](#login-with-2fa)
+  * [Complete 2FA Login](#complete-2fa-login)
+  * [Refresh Tokens](#refresh-tokens)
+  * [Logout](#logout)
+3. [Two-Factor Authentication](#two-factor-authentication)
 
-All error replies use the unified `ApiError` envelope.
+  * [Enable 2FA](#enable-2fa)
+  * [Verify 2FA OTP](#verify-2fa-otp)
+4. [OAuth](#oauth)
+
+  * [Google OAuth2 Callback](#google-oauth2-callback)
+5. [Internal Endpoints](#internal-endpoints)
+
+  * [Verify JWT Token](#verify-jwt-token-internal)
+  * [Revoke Refresh Token](#revoke-refresh-token-internal)
+
+---
+
+### Health Check
+
+| Method | Path    | Description           | Internal | Request | Response (200)       |
+| ------ | ------- | --------------------- | -------- | ------- | -------------------- |
+| GET    | /health | Health check endpoint | No       | –       | `{ "status": "ok" }` |
+
+---
+
+### Authentication
+
+#### Register
+
+| Method | Path           | Description       | Internal | Request Body                                               | Response (200)                                                 | Response (409)                                                                      |
+| ------ | -------------- | ----------------- | -------- | ---------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| POST   | /auth/register | Register new user | No       | `{ "email": "...", "username": "...", "password": "..." }` | `{ "accessToken": "jwt", "refreshToken": "jwt", "userId": 1 }` | `{ "status": "error", "code": "EMAIL_EXISTS", "message": "E‑mail already in use" }` |
+
+---
+
+#### Login
+
+| Method | Path        | Description               | Internal | Request Body                            | Response (200)                                                 | Response (200-alt)                               | Response (401)                                                                                   |
+| ------ | ----------- | ------------------------- | -------- | --------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| POST   | /auth/login | Login with email/password | No       | `{ "email": "...", "password": "..." }` | `{ "accessToken": "jwt", "refreshToken": "jwt", "userId": 1 }` | `{ "requires2fa": true, "loginTicket": "uuid" }` | `{ "status": "error", "code": "INVALID_CREDENTIALS", "message": "Email or password incorrect" }` |
+
+---
+
+#### Complete 2FA Login
+
+| Method | Path            | Description                      | Internal | Request Body                                 | Response (200)                                                 | Response (401)                                                                                  |
+| ------ | --------------- | -------------------------------- | -------- | -------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| POST   | /auth/login/2fa | Complete login with OTP & ticket | No       | `{ "loginTicket": "uuid", "otp": "123456" }` | `{ "accessToken": "jwt", "refreshToken": "jwt", "userId": 1 }` | `{ "status": "error", "code": "TICKET_INVALID", "message": "Login ticket invalid or expired" }` |
+
+---
+
+#### Refresh Tokens
+
+| Method | Path          | Description                   | Internal | Request Body                | Response (200)                                                 | Response (401)                                                                                    |
+| ------ | ------------- | ----------------------------- | -------- | --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| POST   | /auth/refresh | Refresh access/refresh tokens | No       | `{ "refreshToken": "jwt" }` | `{ "accessToken": "jwt", "refreshToken": "jwt", "userId": 1 }` | `{ "status": "error", "code": "INVALID_REFRESH", "message": "Refresh token invalid or expired" }` |
+
+---
+
+#### Logout
+
+| Method | Path         | Description             | Internal | Request Body                | Response (200)        | Response (404)                                                                                              |
+| ------ | ------------ | ----------------------- | -------- | --------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| POST   | /auth/logout | Logout and revoke token | No       | `{ "refreshToken": "jwt" }` | `{ "revoked": true }` | `{ "status": "error", "code": "TOKEN_NOT_FOUND", "message": "Refresh token not found or already revoked" }` |
+
+---
+
+### Two-Factor Authentication
+
+#### Enable 2FA
+
+| Method | Path             | Description         | Internal | Request Headers                 | Response (200)                                                 |
+| ------ | ---------------- | ------------------- | -------- | ------------------------------- | -------------------------------------------------------------- |
+| POST   | /auth/2fa/enable | Enable 2FA for user | No       | `Authorization: Bearer <token>` | `{ "otpauthUrl": "otpauth://...", "qrSvg": "<svg>...</svg>" }` |
+
+---
+
+#### Verify 2FA OTP
+
+| Method | Path             | Description         | Internal | Request Headers                 | Request Body          | Response (200)         | Response (400)                                                                   | Response (401)                                                           |
+| ------ | ---------------- | ------------------- | -------- | ------------------------------- | --------------------- | ---------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| POST   | /auth/2fa/verify | Verify 2FA for user | No       | `Authorization: Bearer <token>` | `{ "otp": "123456" }` | `{ "verified": true }` | `{ "status": "error", "code": "2FA_NOT_ENABLED", "message": "2FA not enabled" }` | `{ "status": "error", "code": "OTP_INVALID", "message": "Invalid OTP" }` |
+
+---
+
+### OAuth
+
+#### Google OAuth2 Callback
+
+| Method | Path                        | Description            | Internal | Request | Response (200)                                                 | Response (500)                                                                         |
+| ------ | --------------------------- | ---------------------- | -------- | ------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| GET    | /auth/oauth/google/callback | Google OAuth2 callback | No       | –       | `{ "accessToken": "jwt", "refreshToken": "jwt", "userId": 1 }` | `{ "status": "error", "code": "OAUTH_FAILED", "message": "Google OAuthTypes failed" }` |
+
+---
+
+### Internal Endpoints
+
+#### Verify JWT Token (Internal)
+
+| Method | Path                    | Description      | Internal | Request Headers            | Request Body         | Response (200)                       | Response (401)                                                                          | Response (403)                                                                      | Response (404)                                                                 |
+| ------ | ----------------------- | ---------------- | -------- | -------------------------- | -------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| POST   | /internal/tokens/verify | Verify JWT token | Yes      | `X-Cluster-Token: <token>` | `{ "token": "jwt" }` | `{ "userId": 1, "username": "foo" }` | `{ "status": "error", "code": "INVALID_TOKEN", "message": "Token invalid or expired" }` | `{ "status": "error", "code": "FORBIDDEN", "message": "Internal route forbidden" }` | `{ "status": "error", "code": "USER_NOT_FOUND", "message": "User not found" }` |
+
+---
+
+#### Revoke Refresh Token (Internal)
+
+| Method | Path                    | Description                  | Internal | Request Headers            | Request Body                           | Response (200)        | Response (404)                                                                           |
+| ------ | ----------------------- | ---------------------------- | -------- | -------------------------- | -------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------- |
+| POST   | /internal/tokens/revoke | Revoke a refresh token by ID | Yes      | `X-Cluster-Token: <token>` | `{ "tokenId": "refresh-token-db-id" }` | `{ "revoked": true }` | `{ "status": "error", "code": "TOKEN_NOT_FOUND", "message": "Refresh token not found" }` |
+
+---
+
+### Error Envelope Format
+
+For error responses, the following envelope is used unless otherwise specified:
+
+```json
+{
+  "status": "error",
+  "code": "ERROR_CODE",   // Optional, machine-readable code (e.g. "EMAIL_EXISTS")
+  "message": "Description of error"
+}
+```
+
+---
+
+### Notes
+
+* **Internal**: Internal endpoints are for service-to-service use only (require `X-Cluster-Token` header).
+* **Authorization**: Some endpoints require `Authorization: Bearer <token>`.
+* **HTTP Status Codes**: Standard usage (200, 400, 401, 403, 404, 409, 500).
 
 ---
 
@@ -140,9 +260,7 @@ model LoginTicket {
 
 | Purpose                          | HTTP call                              | Payload                           | Success                                  | Error mapping                    |
 |----------------------------------|----------------------------------------|-----------------------------------|------------------------------------------|----------------------------------|
-| Uniqueness check before register | `POST /internal/users/validate-unique` | `{ username, email }`             | `{ ok:true }` *or* `{ ok:false, field }` | `USERNAME_TAKEN` / `EMAIL_TAKEN` |
 | Password verification            | `POST /internal/users/verify-password` | `{ email, password }`             | `{ userId }`                             | `INVALID_CREDENTIALS`            |
-| Find‑or‑create on Google OAuth   | `POST /internal/users/find-or-create`  | `{ email, googleSub, username? }` | `{ userId }`                             | `USERVICE_DOWN` (503)            |
 
 All requests must include header `X‑Cluster‑Token: <CLUSTER_TOKEN>`.
 
@@ -262,7 +380,7 @@ The Docker build runs `prisma migrate deploy` so containers always start with la
 
 ---
 
-## 9  Environment Variables
+## 9 Environment Variables
 
 | Var                         | Purpose                      | Example                                            |
 |-----------------------------|------------------------------|----------------------------------------------------|
@@ -398,7 +516,7 @@ authservice:
 
 ---
 
-## 14  Open Questions / Future Work
+## 14 Open Questions / Future Work
 
 * **Refresh‑token family trees** (token‑reuse detection) – skipped for MVP.
 * **Argon2 vs HMAC** – revisit after security review; add PBKDF benchmarking.
@@ -407,10 +525,11 @@ authservice:
 
 ---
 
-## 15  Changelog
+## 15 Changelog
 
 | Date        | Version | Notes                                                                                                    |
 |-------------|---------|----------------------------------------------------------------------------------------------------------|
+| 28 May 2025 | v5      | Complete API reference                                                                                   |
 | 25 May 2025 | v4      | Register refactor, `username` uniqueness, login‑ticket model, UserService contracts, spec styling fixes. |
 | 24 May 2025 | v3      | Local schemas moved to `src/schemas`, AJV auto‑loader.                                                   |
 | 23 May 2025 | v2      | Added `/auth/register` endpoint contracts.                                                               |
