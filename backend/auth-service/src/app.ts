@@ -18,6 +18,7 @@ import healthRoute from "./routes/health";
 import registerRoutes from "./routes/register";
 import authRoutes from "./routes/auth/routes";
 import oauthGoogle from "./plugins/oauth-google";
+import monitoringRoutes from "./routes/monitoring/routes";
 
 // Build the Fastify server
 const buildServer = () => {
@@ -48,6 +49,7 @@ const buildServer = () => {
   app.register(healthRoute);
   app.register(registerRoutes);
   app.register(authRoutes);
+  app.register(monitoringRoutes);
 
   // Handle 404 Not Found
   app.setNotFoundHandler((_req, reply) =>
