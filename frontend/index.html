@@ -3,12 +3,12 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="icon" type="image/png" href="./public/images/pong_logo.png">
+	<link rel="icon" type="image/png" href="./dist/assets/pong_logo.png">
 	<link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./dist/output.css">
 	<title>Welcome to Pong!</title>
 </head>
-<body class="w-[100dvw] h-[100dvh] inset-0 bg-[url('../public/images/background2.jpg')] bg-center bg-cover bg-no-repeat">
+<body class="w-[100dvw] h-[100dvh] inset-0 bg-[url('../dist/assets/background2.jpg')] bg-center bg-cover bg-no-repeat">
 	<div class="w-[100dvw] h-[100dvh] absolute inset-0 bg-black/40 -z-[1]"></div>
 	<div id="wrapper"></div>
 
@@ -37,7 +37,7 @@
 				</button>
 				<form id="loginForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-div-glow">
 					<h1>Sign In</h1>
-					<a href="#" class="w-9 h-9 grid place-items-center p-1 border border-gray-300 rounded-full hover:shadow-neon">
+					<a id="google-login-btn" href="#" class="w-9 h-9 grid place-items-center p-1 border border-gray-300 rounded-full hover:shadow-neon">
 						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
 					</a>
 					<span>or use your email password</span>
@@ -64,7 +64,7 @@
 					<h1>
 						Create Account
 					</h1>
-					<a href="#" class="w-9 h-9 grid place-items-center p-1 border border-gray-300 rounded-full hover:shadow-neon">
+					<a id="google-register-btn" href="#" class="w-9 h-9 grid place-items-center p-1 border border-gray-300 rounded-full hover:shadow-neon">
 						<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
 					</a>
 					<span>or use your email for registration</span>
@@ -131,7 +131,7 @@
 							<div class="px-4 pb-6 relative">
 								<div class="flex justify-center -mt-12">
 									<div class="relative">
-										<img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="./public/images/background1.jpg" alt="User avatar">
+										<img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="./dist/assets/background1.jpg" alt="User avatar">
 										<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-white hover:shadow-neon focus:outline-none">
 											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -322,11 +322,16 @@
 		<div id="tournament-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 				<div class="px-4 pt-5 pb-4 sm:p-6">
-				<h3 class="text-lg border-b border-hover pb-2">
-					All Tournaments
-				</h3>
-				<p class="error-msg text-red-500 text-sm" data-error-for="tournament1"></p>
-				<div id="tournament-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200"></div>
+					<h3 class="text-lg border-b border-hover pb-2">
+						All Tournaments
+					</h3>
+					<p class="error-msg text-red-500 text-sm" data-error-for="tournament1"></p>
+					<div id="tournament-modal-list" class="mt-4 max-h-[60vh] overflow-y-auto divide-y divide-gray-200"></div>
+				</div>
+				<div id="tournament-pagination" class="hidden flex justify-between items-center p-4 border-t border-gray-200">
+					<button id="prev-tournament-page" class="text-sm px-3 py-1 border rounded disabled:opacity-50">Previous</button>
+					<span id="tournament-page-info" class="text-sm"></span>
+					<button id="next-tournament-page" class="text-sm px-3 py-1 border rounded disabled:opacity-50">Next</button>
 				</div>
 				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
 					<button id="close-tournament-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
@@ -382,6 +387,7 @@
 	<script src="./dist/profile/twofa.js" defer></script>
 	<script src="./dist/profile/search.js" defer></script>
 	<script src="./dist/profile/friends.js" defer></script>
+	<script src="./dist/profile/add_friend.js" defer></script>
 	<script src="./dist/profile/matches.js" defer></script>
 	<script src="./dist/profile/tournaments.js" defer></script>
 	<script src="./dist/profile/tournament_details.js" defer></script>

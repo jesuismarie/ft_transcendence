@@ -46,11 +46,11 @@ function getFriendElements(): {
 	};
 }
 
-function renderFriendItem(friend: Friend): string {
+function renderFriendItem(friend: QuickUserResponse): string {
 	const targetHash = friend.username === currentUser ? "#profile" : `#profile/${friend.username}`;
 	return `
-		<div onclick="location.hash = '${targetHash}'; initPersonalData('${friend.id}');" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
-			<img src="${friend.avatar}" alt="${friend.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
+		<div onclick="location.hash = '${targetHash}'; initPersonalData(${friend.id});" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
+			<img src="${friend.avatarPath}" alt="${friend.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
 			<span>${friend.username}</span>
 		</div>
 	`;
@@ -83,7 +83,10 @@ async function fetchFriendList(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`users/${id}/friends?offset=${offset}&limit=${FRIENDS_LIMIT}`);
+		const res = await fetch(`friend/:${id}?offset=${offset}&limit=${FRIENDS_LIMIT}`, {
+			method: 'GET',
+			credentials: 'include'
+		});
 		if (!res.ok)
 			throw new Error("Failed to fetch friends");
 
