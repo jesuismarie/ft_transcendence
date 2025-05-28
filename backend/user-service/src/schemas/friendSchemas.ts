@@ -20,6 +20,27 @@ export const listFriendsQuery = {
     additionalProperties: false,
 } as const;
 
+export const listFriendsResponseSchema = {
+    type: 'object',
+    properties: {
+        total: { type: 'integer', minimum: 0 },
+        friends: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    id: { type: 'integer', minimum: 1 },
+                    username: { type: 'string', minLength: 1 },
+                    avatarPath: { type: 'string', nullable: true },
+                },
+                required: ['id', 'username'],
+                additionalProperties: false,
+            },
+        },
+    },
+    additionalProperties: false,
+}
+
 export const relationshipResponseSchema = {
     type: 'object',
     properties: {
