@@ -184,7 +184,7 @@ For error responses, the following envelope is used unless otherwise specified:
 * **DTO definitions** live in `packages/api-types/src/auth-types.ts` and are imported with:
 
   ```ts
-  import { Auth } from '@ft-transcendence/api-types';
+  import { Auth } from '@KarenDanielyan/ft-transcendence-api-types';
   ```
 * **Runtime validation** uses one AJV instance registered by `plugins/validation.ts`.
 
@@ -401,7 +401,7 @@ The Docker build runs `prisma migrate deploy` so containers always start with la
   "@fastify/helmet": "^9",
   "@fastify/rate-limit": "^7",
   "@fastify/oauth2": "^8",
-  "@ft-transcendence/api-types": "*",
+  "@KarenDanielyan/ft-transcendence-api-types": "*",
   "@prisma/client": "^5",
   "ajv": "^8",
   "ajv-formats": "^2",

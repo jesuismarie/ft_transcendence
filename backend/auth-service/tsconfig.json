@@ -9,7 +9,7 @@
 		"skipLibCheck": true,
 		"baseUrl": ".",
 		"paths": {
-			"@ft-transcendence/api-types": ["../api-types/src"]
+			"@KarenDanielyan/ft-transcendence-api-types": ["../api-types/src"]
 		}
 	},
 	"include": ["src/**/*", "src/types"],
