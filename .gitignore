@@ -8,5 +8,7 @@ data
 public
 migrations
 *.db*
+.npmrc
 *.tsbuildinfo
+SECRET.txt
 
