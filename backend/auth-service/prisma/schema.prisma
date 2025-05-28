@@ -1,0 +1,55 @@
+// prisma/schema.prisma
+
+// Defines the database connection settings.
+// SQLite + `DATABASE_URL` path to the database file.
+datasource db {
+  provider = "sqlite"
+  url      = "file:./auth.db"
+}
+
+// Configures the Prisma Client generator.
+// This generates the Prisma Client JavaScript code for interacting with the database.
+generator client {
+  provider = "prisma-client-js"
+}
+
+model RefreshToken {
+  id            String   @id @default(cuid())
+  userId        Int
+  tokenHash     String   @unique// SHA‑256 of the raw refresh token
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+  rotatedAt     DateTime?
+  revoked       Boolean  @default(false)
+  revokedReason String?
+}
+
+model TotpSecret {
+  id         String   @id @default(cuid())
+  userId     Int      @unique
+  secret     String   // base32
+  verified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model OAuthAccount {
+  id              String   @id @default(cuid())
+  provider        String   // e.g. "google"
+  providerUserId  String   // sub from Google ID token
+  email           String
+  userId          Int
+  createdAt       DateTime @default(now())
+  @@unique([provider, providerUserId])
+}
+
+model LoginTicket {
+	id        String   @id                 // UUIDv4
+	userId    Int                              // FK to external UserService id
+	expiresAt DateTime                         // when the ticket becomes invalid
+	used      Boolean  @default(false)         // set to true after successful /auth/login/2fa
+	createdAt DateTime  @default(now())
+
+	@@index([userId])
+	@@index([expiresAt])
+}

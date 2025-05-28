@@ -1,0 +1,28 @@
+{
+  "name": "proxy-service",
+  "version": "1.0.0",
+  "description": "Proxy service for routing requests to different services",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec \"ts-node\" src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "build:prod": "tsc",
+    "start:prod": "node /app/dist/index.js"
+  },
+  "dependencies": {
+    "@KarenDanielyan/ft-transcendence-api-types": "^1.0.0",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "fastify": "^4.26.1",
+    "fastify-plugin": "^5.0.1",
+    "sqlite": "^4.2.1",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "@fastify/ajv-compiler": "^4.0.2",
+    "@types/node": "^20.11.30",
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

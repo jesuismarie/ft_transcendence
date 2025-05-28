@@ -1,0 +1,18 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "tailwind": "tailwindcss -i ./public/css/styles.css -o ./dist/output.css --minify",
+    "build": "npx tsc && npm run tailwind"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

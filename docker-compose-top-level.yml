@@ -1,0 +1,85 @@
+services:
+    auth-service:
+      image: auth-service
+      container_name: auth-service
+      build: backend/auth-service/
+      ports:
+        - "5000:5000"
+      networks:
+        - bridge-network-transcendence
+      env_file:
+        - secrets/backend/auth-service/auth-service-secrets.txt
+      volumes:
+        - auth-service-db-data:/app/backend/auth-service/prisma
+      restart: always
+
+    game-service:
+      image: game-service
+      container_name: game-service
+      build: backend/game-service
+      ports:
+        - "5001:5001"
+      networks:
+        - bridge-network-transcendence
+      env_file:
+        - secrets/backend/game-service/game-service-secrets.txt
+      volumes:
+        - game-service-db-date:/app/data
+      restart: always
+
+    user-service:
+      image: user-service
+      container_name: user-service
+      build: backend/user-service
+      ports:
+        - "5002:5002"
+      networks:
+        - bridge-network-transcendence
+      env_file:
+        - secrets/backend/user-service/user-service-secrets.txt
+      volumes:
+        - user-service-db-date:/app/data
+      restart: always
+
+    proxy-service:
+      image: proxy-service
+      container_name: proxy-service
+      build: backend/proxy-service/
+      ports:
+        - "5003:5003"
+      networks:
+        - bridge-network-transcendence
+      env_file:
+        - secrets/backend/proxy-service/proxy-service-secrets.txt
+      volumes:
+        - proxy-service-db-date:/example/path
+      depends_on:
+        - auth-service
+        - user-service
+        - game-service
+      restart: always
+
+    pong-service:
+      image: pong-service
+      container_name: pong-service
+      build: backend/pong-service/
+      ports:
+        - "5005:5005"
+      networks:
+        - bridge-network-transcendence
+      env_file:
+        - secrets/backend/pong-service/pong-service-secrets.txt
+      volumes:
+        - pong-service-db-date:/example/path
+      restart: always
+
+volumes:
+    auth-service-db-data:
+    game-service-db-date:
+    user-service-db-date:
+    pong-service-db-date:
+    proxy-service-db-date:
+
+networks:
+  bridge-network-transcendence:
+
