@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { UserRepo } from "../../repositories/userRepo";
 import { listUsersQuery } from "../../schemas/userSchemas";
-import { UserTypes } from "@ft-transcendence/api-types";
+import { UserTypes } from "@KarenDanielyan/ft-transcendence-api-types";
 
 export default async function getUsersRoute(app:FastifyInstance, userRepo:UserRepo) {
 	app.get<{Reply: UserTypes.UserListView}>(

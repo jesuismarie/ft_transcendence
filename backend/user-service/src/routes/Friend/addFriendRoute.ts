@@ -3,7 +3,7 @@ import { addFriendSchema } from "../../schemas/friendSchemas";
 import { errorSchema } from "../../schemas/errorSchema";
 import {UserRepo} from "../../repositories/userRepo";
 import {FriendRepo} from "../../repositories/friendRepo";
-import {CommonTypes, UserTypes} from "@ft-transcendence/api-types";
+import {CommonTypes, UserTypes} from "@KarenDanielyan/ft-transcendence-api-types";
 
 export default async function addFriendRoute(app: FastifyInstance, userRepo: UserRepo, friendRepo: FriendRepo) {
 	app.post<{Body: UserTypes.AddFriendRequest; Response: {status: string} | CommonTypes.ApiError}>(

@@ -3,7 +3,7 @@ import { listFriendsQuery, listFriendsResponseSchema } from "../../schemas/frien
 import { UserRepo } from "../../repositories/userRepo";
 import { FriendRepo } from "../../repositories/friendRepo";
 import errorSchema from "../../schemas/errorSchema";
-import { UserTypes } from "@ft-transcendence/api-types";
+import { UserTypes } from "@KarenDanielyan/ft-transcendence-api-types";
 
 export default async function getUserFriendsRoute(app: FastifyInstance, userRepo: UserRepo, friendRepo: FriendRepo) {
 	app.get<{Params: {userId: string}}>(

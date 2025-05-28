@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
-import { UserTypes } from '@ft-transcendence/api-types';
-import {UserView} from "@ft-transcendence/api-types/dist/user-types";
+import { UserTypes } from '@KarenDanielyan/ft-transcendence-api-types';
+import {UserView} from "@KarenDanielyan/ft-transcendence-api-types/dist/user-types";
 
 
 // This is not a view model, but a repository interface for user data.

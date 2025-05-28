@@ -2,8 +2,8 @@ import { FastifyInstance, FastifyReply } from "fastify";
 import { UserRepo } from "../../repositories/userRepo";
 import {createUserResponseSchema, createUserSchema} from "../../schemas/userSchemas";
 import { errorSchema } from "../../schemas/errorSchema";
-import { UserTypes } from "@ft-transcendence/api-types";
-import { CommonTypes } from "@ft-transcendence/api-types";
+import { UserTypes } from "@KarenDanielyan/ft-transcendence-api-types";
+import { CommonTypes } from "@KarenDanielyan/ft-transcendence-api-types";
 import argon2 from "argon2";
 
 export default async function createUserRoute(app: FastifyInstance, userRepo: UserRepo) {

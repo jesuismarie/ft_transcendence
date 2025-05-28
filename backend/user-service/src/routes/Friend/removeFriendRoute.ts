@@ -1,8 +1,8 @@
 import { removeFriendSchema } from "../../schemas/friendSchemas";
 import { FastifyInstance, FastifyReply } from "fastify";
 import errorSchema from "../../schemas/errorSchema";
-import { CommonTypes } from "@ft-transcendence/api-types";
-import { UserTypes } from "@ft-transcendence/api-types";
+import { CommonTypes } from "@KarenDanielyan/ft-transcendence-api-types";
+import { UserTypes } from "@KarenDanielyan/ft-transcendence-api-types";
 
 
 export default async function removeFriendRoute(app: FastifyInstance, userRepo: any, friendRepo: any) {

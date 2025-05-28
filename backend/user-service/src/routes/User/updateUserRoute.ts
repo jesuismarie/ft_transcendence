@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyReply } from "fastify";
 import { UserRepo } from "../../repositories/userRepo";
 import { updateUserSchema } from "../../schemas/userSchemas";
 import { errorSchema } from "../../schemas/errorSchema";
-import { UserTypes } from "@ft-transcendence/api-types";
+import { UserTypes } from "@KarenDanielyan/ft-transcendence-api-types";
 
 
 export default async function updateUserRoute(app: FastifyInstance, userRepo: UserRepo) {

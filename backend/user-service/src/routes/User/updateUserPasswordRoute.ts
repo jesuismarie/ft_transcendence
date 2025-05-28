@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyReply } from "fastify";
 import { UserRepo } from "../../repositories/userRepo";
 import {updatePasswordResponseSchema, updatePasswordSchema} from "../../schemas/userSchemas";
 import { errorSchema } from "../../schemas/errorSchema";
-import { UserTypes } from "@ft-transcendence/api-types";
+import { UserTypes } from "@KarenDanielyan/ft-transcendence-api-types";
 import argon2 from "argon2";
 
 
