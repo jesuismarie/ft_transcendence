@@ -39,7 +39,7 @@ app.register(routes);
 
 app
   .listen({
-    port: process.env.PORT ? Number(process.env.PORT) : 3000,
+    port: process.env.PORT ? Number(process.env.PORT) : 3003,
     host: process.env.HOST_NAME ? String(process.env.HOST_NAME) : "localhost",
   })
   .catch((err) => {

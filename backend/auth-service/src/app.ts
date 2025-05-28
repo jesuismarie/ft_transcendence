@@ -77,7 +77,7 @@ if (require.main === module) {
   const server = buildServer();
   server
     .listen({
-      port: process.env.PORT ? Number(process.env.PORT) : 3000,
+      port: process.env.PORT ? Number(process.env.PORT) : 3001,
       host: process.env.HOST_NAME ? String(process.env.HOST_NAME) : "localhost",
     })
     .catch((err) => {
