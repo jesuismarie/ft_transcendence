@@ -26,3 +26,5 @@ export default async function createUserRoute(app: FastifyInstance) {
     }
   );
 }
+
+// TODO: delete

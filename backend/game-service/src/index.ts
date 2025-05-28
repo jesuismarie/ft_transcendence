@@ -18,7 +18,7 @@ app.register(tournamentRoutes);
 app.register(internalRoutes);
 
 
-app.listen({ port: Number(process.env.PORT) ?? 3000, host: String(process.env.HOST_NAME) ?? "0.0.0.0" }, (err) => {
+app.listen({ port: process.env.PORT ? Number(process.env.PORT) : 3000, host: process.env.HOST_NAME ? String(process.env.HOST_NAME) : "localhost" }, (err) => {
   if (err) {
     app.log.error(err);
     process.exit(1);
