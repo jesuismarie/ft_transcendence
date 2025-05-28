@@ -12,6 +12,7 @@ dotenv.config();
 // Plugins
 import dbPlugin from './plugins/db';
 import errorEnvelope from "./plugins/errorEnvelope";
+import gameServiceClientPlugin from './plugins/gameServiceClient';
 
 // Routes
 import routes from './routes/routes';
@@ -33,6 +34,7 @@ app.register(multipart, { limits: {fileSize: 1_000_000} });
 
 app.register(errorEnvelope);
 app.register(dbPlugin);
+app.register(gameServiceClientPlugin);
 
 app.register(routes);
 
