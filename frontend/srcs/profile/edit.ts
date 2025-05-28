@@ -32,7 +32,7 @@ function getEditProfileModalInfo(): ModalInfo | null {
 	};
 }
 
-function clearFormInputs(elements: EditProfileElements, currentUser: User) {
+function clearFormInputs(elements: EditProfileElements, currentUser: UserView) {
 	elements.usernameInput.value = currentUser.username;
 	elements.emailInput.value = currentUser.email;
 	elements.oldPasswordInput.value = "";
@@ -41,7 +41,7 @@ function clearFormInputs(elements: EditProfileElements, currentUser: User) {
 	clearErrors();
 }
 
-function validateForm(elements: EditProfileElements, currentUser: User): boolean {
+function validateForm(elements: EditProfileElements, currentUser: UserView): boolean {
 	const updatedUsername = elements.usernameInput.value.trim();
 	const updatedEmail = elements.emailInput.value.trim();
 	const oldPassword = elements.oldPasswordInput.value;
@@ -88,7 +88,7 @@ function validateForm(elements: EditProfileElements, currentUser: User): boolean
 	return !hasError;
 }
 
-async function updateProfile(elements: EditProfileElements, currentUser: User) {
+async function updateProfile(elements: EditProfileElements, currentUser: UserView) {
 	const updatedUsername = elements.usernameInput.value.trim();
 	const updatedEmail = elements.emailInput.value.trim();
 	const oldPassword = elements.oldPasswordInput.value;
@@ -154,7 +154,7 @@ async function updateProfile(elements: EditProfileElements, currentUser: User) {
 	}
 }
 
-function editProfile(currentUser: User) {
+function editProfile(currentUser: UserView) {
 	const modalInfo = getEditProfileModalInfo();
 	const elements = getEditProfileElements();
 

@@ -1,4 +1,4 @@
-function initData(user: User) {
+function initData(user: UserView) {
 	const playerName = document.getElementById("player-name") as HTMLElement | null;
 	const playerWins = document.getElementById("player-wins") as HTMLElement | null;
 	const playerLosses = document.getElementById("player-losses") as HTMLElement | null;
@@ -35,30 +35,30 @@ async function initPersonalData(id: number) {
 		return;
 	}
 
-	try {
-		const currentUserId = getCurrentUserId();
-		const targetUserId = id || currentUserId;
+	// try {
+	// 	const currentUserId = getCurrentUserId();
+	// 	const targetUserId = id || currentUserId;
 
-		if (!targetUserId)
-			throw new Error("Username is required to load user profile");
+	// 	if (!targetUserId)
+	// 		throw new Error("Username is required to load user profile");
 
-		const res = await fetch(`/users/${targetUserId}`, {
-			credentials: 'include'
-		});
-		if (!res.ok)
-			throw new Error("Failed to load user profile");
-		const user: User = await res.json();
+	// 	const res = await fetch(`/users/${targetUserId}`, {
+	// 		credentials: 'include'
+	// 	});
+	// 	if (!res.ok)
+	// 		throw new Error("Failed to load user profile");
+	// 	const user: UserView = await res.json();
 
-		// let targetUserId = 1;
-		// let currentUserId = 1;
-		// const user: User = {
-		// 	id: 1,
-		// 	email: "test@test.com",
-		// 	username: "test",
-		// 	wins: 10,
-		// 	losses: 5,
-		// 	avatar: "https://example.com/avatar.png"
-		// };
+		let targetUserId = 1;
+		let currentUserId = 1;
+		const user: UserView = {
+			id: 1,
+			email: "test@test.com",
+			username: "test",
+			wins: 10,
+			losses: 5,
+			avatar: "https://example.com/avatar.png"
+		};
 		searchUsers();
 		viewFriends(user.id);
 		viewMatches(user.id, user.username);
@@ -68,7 +68,7 @@ async function initPersonalData(id: number) {
 			initAvatarUpload(targetUserId);
 			editProfileBtn.classList.remove("hidden");
 			editProfile(user);
-			// setup2FA();
+			setup2FA();
 			// upcomingTournaments.classList.remove("hidden");
 			initTournaments(currentUser);
 			addTournament();
@@ -86,7 +86,7 @@ async function initPersonalData(id: number) {
 			}
 			addTournamentPreviewBtn.classList.add("hidden");
 		}
-	} catch (err) {
-		console.error("Error loading personal data:", err);
-	}
+	// } catch (err) {
+	// 	console.error("Error loading personal data:", err);
+	// }
 }

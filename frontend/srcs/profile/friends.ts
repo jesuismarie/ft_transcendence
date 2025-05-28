@@ -46,11 +46,11 @@ function getFriendElements(): {
 	};
 }
 
-function renderFriendItem(friend: Friend): string {
+function renderFriendItem(friend: QuickUserResponse): string {
 	const targetHash = friend.username === currentUser ? "#profile" : `#profile/${friend.username}`;
 	return `
 		<div onclick="location.hash = '${targetHash}'; initPersonalData(${friend.id});" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
-			<img src="${friend.avatar}" alt="${friend.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
+			<img src="${friend.avatarPath}" alt="${friend.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
 			<span>${friend.username}</span>
 		</div>
 	`;
