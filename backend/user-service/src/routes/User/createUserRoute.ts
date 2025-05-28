@@ -9,7 +9,7 @@ import argon2 from "argon2";
 export default async function createUserRoute(app: FastifyInstance, userRepo: UserRepo) {
 	// @ts-ignore
 	app.post<{ Body: UserTypes.CreateUserRequest; Reply: UserTypes.CreateUserResponse | CommonTypes.ApiError }>(
-		'/users',
+		'/internal/users',
 		{
 			schema: {
 				body: createUserSchema,

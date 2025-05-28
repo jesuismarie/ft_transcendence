@@ -4,7 +4,7 @@ import { UserRepo } from "../../repositories/userRepo";
 
 export default async function deleteUserRoute(app: FastifyInstance, userRepo: UserRepo) {
 	app.delete<{Params: {id: string}}>(
-		'/users/:id',
+		'/internal/users/:id',
 		async (req, reply: FastifyReply) => {
 			const id = Number(req.params.id);
 			const deleted = userRepo.delete(id);
