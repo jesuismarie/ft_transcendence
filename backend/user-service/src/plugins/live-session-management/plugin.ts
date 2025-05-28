@@ -12,7 +12,7 @@ const CLUSTER_TOKEN = process.env.CLUSTER_TOKEN || 'supersecret';
 export default fp(async (fastify: FastifyInstance) => {
 	
 	fastify.get(
-		'/ws', {
+		'/users/ws', {
 		websocket: true
 		},
 		async (conn: any, req: FastifyRequest) => {
