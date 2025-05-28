@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { microserviceRequestHandler } from "../helpers";
+import { microserviceRequestHandler } from "./helpers";
 import { services } from "../../config";
-import { startTournamentSchema } from "./schemas"; // Импорт схемы
+import { startTournamentSchema } from "../../schemas/game-service/schemas"; // Импорт схемы
 
 interface StartTournamentRequestBody {
   tournament_id: number;

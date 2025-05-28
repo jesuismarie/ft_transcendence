@@ -8,7 +8,6 @@ data
 public
 migrations
 *.db*
-.npmrc
 backend/auth-service/.npmrc
 backend/game-service/.npmrc
 backend/pong-service/.npmrc

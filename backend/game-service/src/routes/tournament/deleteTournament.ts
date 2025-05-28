@@ -5,7 +5,7 @@ import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
 
 interface DeleteTournamentRequestBody {
   tournament_id: number;
-  created_by: string; // Добавлено поле created_by
+  created_by: string;
 }
 
 export default async function deleteTournamentRoute(app: FastifyInstance) {
