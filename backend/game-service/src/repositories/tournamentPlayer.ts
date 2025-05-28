@@ -78,4 +78,20 @@ export class TournamentPlayerRepo {
       .prepare(`DELETE FROM tournament_player WHERE tournament_id = ?`)
       .run(tournament_id);
   }
+
+  getUserStats(
+    username: string,
+    db?: Database
+  ): { wins: number; losses: number } | null {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      SELECT SUM(wins) as wins, SUM(losses) as losses
+      FROM tournament_player
+      WHERE player_username = ?
+    `);
+    const row = stmt.get(username) as
+      | { wins: number; losses: number }
+      | undefined;
+    return row || null;
+  }
 }
