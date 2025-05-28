@@ -19,6 +19,6 @@ const wss = new WebSocket.Server({ server: httpServer });
 wss.on('connection', handleSocketConnection);
 
 
-httpServer.listen(Number(process.env.PORT) ?? 3000, String(process.env.HOST_NAME) ?? "0.0.0.0", () => {
+httpServer.listen(Number(process.env.PORT) ?? 3000, String(process.env.HOST_NAME) ?? "localhost", () => {
     console.log(`Running at http://${process.env.HOST_NAME}:${process.env.PORT}`);
 });
