@@ -36,9 +36,39 @@ const ALLOWED_IMAGE_TYPES = [
 ] as const;
 
 
-
 // API Types
-interface User {
+interface TwoFAEnableResponse {
+	otpauthUrl: string;
+	qrSvg: string;
+}
+
+interface TwoFAVerifyRequest {
+	otp: string;
+}
+
+interface TwoFAVerifyResponse {
+	verified: true;
+}
+
+interface TokenPair {
+	accessToken: string;
+	refreshToken: string;
+	userId: number;
+}
+
+interface LoginSuccess extends TokenPair {}
+
+interface Login2FARequired {
+	requires2fa: true;
+	loginTicket: string;
+}
+
+interface Login2FARequest {
+	loginTicket: string;
+	otp: string;
+}
+
+interface UserView {
 	id:			number;
 	username:	string;
 	email:		string;
@@ -47,7 +77,11 @@ interface User {
 	avatar?:	string | null;
 }
 
-interface PatchUserRequest {
+interface UpdateAvatarRequest {
+	avatarPath:	string;
+}
+
+interface UpdateUserRequest {
 	displayName?:	string;
 	email?:			string;
 }
@@ -59,18 +93,23 @@ interface ChangePasswordRequest {
 
 interface SearchUserResponse {
 	totalCount:	number;
-	users:		User[];
+	users:		QuickUserResponse[];
 }
 
-interface Friend {
+interface QuickUserResponse {
 	id:			number;
 	username:	string;
-	avatar?:	string | null;
+	avatarPath:	string | null;
 }
 
 interface FriendResponse {
-	totalCount:		number;
-	friends:		Friend[];
+	totalCount:	number;
+	friends:	QuickUserResponse[];
+}
+
+interface AddFriendRequest {
+	userId:		number;
+	friendId:	number;
 }
 
 interface GetMatchHistoryResponse {
@@ -79,7 +118,7 @@ interface GetMatchHistoryResponse {
 }
 
 interface MatchHistory {
-	id: 			number;
+	id:				number;
 	opponent:		string;
 	status:			number;
 	is_won:			boolean;
@@ -114,6 +153,12 @@ interface RegisterRequest {
 interface LoginRequest {
 	email:		string;
 	password:	string;
+}
+
+interface ApiError {
+	status: 'error';
+	code: string;
+	message: string;
 }
 
 // Tournament status

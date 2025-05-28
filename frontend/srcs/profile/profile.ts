@@ -1,4 +1,4 @@
-function initData(user: User) {
+function initData(user: UserView) {
 	const playerName = document.getElementById("player-name") as HTMLElement | null;
 	const playerWins = document.getElementById("player-wins") as HTMLElement | null;
 	const playerLosses = document.getElementById("player-losses") as HTMLElement | null;
@@ -37,29 +37,28 @@ async function initPersonalData(id: number) {
 
 	try {
 		// const currentUserId = getCurrentUserId();
-		// const targetUserId = username || currentUserId;
+		// const targetUserId = id || currentUserId;
 
-		let currentUserId;
-		let targetUserId = id || currentUserId;
-		if (!targetUserId)
-			targetUserId = 1; // For testing purposes
-		currentUserId = 1; // For testing purposes
-		
-		if (!targetUserId)
-			throw new Error("Username is required to load user profile");
+		// if (!targetUserId)
+		// 	throw new Error("Username is required to load user profile");
 
-		// const res = await fetch(`/users/${targetUserId}`);
+		// const res = await fetch(`/users/:${targetUserId}`, {
+		// 	method: 'GET',
+		// 	credentials: 'include'
+		// });
 		// if (!res.ok)
 		// 	throw new Error("Failed to load user profile");
-		// const user: User = await res.json();
+		// const user: UserView = await res.json();
 
-		const user: User = {
+		let targetUserId = 0;
+		let currentUserId = 0;
+		const user: UserView = {
 			id: 1,
-			username: "hello",
-			email: "hey@gmail.com",
+			email: "test@test.com",
+			username: "test",
 			wins: 10,
 			losses: 5,
-			avatar: "https://example.com/avatar.png",
+			avatar: "https://example.com/avatar.png"
 		};
 		searchUsers();
 		viewFriends(user.id);
@@ -70,14 +69,22 @@ async function initPersonalData(id: number) {
 			initAvatarUpload(targetUserId);
 			editProfileBtn.classList.remove("hidden");
 			editProfile(user);
-			// setup2FA();
+			setup2FA();
 			// upcomingTournaments.classList.remove("hidden");
-			// initTournaments(targetUserId);
+			initTournaments(currentUser);
 			addTournament();
 		} else {
 			editProfileBtn.classList.add("hidden");
 			upcomingTournaments.classList.add("hidden");
-			friendRequestBtn.classList.remove("hidden");
+			const isAlreadyFriend = await checkIfFriend(currentUserId, targetUserId);
+			if (!isAlreadyFriend) {
+				friendRequestBtn.classList.remove("hidden");
+				friendRequestBtn.addEventListener("click", () => {
+					addFriend(currentUserId, targetUserId, friendRequestBtn);
+				});
+			} else {
+				friendRequestBtn.classList.add("hidden");
+			}
 			addTournamentPreviewBtn.classList.add("hidden");
 		}
 	} catch (err) {

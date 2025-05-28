@@ -45,7 +45,7 @@ services:
     volumes:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     env_file:
-      - ../../secrets/devops/grafana/secrets-grafana.txt
+      - ../../secrets/devops/grafana/grafana-secrets.txt
     networks:
       - bridge-network-transcendence
     depends_on:
