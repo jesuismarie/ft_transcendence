@@ -10,6 +10,7 @@ import updateUserAvatarRoute from "./updateUserAvatarRoute";
 import updateUserPasswordRoute from "./updateUserPasswordRoute";
 import updateUserRoute from "./updateUserRoute";
 import verifyPasswordRoute from "./verifyPasswordRoute";
+import {registerPresenceRoute} from "./presenceRoute";
 
 
 export default async function userRoutes(app: FastifyInstance, userRepo: UserRepo) {
@@ -22,4 +23,5 @@ export default async function userRoutes(app: FastifyInstance, userRepo: UserRep
     await getUserByUsernameRoute(app, userRepo);
     await updateUserAvatarRoute(app, userRepo);
     await verifyPasswordRoute(app, userRepo);
+    await registerPresenceRoute(app, userRepo);
 }
