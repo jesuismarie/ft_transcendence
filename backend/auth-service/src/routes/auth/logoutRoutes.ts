@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { AuthTypes, CommonTypes } from '@ft-transcendence/api-types';
+import { AuthTypes, CommonTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 import { apiError } from '../../lib/error';
 import { hashRefresh } from '../../lib/token';
 

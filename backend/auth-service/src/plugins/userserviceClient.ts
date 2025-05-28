@@ -1,7 +1,7 @@
 import {FastifyInstance, FastifyPluginAsync} from 'fastify';
 import fp from 'fastify-plugin';
 import {request} from 'undici';
-import {AuthTypes, UserTypes} from '@ft-transcendence/api-types';
+import {AuthTypes, UserTypes} from '@KarenDanielyan/ft-transcendence-api-types';
 import {apiError} from '../lib/error';
 
 interface FindOrCreateOAuthBody {
@@ -17,7 +17,7 @@ export interface UserServiceClient {
 	/* Create a new user with the given details. */
 	createUser(body: AuthTypes.RegisterRequest): Promise<number>;
 	/* Get user details by ID. */
-	getUserById(id: number): Promise<UserTypes.User>;
+	getUserById(id: number): Promise<UserTypes.UserView>;
 	/* Find or create a user based on OAuth provider details. */
 	findOrCreateOAuth(body: FindOrCreateOAuthBody): Promise<number>;
 }
@@ -61,13 +61,13 @@ const buildClient = ({ baseUrl, clusterToken } : UserServiceClientConfig): UserS
 		const res = await call<{ userId: number }>('/internal/users', body, [201]);
 		return res.userId;
 	};
-	const getUserById = async (id: number): Promise<UserTypes.User> => {
+	const getUserById = async (id: number): Promise<UserTypes.UserView> => {
 		const {statusCode, body: resBody} = await request(`${baseUrl}/internal/users/${id}`, {
 			method: 'GET',
 			headers,
 		});
 		if (statusCode !== 200) throw apiError('USER_NOT_FOUND', 'User not found', statusCode);
-		return (await resBody.json()) as UserTypes.User;
+		return (await resBody.json()) as UserTypes.UserView;
 	};
 	const findOrCreateOAuth = async (body: FindOrCreateOAuthBody): Promise<number> => {
 		const {email, provider, providerUserId, username} = body;
@@ -93,7 +93,7 @@ const buildClient = ({ baseUrl, clusterToken } : UserServiceClientConfig): UserS
 				throw err; });
 		}
 		else if (statusCode === 201) {
-			const user = await resBody.json() as UserTypes.User;
+			const user = await resBody.json() as UserTypes.UserView;
 			return user.id;
 		}
 		else {

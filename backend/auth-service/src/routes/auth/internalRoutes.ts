@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { apiError } from '../../lib/error';
-import { AuthTypes, CommonTypes } from '@ft-transcendence/api-types';
+import { AuthTypes, CommonTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 
 // Utility middleware: ensure X-Cluster-Token matches env
 async function clusterAuth(req: FastifyRequest, reply: FastifyReply) {

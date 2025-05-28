@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { FastifyInstance } from 'fastify';
-import { AuthTypes } from '@ft-transcendence/api-types';
+import { AuthTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 
 /** Hash refresh token deterministically using HMAC‑SHA256 + service salt */
 export function hashRefresh(token: string, salt: string) {

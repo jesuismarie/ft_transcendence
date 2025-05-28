@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { issueTokenPair } from '../../lib/token';
 import { apiError } from '../../lib/error';
-import { AuthTypes, CommonTypes } from '@ft-transcendence/api-types';
+import { AuthTypes, CommonTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 
 export default async function googleOauthRoutes(app: FastifyInstance) {
 	// OAuthTypes callback endpoint

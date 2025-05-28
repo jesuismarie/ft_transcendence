@@ -1,5 +1,5 @@
 import { FastifyError } from 'fastify';
-import { CommonTypes } from '@ft-transcendence/api-types';
+import { CommonTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 
 export function apiError(code: string, message: string, status = 400): FastifyError {
 	const err = new Error(message) as CommonTypes.ApiError & FastifyError;
