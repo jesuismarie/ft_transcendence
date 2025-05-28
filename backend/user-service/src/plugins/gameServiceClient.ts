@@ -50,7 +50,7 @@ const buildClient = ({ baseUrl, timeout }: GameServiceClientConfig): GameService
 	
 	const getGamestats = async (request: GamestatsRequest): Promise<GamestatsResponse> => {
 		const { username } = request.Params;
-		const path = `/gamestats/${username}`;
+		const path = `internal/gamestats/${username}`;
 		const res = await call<GamestatsResponse>('GET', path, undefined, [200]);
 		return {username: res.username, wins: res.wins, losses: res.losses};
 	}

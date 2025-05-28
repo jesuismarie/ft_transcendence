@@ -11,7 +11,13 @@ export default async function getUserByIdRoute(app: FastifyInstance, userRepo: U
 		if (!user)
 			return reply.sendError({statusCode: 404, message: 'User not found'});
 		const view = userRepo.toView(user);
-		// TODO: Ask win/loss from game service
+		try {
+			console.log('Reached game service to get gamestats for user', view.username);
+			const res = await app.gameService.getGamestats({ Params: { username: view.username } });
+			view.wins = res.wins;
+			view.losses = res.losses;
+		}
+		catch (err) {}
 		return view;
 	});
 }

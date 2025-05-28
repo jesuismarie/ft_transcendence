@@ -21,5 +21,5 @@ export default async function routes(app: FastifyInstance) {
 	await userRoutes(app, userRepo);
 
 	// Friend routes
-	// await friendRoutes(app, userRepo, friendRepo);
+	await friendRoutes(app, userRepo, friendRepo);
 }
