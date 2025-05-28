@@ -5,7 +5,6 @@ dist
 node_modules
 .idea
 data
-public
 migrations
 *.db*
 backend/auth-service/.npmrc
