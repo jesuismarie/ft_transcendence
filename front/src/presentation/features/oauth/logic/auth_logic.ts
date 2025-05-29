@@ -28,4 +28,8 @@ export class AuthLogic {
             }
         });
     }
+
+    async logout(): Promise<void> {
+        localStorage.removeItem("currentUser");
+    }
 }

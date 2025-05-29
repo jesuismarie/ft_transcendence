@@ -1,10 +1,6 @@
 import "reflect-metadata";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {isValidEmail} from "@/utils/validation";
-import {container} from "tsyringe";
-import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository.ts";
-import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic.ts";
-import {ApiClient} from "@/core/network/apiClient.ts";
 import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 
@@ -52,7 +48,7 @@ export function initLoginForm() {
             return;
 
         try {
-            const response = await fetch("/auth/login", {
+            const response = await fetch("/api/user-service/auth/login", {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({email, password}),

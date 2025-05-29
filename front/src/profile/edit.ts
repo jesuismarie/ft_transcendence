@@ -2,6 +2,7 @@ import { clearErrors, showError } from "@/utils/error_messages";
 import { addModalEvents, hideModal } from "@/utils/modal_utils";
 import type {ApiError, ChangePasswordRequest, EditProfileElements, ModalInfo, UpdateUserRequest, UserView } from "@/utils/types";
 import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 export function getEditProfileElements(): EditProfileElements | null {
 	const usernameInput = document.getElementById("edit-username") as HTMLInputElement | null;
@@ -107,7 +108,7 @@ export async function updateProfile(elements: EditProfileElements, currentUser: 
 			if (updatedEmail !== currentUser.email)
 				updateUser.email = updatedEmail;
 
-			const response = await fetch(`/users/:${currentUser.id}`, {
+			const response = await fetch(`${ApiConstants.users}/:${currentUser.id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(updateUser),
@@ -131,7 +132,7 @@ export async function updateProfile(elements: EditProfileElements, currentUser: 
 				newPwd: updatedPassword
 			};
 
-			const response = await fetch(`/users/:${currentUser.id}/password`, {
+			const response = await fetch(`${ApiConstants.users}/:${currentUser.id}${ApiConstants.updatePassword}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(passwordRequest),

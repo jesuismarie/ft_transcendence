@@ -2,6 +2,7 @@ import {clearErrors, showError } from "@/utils/error_messages";
 import {addModalEvents, hideModal } from "@/utils/modal_utils";
 import type { ApiError, ModalInfo } from "@/utils/types";
 import { currentUser } from "@/utils/user";
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 export function getAddTournamentElements(): {
 	modalInfo: ModalInfo,
@@ -56,7 +57,7 @@ export async function fetchAddTournament(
 		return ;
 	}
 	try {
-		const response = await fetch("/create-tournament", {
+		const response = await fetch(`${ApiConstants.createTournament}`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ name, capacity, currentUser }),
@@ -80,7 +81,7 @@ export async function fetchAddTournament(
 
 export async function deleteTournament(id: number, createdBy: string) {
 	try {
-		const response = await fetch("/delete-tournament", {
+		const response = await fetch(`${ApiConstants.deleteTournament}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ id, createdBy }),
@@ -101,7 +102,7 @@ export async function deleteTournament(id: number, createdBy: string) {
 }
 
 export async function startTournament(tournamentId: number) {
-	const response = await fetch("/start-tournament", {
+	const response = await fetch(ApiConstants.startTournament, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ tournamentId }),

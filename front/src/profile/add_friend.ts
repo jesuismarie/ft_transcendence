@@ -1,6 +1,8 @@
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
+
 export async function checkIfFriend(currentUserId: number, targetUserId: number): Promise<boolean> {
 	try {
-		const res = await fetch(`/users/:${currentUserId}/relationship/:${targetUserId}`, {
+		const res = await fetch(`${ApiConstants.users}/:${currentUserId}${ApiConstants.relationships}/:${targetUserId}`, {
 			credentials: 'include'
 		});
 		if (!res.ok)
@@ -18,7 +20,7 @@ export async function addFriend(
 	friendRequestBtn: HTMLButtonElement
 ) {
 	try {
-		const response = await fetch("/friends", {
+		const response = await fetch(ApiConstants.friends, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ userId: currentUserId, friendId: targetUserId }),

@@ -3,6 +3,7 @@ import { addModalEvents } from "@/utils/modal_utils";
 import { updatePaginationControls } from "@/utils/pagination";
 import type {ApiError, GetTournamentsInfoResponse, ModalInfo, PaginationInfo, TournamentInfo } from "@/utils/types";
 import { startTournament } from "./tournament_details";
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 export const TOURNAMENTS_LIMIT = 10;
 let currentTournamentOffset = 0;
@@ -10,7 +11,7 @@ let totalTournamentResults = 0;
 
 export async function registerToTournament(tournamentId: number, username: string) {
 	try {
-		const response = await fetch("/register-to-tournament", {
+		const response = await fetch(`${ApiConstants.registerToTournament}`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ username, tournamentId }),
@@ -31,7 +32,7 @@ export async function registerToTournament(tournamentId: number, username: strin
 
 export async function unregisterFromTournament(tournamentId: number, username: string) {
 	try {
-		const response = await fetch("/unregister-from-tournament", {
+		const response = await fetch(ApiConstants.unregisterFromTournament, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ username, tournamentId }),
@@ -166,7 +167,7 @@ export async function fetchTournamentList(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`/get-tournaments?offset=${offset}&limit=${TOURNAMENTS_LIMIT}`, {
+		const res = await fetch(`${ApiConstants.getTournamentInfo}?offset=${offset}&limit=${TOURNAMENTS_LIMIT}`, {
 			credentials: 'include'
 		});
 		if (!res.ok)
