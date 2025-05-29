@@ -1,4 +1,5 @@
 import type {TwoFAEnableResponse, TwoFAVerifyRequest } from "@/utils/types";
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 export async function setup2FA() {
 	const enable2faBtn = document.getElementById("enable-2fs-btn") as HTMLButtonElement | null;
@@ -28,7 +29,7 @@ export async function initiate2FASetup(container: HTMLElement) {
 }
 
 export async function requestQRCode(): Promise<TwoFAEnableResponse> {
-	const res = await fetch("/auth/2fa/enable", {
+	const res = await fetch(`${ApiConstants.twoFaEnable}`, {
 		method: "GET",
 		credentials: "include"
 	});
@@ -70,7 +71,7 @@ export async function verify2FAToken(container: HTMLElement, tokenInput: HTMLInp
 	}
 
 	try {
-		const verifyRes = await fetch("/auth/2fa/verify", {
+		const verifyRes = await fetch(`${ApiConstants.twoFAVerify}`, {
 			method: "POST",
 			credentials: "include",
 			headers: { 'Content-Type': 'application/json' },

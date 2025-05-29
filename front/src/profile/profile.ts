@@ -1,4 +1,4 @@
-import { currentUser } from "@/utils/user";
+import { currentUser, getCurrentUserId } from "@/utils/user";
 import { addFriend, checkIfFriend } from "./add_friend";
 import { editProfile } from "./edit";
 import { initTournaments } from "./tournaments";
@@ -49,30 +49,30 @@ export async function initPersonalData(id: number) {
 	}
 
 	try {
-		// const currentUserId = getCurrentUserId();
-		// const targetUserId = id || currentUserId;
+		const currentUserId = getCurrentUserId();
+		const targetUserId = id || currentUserId;
 
-		// if (!targetUserId)
-		// 	throw new Error("Username is required to load user profile");
+		if (!targetUserId)
+			throw new Error("Username is required to load user profile");
 
-		// const res = await fetch(`/users/:${targetUserId}`, {
-		// 	method: 'GET',
-		// 	credentials: 'include'
-		// });
-		// if (!res.ok)
-		// 	throw new Error("Failed to load user profile");
-		// const user: UserView = await res.json();
+		const res = await fetch(`/users/:${targetUserId}`, {
+			method: 'GET',
+			credentials: 'include'
+		});
+		if (!res.ok)
+			throw new Error("Failed to load user profile");
+		const user: UserView = await res.json();
 
-		let targetUserId = 0;
-		let currentUserId = 0;
-		const user: UserView = {
-			id: 1,
-			email: "test@test.com",
-			username: "test",
-			wins: 10,
-			losses: 5,
-			avatar: "https://example.com/avatar.png"
-		};
+		// let targetUserId = 0;
+		// let currentUserId = 0;
+		// const user: UserView = {
+		// 	id: 1,
+		// 	email: "test@test.com",
+		// 	username: "test",
+		// 	wins: 10,
+		// 	losses: 5,
+		// 	avatar: "https://example.com/avatar.png"
+		// };
 		searchUsers();
 		viewFriends(user.id);
 		viewMatches(user.id, user.username);

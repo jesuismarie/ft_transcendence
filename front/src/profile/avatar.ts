@@ -2,6 +2,7 @@ import {clearErrors, showError } from "@/utils/error_messages";
 import type {ApiError, AvatarElements } from "@/utils/types";
 import { isValidAvatar } from "@/utils/validation";
 import {currentUserId} from "@/utils/user";
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -54,7 +55,7 @@ export async function uploadAvatar(id: number, file: File): Promise<boolean> {
 		const formData = new FormData();
 		formData.append("avatar", file);
 
-		const response = await fetch(`/users/:${id}/avatar`, {
+		const response = await fetch(`${ApiConstants.users}/:${id}${ApiConstants.avatar}`, {
 			method: "POST",
 			body: formData,
 			credentials: "include"

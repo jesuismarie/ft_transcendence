@@ -2,6 +2,7 @@ import { addModalEvents } from "@/utils/modal_utils";
 import { updatePaginationControls } from "@/utils/pagination";
 import type { ModalInfo, PaginationInfo, QuickUserResponse, SearchUserResponse } from "@/utils/types";
 import { currentUser } from "@/utils/user";
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 export const SEARCH_LIMIT = 10;
 let currentSearchOffset = 0;
@@ -80,7 +81,7 @@ export async function fetchSearchResults(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`/users?q=${encodeURIComponent(query)}&limit=${SEARCH_LIMIT}&offset=${offset}`, {
+		const res = await fetch(`${ApiConstants.users}?q=${encodeURIComponent(query)}&limit=${SEARCH_LIMIT}&offset=${offset}`, {
 			method: 'GET',
 			credentials: 'include'
 		});

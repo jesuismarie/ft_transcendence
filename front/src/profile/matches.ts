@@ -1,6 +1,7 @@
 import { addModalEvents } from "@/utils/modal_utils";
 import { updatePaginationControls } from "@/utils/pagination";
 import type {GetMatchHistoryResponse, MatchHistory, ModalInfo, PaginationInfo } from "@/utils/types";
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 export const MATCHS_LIMIT = 10;
 let currentMatchOffset = 0;
@@ -99,7 +100,7 @@ export async function fetchMatchList(
 	paginationInfo: PaginationInfo
 ) {
 	try {
-		const res = await fetch(`/get-match-history-by-user?username${username}offset=${offset}&limit=${MATCHS_LIMIT}`, {
+		const res = await fetch(`${ApiConstants.matchHistoryByUser}?username${username}offset=${offset}&limit=${MATCHS_LIMIT}`, {
 			credentials: 'include'
 		});
 		if (!res.ok)
