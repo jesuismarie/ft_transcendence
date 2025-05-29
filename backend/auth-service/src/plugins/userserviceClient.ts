@@ -119,6 +119,10 @@ declare module 'fastify' {
 }
 
 const userServiceClientPlugin: FastifyPluginAsync = async (app : FastifyInstance) => {
+	console.log('Registering userService client plugin');
+	if (!app.config.USER_SERVICE_URL) {
+		app.log.warn('USER_SERVICE_URL is not set, using default http://localhost:3003');
+	}
 	const baseUrl = app.config.USER_SERVICE_URL ?? 'http://localhost:3003';
 	const clusterToken = app.config.CLUSTER_TOKEN;
 	
