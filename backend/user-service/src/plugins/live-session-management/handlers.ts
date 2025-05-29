@@ -1,4 +1,4 @@
-import { userConnections, onlineUsers, graceTimers, UserId } from './state';
+import { allConnections, userConnections, onlineUsers, graceTimers, UserId } from './state';
 import type { SocketStream } from './types';
 
 // Message from SPA
@@ -7,39 +7,38 @@ export interface StatusMessage {
 	status: 'online' | 'offline';
 }
 
-export function handleSessionMessages(conn: SocketStream, jwtUserId: UserId) {
+export function handleConnection(conn: SocketStream) {
+	let currentUserId: UserId | null = null;
+	allConnections.add(conn);
+	
 	conn.socket.on('message', (msg) => {
 		try {
 			const data = JSON.parse(msg.toString()) as StatusMessage;
-			// Ignore messages with wrong userId or invalid status
-			if (data.userId !== jwtUserId) return;
 			if (!['online', 'offline'].includes(data.status)) return;
 			
-			// Always replace prior session for user (already handled in plugin)
+			currentUserId = data.userId;
+			let set = userConnections.get(data.userId);
+			if (!set) userConnections.set(data.userId, (set = new Set<SocketStream>()));
+			set.add(conn);
+			
 			if (data.status === 'online') {
 				onlineUsers.add(data.userId);
-				// Remove any pending offline timer
 				clearGraceTimer(data.userId);
 			} else if (data.status === 'offline') {
 				maybeScheduleOffline(data.userId);
 			}
-		} catch {
-			// Ignore parse errors or bad input
-		}
+		} catch {}
 	});
 	
 	conn.socket.on('close', () => {
-		// Remove connection from userConnections
-		let userId: UserId | undefined;
-		for (const [uid, c] of userConnections) {
-			if (c === conn) {
-				userId = uid;
-				break;
+		allConnections.delete(conn);
+		if (currentUserId !== null) {
+			const set = userConnections.get(currentUserId);
+			set?.delete(conn);
+			if (!set || set.size === 0) {
+				userConnections.delete(currentUserId);
+				maybeScheduleOffline(currentUserId);
 			}
-		}
-		if (userId !== undefined) {
-			userConnections.delete(userId);
-			maybeScheduleOffline(userId);
 		}
 	});
 }
@@ -50,7 +49,8 @@ function maybeScheduleOffline(userId: UserId) {
 		userId,
 		setTimeout(() => {
 			graceTimers.delete(userId);
-			if (!userConnections.has(userId)) onlineUsers.delete(userId);
+			const set = userConnections.get(userId);
+			if (!set || set.size === 0) onlineUsers.delete(userId);
 		}, 100)
 	);
 }
