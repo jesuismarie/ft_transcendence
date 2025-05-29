@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .shadow-neon {
+        @apply shadow-[0_0_5px_#DCDCDD,0_0_15px_#30BDAC,0_0_20px_#50A39A];
+    }
+    .shadow-white-glow {
+        @apply shadow-[0_0_5px_#DCDCDD,0_0_10px_#B8B8B9,0_0_15px_#8F8F90];
+    }
+    .shadow-neon-btn-hover {
+        @apply shadow-[0_0_10px_#DCDCDD,0_0_20px_#B8B8B9,0_0_30px_#8F8F90];
+    }
+}
+
+@layer base {
+    * {
+        @apply m-0 p-0 box-border font-tektur;
+    }
+
+    .wipe-text span {
+        @apply inline-block opacity-0 transition-opacity duration-500 ease-out;
+    }
+
+    .login-div button {
+        @apply h-16 max-sm:h-12 w-32 max-sm:w-24 text-lg font-bold max-sm:text-base text-center border-none rounded-[60px] shadow-white-glow bg-primary hover:text-hover hover:shadow-neon-btn-hover;
+    }
+
+    form h1 {
+        @apply font-semibold mb-[5px];
+    }
+
+    form input {
+        @apply bg-gray-50 p-[10px] my-[5px] w-full rounded-[5px] border border-gray-300 focus:outline-none focus:border focus:border-hover;
+    }
+
+    form button {
+        @apply bg-hover border-none text-white p-[10px_20px] rounded-[20px] mt-[10px] text-[12px] cursor-pointer transition-colors duration-300 ease-in-out hover:shadow-neon;
+    }
+}
