@@ -1,6 +1,6 @@
 export abstract class ApiConstants {
     // static baseUrl: string = import.meta.env.VITE_API_URL;
-    static baseUrlDev: string = "http://localhost:5003";
+    static baseUrlDev: string = "";
     static authBaseUrl = "/auth-service"
     static userBaseUrl = "/user-service"
     static gameBaseUrl = "/game-service"
