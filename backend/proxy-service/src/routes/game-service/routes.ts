@@ -8,7 +8,6 @@ import startTournamentRoute from "./startTournament";
 import tournamentNextStepRoute from "./tournamentNextStep";
 import unregisterFromTournamentRoute from "./unregisterFromTournament";
 import getMatchHistoryByUserRoute from "./getMatchHistoryByUser";
-import saveMatchResultRoute from "./saveMatchResult";
 
 export default async function gameServiceRoutes(app: FastifyInstance) {
   await createTournamentRoute(app);
@@ -20,5 +19,4 @@ export default async function gameServiceRoutes(app: FastifyInstance) {
   await tournamentNextStepRoute(app);
   await unregisterFromTournamentRoute(app);
   await getMatchHistoryByUserRoute(app);
-  await saveMatchResultRoute(app);
 }
