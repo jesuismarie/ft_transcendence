@@ -13,7 +13,7 @@ export async function configureDependencies() {
         useClass: RemoteAuthRepositoryImpl,
     });
 
-    const backendUrl = "ws://localhost:5002/ws";
+    const backendUrl = "ws://localhost:5002/users/ws";
 
     container.register<PersistenceService>("PersistenceService", {
         useFactory: () => new PersistenceServiceImpl(backendUrl),
