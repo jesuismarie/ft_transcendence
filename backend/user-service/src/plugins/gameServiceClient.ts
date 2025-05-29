@@ -70,7 +70,7 @@ declare module 'fastify' {
 }
 
 const gameServiceClientPlugin: FastifyPluginAsync = async (app : FastifyInstance) => {
-	const baseUrl = process.env.GAME_SERVICE_URL ?? 'http://userservice:3002';
+	const baseUrl = process.env.GAME_SERVICE_URL ?? 'http://game-service:5004';
 	
 	app.decorate('gameService', buildClient({ baseUrl, timeout: 3000}));
 };
