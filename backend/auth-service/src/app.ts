@@ -3,6 +3,7 @@
 // Core Imports
 import Fastify, { FastifyInstance } from "fastify";
 import helmet from "@fastify/helmet";
+import cors from '@fastify/cors';
 import rateLimit from "@fastify/rate-limit";
 
 // Plugins
@@ -24,6 +25,10 @@ import monitoringRoutes from "./routes/monitoring/routes";
 const buildServer = () => {
   const app: FastifyInstance = Fastify({ logger: true });
 
+  app.register(cors, {
+    origin: true, // or (origin, cb) => cb(null, true)
+    credentials: true
+  });
   // Register plugins
   app.register(envPlugin);
   app.register(errorEnvelope);
@@ -33,10 +38,11 @@ const buildServer = () => {
   app.register(userserviceClient);
   app.register(oauthGoogle);
 
-  // Security and performance plugins
-  app.register(helmet, {
-    crossOriginOpenerPolicy: { policy: "same-origin" },
-  });
+  // // Security and performance plugins
+  // app.register(helmet, {
+  //
+  //   // crossOriginOpenerPolicy: { policy: "*" },
+  // });
   // Rate limiting to prevent abuse
   app.register(rateLimit, {
     max: 10, // Limit each IP to 10 requests per minute

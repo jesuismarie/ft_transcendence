@@ -3,6 +3,7 @@ import fastifyStatic from "@fastify/static";
 import multipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import fastifyHelmet from "@fastify/helmet";
+import cors from '@fastify/cors';
 import dotenv from "dotenv";
 import path from "path";
 
@@ -18,13 +19,19 @@ import routes from "./routes/routes";
 
 const app = Fastify({ logger: true });
 
+app.register(cors, {
+    origin: true, // or (origin, cb) => cb(null, true)
+    credentials: true
+});
+
 app.register(fastifyStatic, {
   root: path.join(process.cwd(), "public"),
   prefix: "/static/",
 });
-app.register(fastifyHelmet, {
-  contentSecurityPolicy: false,
-});
+
+// app.register(fastifyHelmet, {
+//   // contentSecurityPolicy: false,
+// });
 app.register(fastifyRateLimit, {
   max: 1000,
   timeWindow: "1 hour",

@@ -10,6 +10,7 @@
     "start:prod": "node /app/dist/index.js"
   },
   "dependencies": {
+    "@fastify/cors": "^11.0.1",
     "@fastify/http-proxy": "^11.1.2",
     "@fastify/multipart": "^9.0.3",
     "@KarenDanielyan/ft-transcendence-api-types": "^1.0.0",

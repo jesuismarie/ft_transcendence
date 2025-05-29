@@ -1,12 +1,18 @@
 import { createServer } from "http";
 import path from "path";
 import WebSocket from "ws";
+import cors from '@fastify/cors';
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import { handleSocketConnection } from "./socket";
 import monitoringRoutes from "./monitoring/routes";
 
 const app = Fastify();
+
+app.register(cors, {
+    origin: true, // or (origin, cb) => cb(null, true)
+    credentials: true
+});
 
 // Step 4: Wait for Fastify to initialize
 app.ready().then((server) => {});

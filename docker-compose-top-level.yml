@@ -9,6 +9,7 @@ services:
         - bridge-network-transcendence
       env_file:
         - secrets/backend/auth-service/auth-service-secrets.txt
+        - secrets/backend/common/common-secrets.txt
       volumes:
         - auth-service-db-data:/app/backend/auth-service/prisma
       restart: always
@@ -23,6 +24,7 @@ services:
         - bridge-network-transcendence
       env_file:
         - secrets/backend/game-service/game-service-secrets.txt
+        - secrets/backend/common/common-secrets.txt
       volumes:
         - game-service-db-date:/app/data
       restart: always
@@ -37,6 +39,7 @@ services:
         - bridge-network-transcendence
       env_file:
         - secrets/backend/user-service/user-service-secrets.txt
+        - secrets/backend/common/common-secrets.txt
       volumes:
         - user-service-db-date:/app/data
       restart: always
@@ -51,6 +54,7 @@ services:
         - bridge-network-transcendence
       env_file:
         - secrets/backend/proxy-service/proxy-service-secrets.txt
+        - secrets/backend/common/common-secrets.txt
       volumes:
         - proxy-service-db-date:/example/path
       depends_on:
@@ -69,9 +73,24 @@ services:
         - bridge-network-transcendence
       env_file:
         - secrets/backend/pong-service/pong-service-secrets.txt
+        - secrets/backend/common/common-secrets.txt
       volumes:
         - pong-service-db-date:/example/path
       restart: always
+
+#      pong-service:
+#        image: pong-service
+#        container_name: pong-service
+#        build: backend/pong-service/
+#        ports:
+#          - "5005:5005"
+#        networks:
+#          - bridge-network-transcendence
+#        env_file:
+#          - secrets/backend/pong-service/pong-service-secrets.txt
+#        volumes:
+#          - pong-service-db-date:/example/path
+#        restart: always
 
 volumes:
     auth-service-db-data:

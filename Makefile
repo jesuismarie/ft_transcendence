@@ -12,7 +12,7 @@ monitor: network
 	docker-compose -f $(MONITOR_COMPOSE) up -d
 
 # TODO: monitor
-up: monitor
+up:
 	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) build --no-cache
 	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) up -d
 
