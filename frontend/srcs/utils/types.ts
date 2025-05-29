@@ -21,6 +21,11 @@ interface EditProfileElements {
 	confirmPasswordInput:	HTMLInputElement;
 }
 
+interface TwoFAModalElements {
+	twofaInput:	HTMLInputElement;
+	verifyBtn:	HTMLButtonElement;
+}
+
 interface AvatarElements {
 	uploadBtn: HTMLButtonElement;
 	fileInput: HTMLInputElement;
@@ -48,24 +53,6 @@ interface TwoFAVerifyRequest {
 
 interface TwoFAVerifyResponse {
 	verified: true;
-}
-
-interface TokenPair {
-	accessToken: string;
-	refreshToken: string;
-	userId: number;
-}
-
-interface LoginSuccess extends TokenPair {}
-
-interface Login2FARequired {
-	requires2fa: true;
-	loginTicket: string;
-}
-
-interface Login2FARequest {
-	loginTicket: string;
-	otp: string;
 }
 
 interface UserView {

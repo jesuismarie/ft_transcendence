@@ -96,30 +96,62 @@ function showSuccessAndDisableButton(container: HTMLElement) {
 	container.innerHTML = `
 		<p class="text-green-500">2FA enabled successfully!</p>
 		`;
-	// <button id="disable-2fa-btn" class="bg-red-600 hover:bg-red-700 text-white py-1 px-4 mt-2 rounded">
-	// 	Disable 2FA
-	// </button>
-	// addDisable2FAHandler();
 }
 
-// function addDisable2FAHandler() {
-// 	const disableBtn = document.getElementById("disable-2fa-btn") as HTMLButtonElement | null;
-// 	if (!disableBtn) return;
+function get2FAModalInfo(): TwoFAModalElements | null{
+	const twofaInput = document.getElementById("twofa-input") as HTMLInputElement | null;
+	const verifyBtn = document.getElementById("twofa-verify") as HTMLButtonElement | null;
 
-// 	disableBtn.addEventListener("click", async () => {
-// 		try {
-// 			const res = await fetch("/2fa/disable", {
-// 				method: "POST",
-// 				credentials: "include"
-// 			});
-// 			const result = await res.json();
-			
-// 			if (result.success) {
-// 				document.getElementById("twofa-container")!.innerHTML = 
-// 					`<p class="text-yellow-500">2FA has been disabled.</p>`;
-// 			}
-// 		} catch (err) {
-// 			console.error("Error disabling 2FA:", err);
-// 		}
-// 	});
-// }
+	if (!twofaInput || !verifyBtn) {
+		return null;
+	}
+
+	return {
+		twofaInput,
+		verifyBtn
+	};
+}
+
+function handle2FAModal(): void {
+	const twaInfo = get2FAModalInfo();
+	if (!twaInfo)
+		return;
+
+	showModal("twofa-modal");
+
+	twaInfo.twofaInput.value = "";
+	clearErrors();
+
+	twaInfo.verifyBtn.addEventListener("click", async () => {
+		const code = twaInfo.twofaInput.value.trim();
+		
+		if (!isValidTwoFACode(code)) {
+			showError("twofa-code", "Please enter a valid 6-digit code");
+			return;
+		}
+
+		try {
+			const response = await fetch("/auth/2fa/verify", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				body: JSON.stringify({ otp: code } as TwoFAVerifyRequest)
+			});
+
+			if (!response.ok) {
+				const error: ApiError = await response.json();
+				showError("twofa-code", error.message);
+				return;
+			}
+
+			const result: TwoFAVerifyResponse = await response.json();
+			if (result.verified) {
+				hideModal("twofa-modal");
+			} else {
+				showError("twofa-code", "Invalid verification code");
+			}
+		} catch (err) {
+			showError("twofa-code", "Verification failed. Please try again");
+		}
+	});
+}
