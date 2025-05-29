@@ -5,6 +5,7 @@ services:
       build: backend/auth-service/
       ports:
         - "5000:5000"
+        - "5555:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -13,13 +14,14 @@ services:
       volumes:
         - auth-service-db-data:/app/backend/auth-service/prisma
       restart: always
-#
+
     game-service:
       image: game-service
       container_name: game-service
       build: backend/game-service
       ports:
         - "5001:5001"
+        - "5551:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -35,6 +37,7 @@ services:
       build: backend/user-service
       ports:
         - "5002:5002"
+        - "5552:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -50,6 +53,7 @@ services:
       build: backend/proxy-service/
       ports:
         - "5003:5003"
+        - "5553:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -69,6 +73,7 @@ services:
       build: backend/pong-service/
       ports:
         - "5005:5005"
+        - "5554:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -103,3 +108,4 @@ volumes:
 networks:
   bridge-network-transcendence:
 
+# npx prisma studio

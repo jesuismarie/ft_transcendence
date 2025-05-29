@@ -28,8 +28,14 @@ export default async function registerRoutes(app: FastifyInstance) {
 				console.log("Error creating user:", e);
 				throw apiError('INTERNAL_ERROR', 'Failed to create user', 500);
 			}
-			const tokens = await issueTokenPair(app, userId);
-			return reply.send(tokens);
+			try {
+				const tokens = await issueTokenPair(app, userId);
+				return reply.send(tokens);
+
+			}
+			catch (e) {
+				console.log(`AAAA:::${e}`);
+			}
 		}
 	);
 }
