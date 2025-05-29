@@ -4,6 +4,7 @@ import multipart from '@fastify/multipart';
 import fastifyRateLimit from "@fastify/rate-limit";
 import fastifyHelmet from "@fastify/helmet";
 import websocket from '@fastify/websocket';
+import cors from '@fastify/cors'
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
@@ -21,6 +22,11 @@ import liveSessionManagementPlugin from './plugins/live-session-management/plugi
 import routes from './routes/routes';
 
 const app = Fastify({ logger: true });
+
+app.register(cors, {
+    origin: true, // or (origin, cb) => cb(null, true)
+    credentials: true
+});
 
 // make sure public directory exists
 const publicDir = path.join(process.cwd(), 'public');
@@ -52,7 +58,12 @@ app.register(liveSessionManagementPlugin);
 
 app.register(routes);
 
-app.listen({ port: Number(process.env.PORT) ?? 3000, host: '0.0.0.0' }).catch((err) => {
-	app.log.error(err);
-	process.exit(1);
-});
+app
+  .listen({
+    port: process.env.PORT ? Number(process.env.PORT) : 3003,
+    host: process.env.HOST_NAME ? String(process.env.HOST_NAME) : "localhost",
+  })
+  .catch((err) => {
+    app.log.error(err);
+    process.exit(1);
+  });

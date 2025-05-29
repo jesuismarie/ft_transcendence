@@ -19,7 +19,7 @@ export default async function userRoutes(app: FastifyInstance, userRepo: UserRep
     await getUserByIdRoute(app, userRepo);
     await updateUserPasswordRoute(app, userRepo);
     await deleteUserRoute(app, userRepo);
-    // await updateUserRoute(app, userRepo);
+    await updateUserRoute(app, userRepo);
     await getUserByUsernameRoute(app, userRepo);
     await updateUserAvatarRoute(app, userRepo);
     await verifyPasswordRoute(app, userRepo);

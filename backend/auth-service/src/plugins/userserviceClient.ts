@@ -58,11 +58,11 @@ const buildClient = ({ baseUrl, clusterToken } : UserServiceClientConfig): UserS
 		return res.userId;
 	};
 	const createUser = async (body: UserTypes.CreateUserRequest): Promise<number> => {
-		const res = await call<{ userId: number }>('/internal/users', body, [201]);
-		return res.userId;
+		const res = await call<UserTypes.CreateUserResponse>('/internal/users', body, [201]);
+		return res.id;
 	};
 	const getUserById = async (id: number): Promise<UserTypes.UserView> => {
-		const {statusCode, body: resBody} = await request(`${baseUrl}/internal/users/${id}`, {
+		const {statusCode, body: resBody} = await request(`${baseUrl}/users/${id}`, {
 			method: 'GET',
 			headers,
 		});
@@ -71,7 +71,7 @@ const buildClient = ({ baseUrl, clusterToken } : UserServiceClientConfig): UserS
 	};
 	const findOrCreateOAuth = async (body: FindOrCreateOAuthBody): Promise<number> => {
 		const {email, provider, providerUserId, username} = body;
-		const {statusCode, body: resBody} = await request(`${baseUrl}/internal/users/${email}`, {
+		const {statusCode, body: resBody} = await request(`${baseUrl}/users/${email}`, {
 			method: 'GET',
 			headers,
 		});
@@ -119,7 +119,7 @@ declare module 'fastify' {
 }
 
 const userServiceClientPlugin: FastifyPluginAsync = async (app : FastifyInstance) => {
-	const baseUrl = app.config.USER_SERVICE_URL ?? 'http://userservice:3000';
+	const baseUrl = app.config.USER_SERVICE_URL ?? 'http://localhost:3003';
 	const clusterToken = app.config.CLUSTER_TOKEN;
 	
 	app.decorate('userService', buildClient({ baseUrl, clusterToken }));
