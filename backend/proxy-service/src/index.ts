@@ -3,22 +3,24 @@ import gameServiceRoutes from "./routes/game-service/routes";
 import monitorningRoutes from "./routes/monitoring/routes";
 import errorEnvelope from "./plugins/errorEnvelope";
 import multipart from "@fastify/multipart";
-import cors from '@fastify/cors';
+import cors from "@fastify/cors";
 import httpProxy from "@fastify/http-proxy";
 import { services } from "./config";
+import authMiddleware from "./plugins/authMiddleware";
 
 const app = Fastify({ logger: true });
 app.register(multipart, { limits: { fileSize: 1_000_000 } });
 
 app.register(cors, {
   origin: true, // or (origin, cb) => cb(null, true)
-  credentials: true
+  credentials: true,
 });
-// Регистрируем маршруты
-// app.register(authServiceRoutes);
-app.register(gameServiceRoutes);
-// app.register(userServiceRoutes);
+
 app.register(errorEnvelope);
+authMiddleware(app);
+
+// Регистрируем маршруты
+app.register(gameServiceRoutes);
 app.register(httpProxy, {
   upstream: services.userService,
   prefix: "/user-service",
