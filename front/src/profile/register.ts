@@ -1,5 +1,11 @@
 import {clearErrors, showError } from "@/utils/error_messages";
 import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
+import {container} from "tsyringe";
+import type {ApiClient} from "@/core/network/apiClient.ts";
+import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository.ts";
+import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic.ts";
+import {AuthStatus} from "@/presentation/features/oauth/state/auth_state.ts";
+import {ApiConstants} from "@/core/constants/apiConstants.ts";
 
 export function initGoogleRegister() {
 	const googleRegisterButton = document.getElementById('google-register-btn');
@@ -7,7 +13,7 @@ export function initGoogleRegister() {
 		return;
 
 	googleRegisterButton.addEventListener('click', () => {
-		window.location.href = '/auth/oauth/google';
+		window.location.href = `${ApiConstants.baseUrlDev}${ApiConstants.auth}`;
 	});
 }
 
@@ -70,27 +76,40 @@ export function initRegistrationForm() {
 		if (hasError)
 			return;
 
-		try {
-			const response = await fetch("/auth/register", {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email, username, password }),
-				credentials: 'include'
-			});
-
-			const result = await response.json();
-
-			if (!response.ok) {
-				console.error('Registration failed:', result);
-				showError('reg_email', result?.message || 'Server error');
-				return;
-			}
-
-			console.log('Registration successful:', result);
-			// window.location.href = '/login';
-		} catch (error) {
-			console.error('Network error during registration:', error);
-			showError('reg_email', 'Network or server error.');
+		const apiClient = container.resolve<ApiClient>('ApiClient');
+		const authRepository = container.resolve<RemoteAuthRepository>('RemoteAuthRepository');
+		const authLogic = new AuthLogic(authRepository);
+		await authLogic.register({username, password, email});
+		if (authLogic.state.status == AuthStatus.Error) {
+			showError('reg_email', authLogic.state.errorMessage || 'Registration Failed.');
+			return;
 		}
+		else if (authLogic.state.status == AuthStatus.Success) {
+			console.log('Registration successful:');
+			// window.location.href = '/login';
+		}
+		// const res =
+		// try {
+		// 	const response = await fetch("/auth/register", {
+		// 		method: 'POST',
+		// 		headers: { 'Content-Type': 'application/json' },
+		// 		body: JSON.stringify({ email, username, password }),
+		// 		credentials: 'include'
+		// 	});
+		//
+		// 	const result = await response.json();
+		//
+		// 	if (!response.ok) {
+		// 		console.error('Registration failed:', result);
+		// 		showError('reg_email', result?.message || 'Server error');
+		// 		return;
+		// 	}
+		//
+		// 	console.log('Registration successful:', result);
+		// 	// window.location.href = '/login';
+		// } catch (error) {
+		// 	console.error('Network error during registration:', error);
+		// 	showError('reg_email', 'Network or server error.');
+		// }
 	});
 }

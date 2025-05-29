@@ -3,7 +3,10 @@ import {initGoogleAuth, initLoginForm} from "@/profile/login.ts";
 import {initGoogleRegister, initRegistrationForm } from "./profile/register";
 import { initializePongGame } from "./game/pong";
 import { initPersonalData } from "./profile/profile";
+import {configureDependencies} from "@/di/service_locator.ts";
+
 import '../index.css';
+configureDependencies();
 
 
 const mainWrapper = document.getElementById("wrapper") as HTMLElement | null;
@@ -83,6 +86,7 @@ const routes: { [key: string]: () => void } = {
 };
 
 function handleRouting() {
+	// configureDependencies();
 	const hash = location.hash;
 
 	if (hash.startsWith("#profile/")) {
