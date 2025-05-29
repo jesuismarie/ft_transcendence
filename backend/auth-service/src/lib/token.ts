@@ -16,6 +16,7 @@ export async function issueTokenPair(app: FastifyInstance, userId: number): Prom
 	const rawRefresh  = crypto.randomBytes(32).toString('hex');
 	const tokenHash   = hashRefresh(rawRefresh, app.config.REFRESH_TOKEN_SALT);
 	
+	console.log(userId + ' recieved new refresh token: ' + tokenHash);
 	await app.prisma.refreshToken.create({
 		data: {
 			userId,

@@ -11,8 +11,8 @@ export default fp(async function dbPlugin(app: FastifyInstance) {
     const dbPath = process.env.DB_PATH || path.join(process.cwd(), 'data', 'users.db');
     // Make sure the directory exists
     const dbDir = path.dirname(dbPath);
-    fs.mkdirSync(dbDir, { recursive: true });
     const isNewDb = !fs.existsSync(dbPath);
+    fs.mkdirSync(dbDir, { recursive: true });
     const db = new Database(dbPath);
     // Check if the database is new or existing
     db.pragma('journal_mode = WAL');
