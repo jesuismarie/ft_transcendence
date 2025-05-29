@@ -2,7 +2,7 @@
 PRAGMA foreign_keys = ON;
 PRAGMA journal_mode = WAL;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     email           TEXT    NOT NULL UNIQUE,
     username        TEXT    NOT NULL UNIQUE COLLATE NOCASE,
@@ -17,13 +17,13 @@ CREATE TABLE users (
         OR (authProvider!='local' AND passwordHash IS NULL) )
 );
 
-CREATE UNIQUE INDEX idx_users_provider
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_provider
     ON users (authProvider, providerSub);
 
 CREATE INDEX IF NOT EXISTS idx_users_username
     ON users (username COLLATE NOCASE);
 
-CREATE TABLE friends (
+CREATE TABLE IF NOT EXISTS friends (
     id        INTEGER PRIMARY KEY AUTOINCREMENT,
     userId    INTEGER NOT NULL,
     friendId  INTEGER NOT NULL,

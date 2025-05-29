@@ -11,7 +11,11 @@ export interface EnvConfig {
 	GOOGLE_CLIENT_ID: string;
 	GOOGLE_CLIENT_SECRET: string;
 	GOOGLE_CALLBACK_URL: string;
-	USER_SERVICE_URL?: string; // Optional, for `user-service` client
+	USER_SERVICE_URL: string;
+	AUTH_SERVICE_URL: string;
+	GAME_SERVICE_URL: string;
+	PONG_SERVICE_URL: string;
+	PROXY_SERVICE_URL: string;
 }
 
 const schema = {
@@ -24,7 +28,12 @@ const schema = {
 		CLUSTER_TOKEN: { type: 'string' },
 		GOOGLE_CLIENT_ID: { type: 'string' },
 		GOOGLE_CLIENT_SECRET: { type: 'string' },
-		GOOGLE_CALLBACK_URL: { type: 'string' }
+		GOOGLE_CALLBACK_URL: { type: 'string' },
+		USER_SERVICE_URL: { type: 'string' },
+		AUTH_SERVICE_URL: { type: 'string' },
+		GAME_SERVICE_URL: { type: 'string' },
+		PONG_SERVICE_URL: { type: 'string' },
+		PROXY_SERVICE_URL: { type: 'string'}
 	}
 };
 

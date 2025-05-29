@@ -24,7 +24,9 @@ export default async function registerRoutes(app: FastifyInstance) {
 			} catch (e: any) {
 				if (e.code === 'EMAIL_EXISTS') throw apiError('EMAIL_EXISTS', 'E‑mail already in use', 409);
 				if (e.code === 'USERNAME_EXISTS') throw apiError('USERNAME_EXISTS', 'Username already in use', 409);
-				throw e;
+				if (e.code === 'USERSERVICE_DOWN') throw apiError('USERSERVICE_DOWN', 'UserService is unavailable', 503);
+				console.log("Error creating user:", e);
+				throw apiError('INTERNAL_ERROR', 'Failed to create user', 500);
 			}
 			const tokens = await issueTokenPair(app, userId);
 			return reply.send(tokens);
