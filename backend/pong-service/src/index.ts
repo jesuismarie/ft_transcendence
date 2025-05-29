@@ -1,10 +1,10 @@
-import { createServer } from 'http';
-import path from 'path';
-import WebSocket from 'ws';
-import Fastify from 'fastify';
-import fastifyStatic from '@fastify/static';
-import { handleSocketConnection } from './socket';
-
+import { createServer } from "http";
+import path from "path";
+import WebSocket from "ws";
+import Fastify from "fastify";
+import fastifyStatic from "@fastify/static";
+import { handleSocketConnection } from "./socket";
+import monitoringRoutes from "./monitoring/routes";
 
 const app = Fastify();
 
@@ -12,13 +12,22 @@ const app = Fastify();
 app.ready().then((server) => {});
 
 const httpServer = createServer((req, res) => {
-    app.routing(req, res);
+  app.routing(req, res);
 });
 const wss = new WebSocket.Server({ server: httpServer });
 
-wss.on('connection', handleSocketConnection);
+wss.on("connection", handleSocketConnection);
+app.register(monitoringRoutes);
 
-
-httpServer.listen(Number(process.env.PORT) ?? 3000, String(process.env.HOST_NAME) ?? "0.0.0.0", () => {
-    console.log(`Running at http://${process.env.HOST_NAME}:${process.env.PORT}`);
-});
+// TODO: fix port
+httpServer.listen(
+  process.env.PORT ? Number(process.env.PORT) : 3000,
+  process.env.HOST_NAME ? String(process.env.HOST_NAME) : "localhost",
+  () => {
+    console.log(
+      `Running at http://${
+        process.env.HOST_NAME ? process.env.HOST_NAME : "localhost"
+      }:${process.env.PORT ? process.env.PORT : 3000}`
+    );
+  }
+);
