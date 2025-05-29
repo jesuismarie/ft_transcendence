@@ -20,3 +20,8 @@ export function isValidPassword(password: string): boolean {
 export function isValidAvatar(dataUrl: string): boolean {
 	return /^data:image\/(jpe?g|png|gif|webp);base64,/.test(dataUrl);
 }
+
+
+export function isValidTwoFACode(code: string): boolean {
+	return /^\d{6}$/.test(code);
+}
