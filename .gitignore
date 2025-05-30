@@ -4,7 +4,7 @@
 dist
 node_modules
 .idea
-data
+
 migrations
 *.db*
 backend/auth-service/.npmrc
