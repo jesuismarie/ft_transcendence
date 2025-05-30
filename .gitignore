@@ -6,6 +6,7 @@ node_modules
 .idea
 
 migrations
+feature/staging
 *.db*
 backend/auth-service/.npmrc
 backend/game-service/.npmrc
