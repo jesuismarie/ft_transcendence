@@ -6,6 +6,8 @@ import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_reposi
 import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic.ts";
 import {AuthStatus} from "@/presentation/features/oauth/state/auth_state.ts";
 import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {loadHomePage, loadProfilePage} from "@/presentation/templates/templates.ts";
+import {currentUser} from "@/utils/user.ts";
 
 export function initGoogleRegister() {
 	const googleRegisterButton = document.getElementById('google-register-btn');
@@ -76,17 +78,23 @@ export function initRegistrationForm() {
 		if (hasError)
 			return;
 
-		const apiClient = container.resolve<ApiClient>('ApiClient');
 		const authRepository = container.resolve<RemoteAuthRepository>('RemoteAuthRepository');
 		const authLogic = new AuthLogic(authRepository);
 		await authLogic.register({username, password, email});
-		if (authLogic.state.status == AuthStatus.Error) {
-			showError('reg_email', authLogic.state.errorMessage || 'Registration Failed.');
+		if (authLogic.state.status === AuthStatus.Success) {
+			console.log('Registration successful:');
+			if (authLogic.state.user) {
+				localStorage.setItem("currentUser", JSON.stringify(authLogic.state.user));
+				localStorage.setItem("currentUserId", authLogic.state.user.userId.toString());
+			}
+			await authLogic.resetState();
+			// location.hash = '#profile';
+			loadProfilePage(currentUser);
 			return;
 		}
-		else if (authLogic.state.status == AuthStatus.Success) {
-			console.log('Registration successful:');
-			// window.location.href = '/login';
+		else if(authLogic.state.status === AuthStatus.Error) {
+			showError('reg_email', authLogic.state.errorMessage || 'Registration Failed.');
+			return;
 		}
 		// const res =
 		// try {

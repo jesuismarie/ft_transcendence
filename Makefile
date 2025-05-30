@@ -8,12 +8,12 @@ network:
 	docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || docker network create --driver bridge $(TRANSCENDENCE_NETWORK_NAME) || exit 0
 
 monitor: network
-	docker-compose -f $(MONITOR_COMPOSE) build --no-cache
+	docker-compose -f $(MONITOR_COMPOSE) build
 	docker-compose -f $(MONITOR_COMPOSE) up -d
 
 # TODO: monitor
 up:
-	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) build --no-cache
+	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) build
 	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) up -d
 
 down:

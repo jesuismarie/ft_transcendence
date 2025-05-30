@@ -3,8 +3,9 @@ services:
       image: auth-service
       container_name: auth-service
       build: backend/auth-service/
-#      ports:
-#        - "5000:5000"
+      ports:
+        - "5000:5000"
+        - "5555:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -18,8 +19,9 @@ services:
       image: game-service
       container_name: game-service
       build: backend/game-service
-#      ports:
-#        - "5001:5001"
+      ports:
+        - "5001:5001"
+        - "5551:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -33,8 +35,9 @@ services:
       image: user-service
       container_name: user-service
       build: backend/user-service
-#      ports:
-#        - "5002:5002"
+      ports:
+        - "5002:5002"
+        - "5552:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -50,6 +53,7 @@ services:
       build: backend/proxy-service/
       ports:
         - "5003:5003"
+        - "5553:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -67,8 +71,9 @@ services:
       image: pong-service
       container_name: pong-service
       build: backend/pong-service/
-#      ports:
-#        - "5005:5005"
+      ports:
+        - "5005:5005"
+        - "5554:5555"
       networks:
         - bridge-network-transcendence
       env_file:
@@ -84,15 +89,14 @@ services:
         build: front/
         ports:
           - "80:80"
+          - "443:443"
         networks:
           - bridge-network-transcendence
-#        env_file:
-#          - secrets/backend/pong-service/pong-service-secrets.txt
-#        volumes:
-#          - pong-service-db-date:/example/path
+        volumes:
+          - pong-service-db-date:/example/path
         depends_on:
           - proxy-service
-#        restart: always
+        restart: always
 
 volumes:
     auth-service-db-data:
@@ -104,3 +108,4 @@ volumes:
 networks:
   bridge-network-transcendence:
 
+# npx prisma studio

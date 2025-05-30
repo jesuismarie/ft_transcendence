@@ -13,6 +13,9 @@ export function getCurrentUserId(): number {
     return Number(localStorage.getItem("currentUserId"));
 }
 
+
+
+
 export function getCurrentUser(): string | null {
     return localStorage.getItem("currentUser");
 }

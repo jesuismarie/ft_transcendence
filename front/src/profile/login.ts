@@ -2,6 +2,13 @@ import "reflect-metadata";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {isValidEmail} from "@/utils/validation";
 import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import type {UserEntity} from "@/domain/entity/user_entity.ts";
+import {container} from "tsyringe";
+import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository.ts";
+import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic.ts";
+import {AuthStatus} from "@/presentation/features/oauth/state/auth_state.ts";
+import {loadProfilePage} from "@/presentation/templates/templates.ts";
+import {currentUser} from "@/utils/user.ts";
 
 
 export function initGoogleAuth() {
@@ -47,28 +54,23 @@ export function initLoginForm() {
         if (hasError)
             return;
 
-        try {
-            const response = await fetch("/api/user-service/auth/login", {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email, password}),
-                credentials: 'include'
-            });
+        const authRepository = container.resolve<RemoteAuthRepository>('RemoteAuthRepository');
+        const authLogic = new AuthLogic(authRepository);
+        await authLogic.login({email, password});
 
-            const result = await response.json();
-
-            if (!response.ok) {
-                console.error('Login error:', result);
-                showError('login_password', result?.message || 'Invalid credentials');
-                return;
+        if (authLogic.state.status === AuthStatus.Success) {
+            if (authLogic.state.user) {
+                localStorage.setItem("currentUser", JSON.stringify(authLogic.state.user));
+                localStorage.setItem("currentUserId", authLogic.state.user.userId.toString());
             }
-            if (result.id) {
-                localStorage.setItem("currentUser", result.username);
-                localStorage.setItem("currentUserId", result.id.toString());
-            }
-        } catch (error) {
-            console.error('Login failed:', error);
+            await authLogic.resetState();
+            loadProfilePage(currentUser);
+            return;
+        }
+        else if(authLogic.state.status === AuthStatus.Error) {
+            console.error('Login failed:', authLogic.state.errorMessage);
             showError('login_password', 'Network or server error.');
+            return;
         }
     });
 }
