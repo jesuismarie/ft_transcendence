@@ -7,5 +7,9 @@ export interface RemoteAuthRepository {
         email: string;
         username: string;
         password: string
-    }): Promise<Either<GeneralException, void>>
+    }): Promise<Either<GeneralException, UserEntity>>
+    login({email, password}: {
+        email: string,
+        password: string
+    }): Promise<Either<GeneralException, UserEntity>>;
 }

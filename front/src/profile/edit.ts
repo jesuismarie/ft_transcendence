@@ -157,6 +157,7 @@ export async function updateProfile(elements: EditProfileElements, currentUser: 
 }
 
 export function editProfile(currentUser: UserView) {
+	console.log("edit_profile", currentUser);
 	const modalInfo = getEditProfileModalInfo();
 	const elements = getEditProfileElements();
 
