@@ -5,10 +5,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/png" href="./dist/assets/pong_logo.png">
 	<link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="./dist/output.css">
+	<link rel="stylesheet" href="/index.css">
 	<title>Welcome to Pong!</title>
 </head>
-<body class="w-[100dvw] h-[100dvh] inset-0 bg-[url('../dist/assets/background2.jpg')] bg-center bg-cover bg-no-repeat">
+<body class="w-[100dvw] h-[100dvh] inset-0 bg-[url('/images/background2.jpg')] bg-center bg-cover bg-no-repeat">
 	<div class="w-[100dvw] h-[100dvh] absolute inset-0 bg-black/40 -z-[1]"></div>
 	<div id="wrapper"></div>
 
@@ -22,6 +22,23 @@
 				<button id="to-sign-in" onclick="loadSignInForm()">Sign In</button>
 				<button id="to-sign-up" onclick="loadSignUpForm()">Sign up</button>
 				<button onclick="loadProfilePage()">Temprory Profile</button>
+			</div>
+		</div>
+
+		<div id="twofa-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
+			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+				<div class="px-4 pt-5 pb-4 sm:p-6">
+					<h3 class="text-lg border-b border-hover pb-2">
+						Two Factor Authentication
+					</h3>
+					<div class="flex flex-col sm:flex-row gap-4 mt-4">
+						<input type="text" id="twofa-input" name="twofa-code" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:border-hover sm:text-sm">
+						<p class="error-msg text-red-500 text-sm" data-error-for="twofa-code"></p>
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
+					<button id="twofa-verify" class="bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Verify</button>
+				</div>
 			</div>
 		</div>
 	</template>
@@ -47,23 +64,6 @@
 					<p class="error-msg text-red-500 text-sm" data-error-for="login_password"></p>
 					<button type="submit">Sign In</button>
 				</form>
-			</div>
-		</div>
-
-		<div id="twofa-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
-			<div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
-				<div class="px-4 pt-5 pb-4 sm:p-6">
-					<h3 class="text-lg border-b border-hover pb-2">
-						Two Factor Authentication
-					</h3>
-					<div class="flex flex-col sm:flex-row gap-4 mt-4">
-						<input type="text" id="twofa-input" name="twofa-code" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:border-hover sm:text-sm">
-						<p class="error-msg text-red-500 text-sm" data-error-for="twofa-code"></p>
-					</div>
-				</div>
-				<div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
-					<button id="twofa-verify" class="bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Verify</button>
-				</div>
 			</div>
 		</div>
 	</template>
@@ -110,10 +110,10 @@
 			</p>
 			<button id="startgame">START!</button>
 
-			<div class="container" id="gamecontainer">
+<!--			<div class="container" id="gamecontainer">-->
 
-			</div>
-<!--			<canvas class="bg-black border-5 border-solid border-white" id="pongCanvas"></canvas>-->
+<!--			</div>-->
+			<canvas class="container bg-black border-5 border-solid border-white" id="gamecontainer"></canvas>
 		</div>
 	</template>
 
@@ -148,7 +148,7 @@
 							<div class="px-4 pb-6 relative">
 								<div class="flex justify-center -mt-12">
 									<div class="relative">
-										<img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="./dist/assets/background1.jpg" alt="User avatar">
+										<img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="/images/background1.jpg" alt="User avatar">
 										<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-white hover:shadow-neon focus:outline-none">
 											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -177,7 +177,7 @@
 										<p id="player-losses" class="text-black font-bold">0</p>
 									</div>
 								</div>
-								<button onclick="loadGamePage()" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
+<!--								<button onclick="loadGamePage()" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>-->
 								<button id="friend-request-btn" class="hidden mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
 								<button id="edit-profile-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
 							</div>
@@ -383,37 +383,38 @@
 			</div>
 		</div>
 	</template>
+	<script type="module" src="/src/main.ts"></script>
 
-	<script src="./dist/main.js" defer></script>
-	<script src="./dist/game/pong.js" defer></script>
-	<script src="./dist/game/client/browser.js" defer></script>
-	<script src="./dist/game/client/connectionSocket.js" defer></script>
-	<script src="./dist/game/client/init.js" defer></script>
-	<script src="./dist/game/client/types.js" defer></script>
-	<script src="./dist/game/client/lib/ball.js" defer></script>
-	<script src="./dist/game/client/lib/canvas.js" defer></script>
-	<script src="./dist/game/client/lib/gameTable.js" defer></script>
-	<script src="./dist/game/client/lib/messages.js" defer></script>
-	<script src="./dist/game/client/lib/player.js" defer></script>
-	<script src="./dist/game/client/lib/score.js" defer></script>
-	<script src="./dist/profile/login.js" defer></script>
-	<script src="./dist/profile/register.js" defer></script>
-	<script src="./dist/profile/profile.js" defer></script>
-	<script src="./dist/profile/avatar.js" defer></script>
-	<script src="./dist/profile/edit.js" defer></script>
-	<script src="./dist/profile/twofa.js" defer></script>
-	<script src="./dist/profile/search.js" defer></script>
-	<script src="./dist/profile/friends.js" defer></script>
-	<script src="./dist/profile/add_friend.js" defer></script>
-	<script src="./dist/profile/matches.js" defer></script>
-	<script src="./dist/profile/tournaments.js" defer></script>
-	<script src="./dist/profile/tournament_details.js" defer></script>
-	<script src="./dist/profile/add_tournaments.js" defer></script>
-	<script src="./dist/animation/animation.js" defer></script>
-	<script src="./dist/utils/types.js" defer></script>
-	<script src="./dist/utils/validation.js" defer></script>
-	<script src="./dist/utils/error_messages.js" defer></script>
-	<script src="./dist/utils/modal_utils.js" defer></script>
-	<script src="./dist/utils/pagination.js" defer></script>
+<!--	<script src="./dist/main.js" defer></script>-->
+<!--	<script src="./dist/game/pong.js" defer></script>-->
+<!--	<script src="./dist/game/client/browser.js" defer></script>-->
+<!--	<script src="./dist/game/client/connectionSocket.js" defer></script>-->
+<!--	<script src="./dist/game/client/init.js" defer></script>-->
+<!--	<script src="./dist/game/client/types.js" defer></script>-->
+<!--	<script src="./dist/game/client/lib/ball.js" defer></script>-->
+<!--	<script src="./dist/game/client/lib/canvas.js" defer></script>-->
+<!--	<script src="./dist/game/client/lib/gameTable.js" defer></script>-->
+<!--	<script src="./dist/game/client/lib/messages.js" defer></script>-->
+<!--	<script src="./dist/game/client/lib/player.js" defer></script>-->
+<!--	<script src="./dist/game/client/lib/score.js" defer></script>-->
+<!--	<script src="./dist/profile/login.js" defer></script>-->
+<!--	<script src="./dist/profile/register.js" defer></script>-->
+<!--	<script src="./dist/profile/profile.js" defer></script>-->
+<!--	<script src="./dist/profile/avatar.js" defer></script>-->
+<!--	<script src="./dist/profile/edit.js" defer></script>-->
+<!--	<script src="./dist/profile/twofa.js" defer></script>-->
+<!--	<script src="./dist/profile/search.js" defer></script>-->
+<!--	<script src="./dist/profile/friends.js" defer></script>-->
+<!--	<script src="./dist/profile/add_friend.js" defer></script>-->
+<!--	<script src="./dist/profile/matches.js" defer></script>-->
+<!--	<script src="./dist/profile/tournaments.js" defer></script>-->
+<!--	<script src="./dist/profile/tournament_details.js" defer></script>-->
+<!--	<script src="./dist/profile/add_tournaments.js" defer></script>-->
+<!--	<script src="./dist/animation/animation.js" defer></script>-->
+<!--	<script src="./dist/utils/types.js" defer></script>-->
+<!--	<script src="./dist/utils/validation.js" defer></script>-->
+<!--	<script src="./dist/utils/error_messages.js" defer></script>-->
+<!--	<script src="./dist/utils/modal_utils.js" defer></script>-->
+<!--	<script src="./dist/utils/pagination.js" defer></script>-->
 </body>
 </html>
