@@ -30,15 +30,15 @@ mfclean:
 	@$(MAKE) --no-print-directory -C devops/monitoring fclean
 
 # TODO: Add dependency from (mup).
-up: mup
+up:
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans
 
 # TODO: Add dependency from (mdown).
-down: mdown
+down:
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --remove-orphans
 
 # TODO: Add dependency from (mfclean).
-fclean: mfclean
+fclean:
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --volumes --rmi all --remove-orphans
 
 .PHONY: net rmnet mup mdown mfclean up down fclean

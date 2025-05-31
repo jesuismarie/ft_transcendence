@@ -1,18 +1,18 @@
 services:
-#    auth-service:
-#      container_name: auth-service
-#      build: backend/auth-service/
-#      ports:
-#        - "5000:5000"
-#        - "5555:5555"
-#      networks:
-#        - bridge-network
-#      env_file:
-#        - secrets/backend/auth-service/auth-service-secrets.txt
-#        - secrets/backend/common/common-secrets.txt
-#      volumes:
-#        - auth-service-db-data:/app/backend/auth-service/prisma
-#      restart: always
+    auth-service:
+      container_name: auth-service
+      build: backend/auth-service/
+      ports:
+        - "5000:5000"
+        - "5555:5555"
+      networks:
+        - bridge-network
+      env_file:
+        - secrets/backend/auth-service/auth-service-secrets.txt
+        - secrets/backend/common/common-secrets.txt
+      volumes:
+        - auth-service-db-data:/app/backend/auth-service/prisma
+      restart: always
 
     game-service:
       container_name: game-service
@@ -29,21 +29,21 @@ services:
         - game-service-db-date:/app/data
       restart: always
 
-#    user-service:
-#      image: user-service
-#      container_name: user-service
-#      build: backend/user-service
-#      ports:
-#        - "5002:5002"
-#        - "5552:5555"
-#      networks:
-#        - bridge-network
-#      env_file:
-#        - secrets/backend/user-service/user-service-secrets.txt
-#        - secrets/backend/common/common-secrets.txt
-#      volumes:
-#        - user-service-db-date:/app/data
-#      restart: always
+    user-service:
+      image: user-service
+      container_name: user-service
+      build: backend/user-service
+      ports:
+        - "5002:5002"
+        - "5552:5555"
+      networks:
+        - bridge-network
+      env_file:
+        - secrets/backend/user-service/user-service-secrets.txt
+        - secrets/backend/common/common-secrets.txt
+      volumes:
+        - user-service-db-date:/app/data
+      restart: always
 
     proxy-service:
       container_name: proxy-service
