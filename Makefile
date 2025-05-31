@@ -1,34 +1,44 @@
-ROOT_DIRECTORY 	:= $(shell git rev-parse --show-toplevel)
+include Makefile.mk
 
-TRANSCENDENCE_NETWORK_NAME 			:= bridge-network-transcendence
-MONITOR_COMPOSE 					:= $(ROOT_DIRECTORY)/devops/monitoring/docker-compose-monitoring.yml
-TRANSCENDENCE_TOP_LEVEL_COMPOSE 	:= $(ROOT_DIRECTORY)/docker-compose-top-level.yml
+net:
+ifeq ($(OS),Windows_NT)
+	@docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >nul 2>&1 || ( \
+		docker network create --driver bridge $(TRANSCENDENCE_NETWORK_NAME) >nul 2>&1 \
+	)
+else
+	@docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || \
+	docker network create --driver bridge $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1
+endif
 
-network:
-	docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || docker network create --driver bridge $(TRANSCENDENCE_NETWORK_NAME) || exit 0
+rmnet:
+ifeq ($(OS),Windows_NT)
+	@docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >nul 2>&1 && ( \
+		docker network rm $(TRANSCENDENCE_NETWORK_NAME) >nul 2>&1 \
+	) || (exit 0)
+else
+	@docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 && \
+	docker network rm $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || true
+endif
 
-monitor: network
-	docker-compose -f $(MONITOR_COMPOSE) build
-	docker-compose -f $(MONITOR_COMPOSE) up -d
+mup: net
+	@$(MAKE) --no-print-directory -C devops/monitoring up
 
-# TODO: monitor
-up:
-	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) build
-	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) up -d
+mdown:
+	@$(MAKE) --no-print-directory -C devops/monitoring down
 
-down:
-	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) down
-	docker-compose -f $(MONITOR_COMPOSE) down
+mfclean:
+	@$(MAKE) --no-print-directory -C devops/monitoring fclean
 
-clean: down
-	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) stop
-	docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) rm -f
-	docker-compose -f $(MONITOR_COMPOSE) stop
-	docker-compose -f $(MONITOR_COMPOSE) rm -f
+# TODO: Add dependency from (mup).
+up: mup
+	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans
 
-fclean: clean
-	docker image prune -f
-	docker volume prune -f
-	docker network rm $(TRANSCENDENCE_NETWORK_NAME) 2>/dev/null || true
+# TODO: Add dependency from (mdown).
+down: mdown
+	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --remove-orphans
 
-.PHONY: network monitor up down clean fclean
+# TODO: Add dependency from (mfclean).
+fclean: mfclean
+	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --volumes --rmi all --remove-orphans
+
+.PHONY: net rmnet mup mdown mfclean up down fclean
