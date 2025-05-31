@@ -1,8 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: [
-		"./srcs/**/*.{ts,js}",
-		"./index.html"
+		"./src/**/*.{ts,js}",
+		"./index.html",
+		"./index.css"
 	],
 	theme: {
 		extend: {
@@ -27,7 +28,7 @@ module.exports = {
 					'0%, 100%': {
 						textShadow: '0 0 5px #DCDCDD, 0 0 10px #B8B8B9, 0 0 15px #8F8F90',
 					},
-					'50%': { 
+					'50%': {
 						textShadow: '0 0 10px #DCDCDD, 0 0 20px #B8B8B9, 0 0 30px #8F8F90',
 					},
 				}
