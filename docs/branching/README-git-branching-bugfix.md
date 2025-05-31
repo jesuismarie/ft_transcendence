@@ -29,4 +29,4 @@ Bugfix branches are used for fixing bugs or issues that have been identified in 
     ```bash
     git push origin bugfix/<bug-name>
 
-6. **Create a pull request to merge your bugfix branch into `dev`.**
+6. **Create a pull request to merge your bugfix branch into `dev` and remove bugfix/<bug-name>.**
