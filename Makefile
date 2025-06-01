@@ -33,7 +33,7 @@ mfclean:
 	@$(MAKE) --no-print-directory -C devops/monitoring fclean
 
 # TODO: Add dependency from (mup).
-up:
+up: net mup
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans
 
 # TODO: Add dependency from (mdown).
