@@ -2,7 +2,9 @@ services:
     auth-service:
       image: auth-service
       container_name: auth-service
-      build: backend/auth-service/
+      build:
+        context: .
+        dockerfile: backend/auth-service/Dockerfile
       ports:
         - "5000:5000"
         - "5555:5555"
@@ -18,7 +20,9 @@ services:
     game-service:
       image: game-service
       container_name: game-service
-      build: backend/game-service
+      build:
+        context: .
+        dockerfile: backend/game-service/Dockerfile
       ports:
         - "5001:5001"
         - "5551:5555"
@@ -34,7 +38,9 @@ services:
     user-service:
       image: user-service
       container_name: user-service
-      build: backend/user-service
+      build:
+        context: .
+        dockerfile: backend/user-service/Dockerfile
       ports:
         - "5002:5002"
         - "5552:5555"
@@ -50,7 +56,9 @@ services:
     proxy-service:
       image: proxy-service
       container_name: proxy-service
-      build: backend/proxy-service/
+      build:
+        context: .
+        dockerfile: backend/proxy-service/Dockerfile
       ports:
         - "5003:5003"
         - "5553:5555"
@@ -70,7 +78,9 @@ services:
     pong-service:
       image: pong-service
       container_name: pong-service
-      build: backend/pong-service/
+      build:
+        context: .
+        dockerfile: backend/pong-service/Dockerfile
       ports:
         - "5005:5005"
         - "5554:5555"
