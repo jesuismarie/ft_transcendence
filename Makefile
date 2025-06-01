@@ -20,6 +20,12 @@ else
 	docker network rm $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || true
 endif
 
+sinit:
+	git clone git clone git@github.com:hovhannisyangevorg/secrets.git secrets && rm -rf secrets/.git
+
+network:
+	docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || docker network create --driver bridge $(TRANSCENDENCE_NETWORK_NAME) || exit 0
+
 mup: net
 	@$(MAKE) --no-print-directory -C devops/monitoring up
 
