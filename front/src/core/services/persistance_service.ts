@@ -1,4 +1,4 @@
-import {Status} from "@/core/models/status.ts";
+import {Status} from "@/core/models/status";
 
 export interface PersistenceService {
     init(): void;

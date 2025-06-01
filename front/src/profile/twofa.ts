@@ -8,7 +8,7 @@ import type {
     TwoFAVerifyResponse
 } from "@/utils/types";
 import {isValidTwoFACode} from "@/utils/validation";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export async function setup2FA() {
     const enable2faBtn = document.getElementById("enable-2fs-btn") as HTMLButtonElement | null;

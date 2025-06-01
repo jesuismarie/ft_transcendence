@@ -38,8 +38,8 @@ function loadSignInForm() {
 	initGoogleAuth();
 }
 
-function loadSignUpForm() {
-	loadTemplate("signup-template", "Sign Up");
+export function loadSignUpForm() {
+	// loadTemplate("signup-template", "Sign Up");
 	initRegistrationForm();
 	initGoogleRegister();
 }

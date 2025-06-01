@@ -1,11 +1,12 @@
-import {initWipeText} from "@/animation/animation.ts";
-import {initGoogleAuth, initLoginForm} from "@/profile/login.ts";
-import {initGoogleRegister, initRegistrationForm} from "@/profile/register.ts";
-import {initializePongGame} from "@/game/pong.ts";
-import {initPersonalData} from "@/profile/profile.ts";
-import {logoutCallback} from "@/presentation/features/auth/view/auth_view.ts";
-import {configureDependencies} from "@/di/service_locator.ts";
-import {getPersistenceService} from "@/di/resolver.ts";
+import {initWipeText} from "@/animation/animation";
+import {initGoogleAuth, initLoginForm} from "@/profile/login";
+import {initGoogleRegister, initRegistrationForm} from "@/profile/register";
+import {initializePongGame} from "@/game/pong";
+import {initPersonalData} from "@/profile/profile";
+import {logoutCallback} from "@/presentation/features/auth/view/auth_view";
+import {configureDependencies} from "@/di/service_locator";
+import {getPersistenceService} from "@/di/resolver";
+import type {BuildContext} from "@/core/rendering-engine/buildContext";
 
 export const mainWrapper = document.getElementById("wrapper") as HTMLElement | null;
 
@@ -44,14 +45,14 @@ export function loadHomePage() {
     initWipeText();
 }
 
-export function loadSignInForm() {
-    loadTemplate("signin-template", "Sign In");
-    initLoginForm();
+export function loadSignInForm(context: BuildContext) {
+    // loadTemplate("signin-template", "Sign In");
+    initLoginForm(context);
     initGoogleAuth();
 }
 
-export function loadSignUpForm() {
-    loadTemplate("signup-template", "Sign Up");
+export function loadSignUpForm(context: BuildContext) {
+    // loadTemplate("signup-template", "Sign Up");
     initRegistrationForm();
     initGoogleRegister();
 }
@@ -80,8 +81,8 @@ export function loadProfilePage(username: string | null = null) {
 export const routes: { [key: string]: () => void } = {
     "#": loadHomePage,
     "#home": loadHomePage,
-    "#signin": loadSignInForm,
-    "#signup": loadSignUpForm,
+    // "#signin": loadSignInForm,
+    // "#signup": loadSignUpForm,
     "#game": loadGamePage,
     "#profile": loadProfilePage,
 };

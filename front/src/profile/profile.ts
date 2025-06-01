@@ -10,7 +10,7 @@ import {viewMatches} from "./matches";
 import {searchUsers} from "./search";
 import type {UserView} from "@/utils/types";
 import {initWipeText} from "@/animation/animation";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export function initData(user: UserView) {
     const playerName = document.getElementById("player-name") as HTMLElement | null;

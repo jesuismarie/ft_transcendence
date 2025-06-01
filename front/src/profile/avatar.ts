@@ -2,7 +2,7 @@ import {clearErrors, showError } from "@/utils/error_messages";
 import type {ApiError, AvatarElements } from "@/utils/types";
 import { isValidAvatar } from "@/utils/validation";
 import {currentUserId} from "@/utils/user";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;
 

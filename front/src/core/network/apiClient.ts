@@ -1,4 +1,4 @@
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 import {type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig} from "axios";
 import axios from "axios";
 

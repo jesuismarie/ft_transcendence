@@ -2,7 +2,7 @@ import {clearErrors, showError } from "@/utils/error_messages";
 import {addModalEvents, hideModal } from "@/utils/modal_utils";
 import type { ApiError, ModalInfo } from "@/utils/types";
 import { currentUser } from "@/utils/user";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export function getAddTournamentElements(): {
 	modalInfo: ModalInfo,

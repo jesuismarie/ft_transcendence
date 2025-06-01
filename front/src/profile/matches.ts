@@ -1,7 +1,7 @@
 import { addModalEvents } from "@/utils/modal_utils";
 import { updatePaginationControls } from "@/utils/pagination";
 import type {GetMatchHistoryResponse, MatchHistory, ModalInfo, PaginationInfo } from "@/utils/types";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export const MATCHS_LIMIT = 10;
 let currentMatchOffset = 0;

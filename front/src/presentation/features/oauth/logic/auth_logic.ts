@@ -1,13 +1,14 @@
-import type {UserEntity} from "@/domain/entity/user_entity.ts";
+import type {UserEntity} from "@/domain/entity/user_entity";
 import {inject} from "tsyringe";
-import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository.ts";
-import type {GeneralException} from "@/core/exception/exception.ts";
-import {type Either} from "purify-ts/Either";
-import {AuthState, AuthStatus} from "@/presentation/features/oauth/state/auth_state.ts";
+import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
+import type {GeneralException} from "@/core/exception/exception";
+import {AuthState, AuthStatus} from "@/presentation/features/oauth/state/auth_state";
+import type { Either } from "@/core/models/either";
 
 export class AuthLogic {
     public state: AuthState;
-    constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository)  {
+
+    constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository) {
         this.state = new AuthState({})
     }
 
@@ -21,14 +22,18 @@ export class AuthLogic {
         username: string;
         password: string
     }): Promise<void> {
-        const res: Either<GeneralException, UserEntity> = await this.authRepository.register({email, username, password});
-        res.caseOf({
-            Left: (err: any) => {
+        const res: Either<GeneralException, UserEntity> = await this.authRepository.register({
+            email,
+            username,
+            password
+        });
+        res.when({
+            onError: (err: any) => {
                 console.log('Error:', err)
                 this.state = this.state.copyWith({status: AuthStatus.Error, errorMessage: err.message});
                 // user = null;
             },
-            Right: (user) => {
+            onSuccess: (user) => {
                 this.state = this.state.copyWith({status: AuthStatus.Success, user: user});
             }
         });
@@ -38,17 +43,22 @@ export class AuthLogic {
         email: string;
         password: string
     }): Promise<void> {
+
         const res: Either<GeneralException, UserEntity> = await this.authRepository.login({email, password});
-        res.caseOf({
-            Left: (err: any) => {
+        res.when({
+            onError: (err: any) => {
                 console.log('Error:', err)
                 this.state = this.state.copyWith({status: AuthStatus.Error, errorMessage: err.message});
                 // user = null;
             },
-            Right: (user) => {
+            onSuccess: (user) => {
                 this.state = this.state.copyWith({status: AuthStatus.Success, user: user});
             }
         });
+    }
+
+    validate()  {
+
     }
 
     async logout(): Promise<void> {

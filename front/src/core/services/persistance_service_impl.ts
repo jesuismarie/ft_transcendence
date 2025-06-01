@@ -1,6 +1,6 @@
-import {type PresenceMessage, Status} from "@/core/models/status.ts";
-import type {PersistenceService} from "@/core/services/persistance_service.ts";
-import {getCurrentUserId} from "@/utils/user.ts";
+import {type PresenceMessage, Status} from "@/core/models/status";
+import type {PersistenceService} from "@/core/services/persistance_service";
+import {getCurrentUserId} from "@/utils/user";
 
 
 export class PersistenceServiceImpl implements PersistenceService {

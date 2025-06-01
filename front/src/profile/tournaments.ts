@@ -3,7 +3,7 @@ import { addModalEvents } from "@/utils/modal_utils";
 import { updatePaginationControls } from "@/utils/pagination";
 import type {ApiError, GetTournamentsInfoResponse, ModalInfo, PaginationInfo, TournamentInfo } from "@/utils/types";
 import { startTournament } from "./tournament_details";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export const TOURNAMENTS_LIMIT = 10;
 let currentTournamentOffset = 0;

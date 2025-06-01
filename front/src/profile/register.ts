@@ -1,13 +1,13 @@
 import {clearErrors, showError } from "@/utils/error_messages";
 import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
 import {container} from "tsyringe";
-import type {ApiClient} from "@/core/network/apiClient.ts";
-import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository.ts";
-import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic.ts";
-import {AuthStatus} from "@/presentation/features/oauth/state/auth_state.ts";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
-import {loadHomePage, loadProfilePage} from "@/presentation/templates/templates.ts";
-import {currentUser} from "@/utils/user.ts";
+import type {ApiClient} from "@/core/network/apiClient";
+import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
+import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic";
+import {AuthStatus} from "@/presentation/features/oauth/state/auth_state";
+import {ApiConstants} from "@/core/constants/apiConstants";
+import {loadHomePage, loadProfilePage} from "@/presentation/templates/templates";
+import {currentUser} from "@/utils/user";
 
 export function initGoogleRegister() {
 	const googleRegisterButton = document.getElementById('google-register-btn');

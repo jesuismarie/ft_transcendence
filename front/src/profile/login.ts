@@ -1,14 +1,15 @@
 import "reflect-metadata";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {isValidEmail} from "@/utils/validation";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 import type {UserEntity} from "@/domain/entity/user_entity.ts";
 import {container} from "tsyringe";
-import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository.ts";
-import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic.ts";
-import {AuthStatus} from "@/presentation/features/oauth/state/auth_state.ts";
-import {loadProfilePage} from "@/presentation/templates/templates.ts";
-import {currentUser} from "@/utils/user.ts";
+import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
+import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic";
+import {AuthStatus} from "@/presentation/features/oauth/state/auth_state";
+import {loadProfilePage} from "@/presentation/templates/templates";
+import {currentUser} from "@/utils/user";
+import type {BuildContext} from "@/core/rendering-engine/buildContext";
 
 
 export function initGoogleAuth() {
@@ -21,7 +22,8 @@ export function initGoogleAuth() {
     });
 }
 
-export function initLoginForm() {
+export function initLoginForm(context: BuildContext) {
+    const navigator = context.navigator();
     const loginForm = document.getElementById('loginForm') as HTMLFormElement | null;
 
     if (!loginForm)
@@ -64,12 +66,14 @@ export function initLoginForm() {
                 localStorage.setItem("currentUserId", authLogic.state.user.userId.toString());
             }
             await authLogic.resetState();
-            loadProfilePage(currentUser);
+            navigator.pushNamed(context, '/profile')
+            // loadProfilePage(currentUser);
             return;
         }
         else if(authLogic.state.status === AuthStatus.Error) {
             console.error('Login failed:', authLogic.state.errorMessage);
             showError('login_password', 'Network or server error.');
+            await authLogic.resetState();
             return;
         }
     });

@@ -2,7 +2,7 @@ import { addModalEvents } from "@/utils/modal_utils";
 import { updatePaginationControls } from "@/utils/pagination";
 import type { ModalInfo, PaginationInfo, QuickUserResponse, SearchUserResponse } from "@/utils/types";
 import { currentUser } from "@/utils/user";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export const SEARCH_LIMIT = 10;
 let currentSearchOffset = 0;

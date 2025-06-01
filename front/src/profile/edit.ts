@@ -2,7 +2,7 @@ import { clearErrors, showError } from "@/utils/error_messages";
 import { addModalEvents, hideModal } from "@/utils/modal_utils";
 import type {ApiError, ChangePasswordRequest, EditProfileElements, ModalInfo, UpdateUserRequest, UserView } from "@/utils/types";
 import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export function getEditProfileElements(): EditProfileElements | null {
 	const usernameInput = document.getElementById("edit-username") as HTMLInputElement | null;

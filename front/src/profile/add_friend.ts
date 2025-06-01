@@ -1,4 +1,4 @@
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 export async function checkIfFriend(currentUserId: number, targetUserId: number): Promise<boolean> {
 	try {
