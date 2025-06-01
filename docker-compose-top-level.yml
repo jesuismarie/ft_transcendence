@@ -67,8 +67,8 @@ services:
       volumes:
         - proxy-service-db-date:/example/path
       depends_on:
-#        - auth-service
-#        - user-service
+        - auth-service
+        - user-service
         - game-service
       restart: always
 

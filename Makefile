@@ -1,5 +1,8 @@
 include Makefile.mk
 
+sinit:
+	git clone git clone git@github.com:hovhannisyangevorg/secrets.git secrets && rm -rf secrets/.git
+
 net:
 ifeq ($(OS),Windows_NT)
 	@docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >nul 2>&1 || ( \
@@ -20,12 +23,6 @@ else
 	docker network rm $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || true
 endif
 
-sinit:
-	git clone git clone git@github.com:hovhannisyangevorg/secrets.git secrets && rm -rf secrets/.git
-
-network:
-	docker network inspect $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || docker network create --driver bridge $(TRANSCENDENCE_NETWORK_NAME) || exit 0
-
 mup: net
 	@$(MAKE) --no-print-directory -C devops/monitoring up
 
@@ -36,7 +33,7 @@ mfclean:
 	@$(MAKE) --no-print-directory -C devops/monitoring fclean
 
 # TODO: Add dependency from (mup).
-up:
+up: net mup
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans
 
 # TODO: Add dependency from (mdown).
