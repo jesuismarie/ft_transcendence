@@ -9,7 +9,7 @@ import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic";
 import {AuthStatus} from "@/presentation/features/oauth/state/auth_state";
 import {loadProfilePage} from "@/presentation/templates/templates";
 import {currentUser} from "@/utils/user";
-import type {BuildContext} from "@/core/rendering-engine/buildContext";
+import type {BuildContext} from "@/core/framework/buildContext";
 
 
 export function initGoogleAuth() {

@@ -6,7 +6,7 @@ import {initPersonalData} from "@/profile/profile";
 import {logoutCallback} from "@/presentation/features/auth/view/auth_view";
 import {configureDependencies} from "@/di/service_locator";
 import {getPersistenceService} from "@/di/resolver";
-import type {BuildContext} from "@/core/rendering-engine/buildContext";
+import type {BuildContext} from "@/core/framework/buildContext";
 
 export const mainWrapper = document.getElementById("wrapper") as HTMLElement | null;
 

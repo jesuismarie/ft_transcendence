@@ -1,6 +1,6 @@
-import type { Widget } from "@/core/rendering-engine/widget";
-import { State, StatefulWidget } from "@/core/rendering-engine/statefulWidget";
-import { BuildContext } from "@/core/rendering-engine/buildContext";
+import type { Widget } from "@/core/framework/widget";
+import { State, StatefulWidget } from "@/core/framework/statefulWidget";
+import { BuildContext } from "@/core/framework/buildContext";
 
 export type RouteBuilder = (context: BuildContext) => Widget;
 

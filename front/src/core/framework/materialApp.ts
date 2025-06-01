@@ -1,9 +1,9 @@
 // material_app.ts
 import {Navigator} from "./navigator";
-import {BuildContext} from "@/core/rendering-engine/buildContext";
-import {Widget} from "@/core/rendering-engine/widget";
-import {StatelessWidget} from "@/core/rendering-engine/statelessWidget";
-import {Builder} from "@/core/rendering-engine/builder";
+import {BuildContext} from "@/core/framework/buildContext";
+import {Widget} from "@/core/framework/widget";
+import {StatelessWidget} from "@/core/framework/statelessWidget";
+import {Builder} from "@/core/framework/builder";
 
 type RouteBuilder = (context: BuildContext) => Widget;
 

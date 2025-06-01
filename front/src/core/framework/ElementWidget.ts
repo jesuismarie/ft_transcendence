@@ -1,5 +1,5 @@
-import {BuildContext} from "@/core/rendering-engine/buildContext";
-import type {Widget} from "@/core/rendering-engine/widget";
+import {BuildContext} from "@/core/framework/buildContext";
+import type {Widget} from "@/core/framework/widget";
 
 export abstract class WidgetElement {
     widget: Widget;

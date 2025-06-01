@@ -1,4 +1,4 @@
-import type {WidgetElement} from "@/core/rendering-engine/ElementWidget";
+import type {WidgetElement} from "@/core/framework/ElementWidget";
 
 export abstract class Widget {
     abstract createElement(): WidgetElement;

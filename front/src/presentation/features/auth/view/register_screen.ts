@@ -1,7 +1,7 @@
-import {StatelessWidget} from "@/core/rendering-engine/statelessWidget";
-import  {type BuildContext} from "@/core/rendering-engine/buildContext";
-import type {Widget} from "@/core/rendering-engine/widget";
-import {HtmlWidget} from "@/core/rendering-engine/htmlWidget";
+import {StatelessWidget} from "@/core/framework/statelessWidget";
+import  {type BuildContext} from "@/core/framework/buildContext";
+import type {Widget} from "@/core/framework/widget";
+import {HtmlWidget} from "@/core/framework/htmlWidget";
 // import {initGoogleRegister, initRegistrationForm} from "@/profile/register";
 import {loadSignUpForm} from "@/presentation/templates/templates";
 

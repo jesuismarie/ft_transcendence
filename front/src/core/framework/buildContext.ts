@@ -1,7 +1,7 @@
 import type { Widget } from "./widget";
-import type {WidgetElement} from "@/core/rendering-engine/ElementWidget";
-import {StatefulElement} from "@/core/rendering-engine/statefulWidget";
-import  {NavigatorState} from "@/core/rendering-engine/navigator";
+import type {WidgetElement} from "@/core/framework/ElementWidget";
+import {StatefulElement} from "@/core/framework/statefulWidget";
+import  {NavigatorState} from "@/core/framework/navigator";
 
 export class BuildContext {
     element: WidgetElement;

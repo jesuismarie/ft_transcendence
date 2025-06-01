@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 // import {configureDependencies} from "@/di/service_locator.ts";
 import {App} from "@/app";
-import {runApp} from "@/core/rendering-engine/runApp";
+import {runApp} from "@/core/framework/runApp";
 // import {CounterWidget} from "@/app.ts";
 //
 // import '../index.css';

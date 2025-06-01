@@ -1,6 +1,6 @@
-import {WidgetElement} from "@/core/rendering-engine/ElementWidget";
-import type {BuildContext} from "@/core/rendering-engine/buildContext";
-import type {HtmlWidget} from "@/core/rendering-engine/htmlWidget";
+import {WidgetElement} from "@/core/framework/ElementWidget";
+import type {BuildContext} from "@/core/framework/buildContext";
+import type {HtmlWidget} from "@/core/framework/htmlWidget";
 
 export class HtmlElement extends WidgetElement {
     constructor(widget: HtmlWidget) {

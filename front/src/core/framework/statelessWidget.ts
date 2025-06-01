@@ -1,6 +1,6 @@
 import {Widget} from "./widget";
-import {WidgetElement} from "@/core/rendering-engine/ElementWidget";
-import {BuildContext} from "@/core/rendering-engine/buildContext";
+import {WidgetElement} from "@/core/framework/ElementWidget";
+import {BuildContext} from "@/core/framework/buildContext";
 
 export abstract class StatelessWidget extends Widget {
     createElement(): WidgetElement {

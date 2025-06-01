@@ -1,5 +1,5 @@
 import { Widget } from "./widget";
-import {BuildContext} from "@/core/rendering-engine/buildContext";
+import {BuildContext} from "@/core/framework/buildContext";
 
 export function runApp(widget: Widget) {
     window.addEventListener("DOMContentLoaded", () => {

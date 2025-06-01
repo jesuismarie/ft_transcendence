@@ -1,10 +1,10 @@
 import {container} from "tsyringe";
 import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
 import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic";
-import {HtmlWidget} from "@/core/rendering-engine/htmlWidget";
-import type {BuildContext} from "@/core/rendering-engine/buildContext";
-import type {Widget} from "@/core/rendering-engine/widget";
-import {State, StatefulWidget} from "@/core/rendering-engine/statefulWidget";
+import {HtmlWidget} from "@/core/framework/htmlWidget";
+import type {BuildContext} from "@/core/framework/buildContext";
+import type {Widget} from "@/core/framework/widget";
+import {State, StatefulWidget} from "@/core/framework/statefulWidget";
 import {initPersonalData} from "@/profile/profile";
 import {currentUserId} from "@/presentation/templates/templates";
 
