@@ -27,6 +27,11 @@ export default async function createUserRoute(app: FastifyInstance, userRepo: Us
 				return reply.sendError({statusCode: 409, code: "EMAIL_EXISTS", message: "Email already exists"});
 			if (userRepo.findByUsername(username))
 				return reply.sendError({statusCode: 409, code: "USERNAME_EXISTS", message: "Username already exists"});
+			if (authProvider !== 'local' && !providerSub)
+				return reply.sendError({statusCode: 400, code: "INVALID_AUTH_PROVIDER", message: "Invalid auth provider or provider sub is missing"});
+			if (authProvider === 'local' && !password)
+				return reply.sendError({statusCode: 400, code: "PASSWORD_REQUIRED", message: "Password is required for authentication."});
+			
 			const hash = await argon2.hash(password);
 			const user = userRepo.create(email, username, hash, authProvider, providerSub);
 			if (!user) {

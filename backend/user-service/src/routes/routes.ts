@@ -3,8 +3,9 @@ import { FastifyInstance } from "fastify";
 
 // Routes for the user service
 import healthRoute from "./health";
-import userRoutes from "./User/routes";
+import userRoutes from "./user/routes";
 import friendRoutes from "./Friend/routes";
+import internalRoutes from "./internal/routes";
 
 // Repositories
 import { UserRepo } from "../repositories/userRepo";
@@ -20,6 +21,9 @@ export default async function routes(app: FastifyInstance) {
 
   // User routes
   await userRoutes(app, userRepo);
+  
+  // Internal routes
+    await internalRoutes(app, userRepo);
 
   // Friend routes
   await friendRoutes(app, userRepo, friendRepo);
