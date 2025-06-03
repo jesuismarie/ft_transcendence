@@ -40,7 +40,7 @@ export class UserRepo implements UserRepoInterface {
 		this.app = app;
 	}
 	
-	create(email: string, username: string, passwordHash: string, authProvider?: string, providerSub?: string): User | null {
+	create(email: string, username: string, passwordHash: string | null, authProvider?: string, providerSub?: string): User | null {
 		const stmt = this.app.db.prepare(
 			'INSERT INTO users (email, passwordHash, authProvider, providerSub, username) VALUES (?,?,?,?,?)'
 		);
