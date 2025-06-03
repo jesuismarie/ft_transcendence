@@ -7,7 +7,6 @@ import { CommonTypes } from "@KarenDanielyan/ft-transcendence-api-types";
 import argon2 from "argon2";
 
 export default async function createUserRoute(app: FastifyInstance, userRepo: UserRepo) {
-	// @ts-ignore
 	app.post<{ Body: UserTypes.CreateUserRequest; Reply: UserTypes.CreateUserResponse | CommonTypes.ApiError }>(
 		'/internal/users',
 		{
@@ -31,8 +30,9 @@ export default async function createUserRoute(app: FastifyInstance, userRepo: Us
 				return reply.sendError({statusCode: 400, code: "INVALID_AUTH_PROVIDER", message: "Invalid auth provider or provider sub is missing"});
 			if (authProvider === 'local' && !password)
 				return reply.sendError({statusCode: 400, code: "PASSWORD_REQUIRED", message: "Password is required for authentication."});
-			
-			const hash = await argon2.hash(password);
+			let hash: string | null = null;
+			if (authProvider === 'local' && password)
+				hash = await argon2.hash(password);
 			const user = userRepo.create(email, username, hash, authProvider, providerSub);
 			if (!user) {
 				return reply.sendError({statusCode: 500, message: 'Failed to create user'});
