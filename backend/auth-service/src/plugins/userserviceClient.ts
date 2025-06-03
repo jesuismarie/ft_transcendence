@@ -80,7 +80,6 @@ const buildClient = ({ baseUrl, clusterToken } : UserServiceClientConfig): UserS
 			return await createUser(
 				{
 					email,
-					password: '',
 					username: username ?? email.split('@')[0], // Default username from email
 					authProvider: provider,
 					providerSub: providerUserId

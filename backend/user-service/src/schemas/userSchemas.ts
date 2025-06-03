@@ -1,6 +1,6 @@
 export const createUserSchema = {
     type: 'object',
-    required: ['email', 'password', 'username'],
+    required: ['email', 'username'],
     additionalProperties: false,
     properties: {
         email: { type: 'string', format: 'email' },
