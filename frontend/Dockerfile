@@ -2,12 +2,9 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json ./
-RUN npm install
+COPY ./frontend .
 
-COPY . .
-
-RUN npm run build:prod
+RUN npm i && npm run build:prod
 
 FROM nginx:alpine AS production
 
