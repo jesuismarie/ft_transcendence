@@ -2,18 +2,18 @@
 
 ## When to Create a Feature Branch
 - Create a feature branch when starting a new feature.
-- Always branch from `feature/staging`.
+- Always branch from `dev`.
 - Use descriptive names for the feature branch (e.g., `feature/login-page`, `feature/payment-integration`).
 
 ## Work on a Feature Branch
 
-1. **Switch to the `feature/staging` branch**.
+1. **Switch to the `dev` branch**.
     ```bash
-    git checkout feature/staging
+    git checkout dev
 
 2. **Pull the latest changes**.
     ```bash
-    git pull origin feature/staging
+    git pull origin dev
 
 3. **Create a new feature branch**.
     ```bash
@@ -27,4 +27,4 @@
    ```bash
    git push origin feature/<feature-name>
 
-6. **Create a pull request to merge your feature branch into `feature/staging` and remove feature/<feature-name>.**:
+6. **Create a pull request to merge your feature branch into `dev` and remove feature/<feature-name>.**:

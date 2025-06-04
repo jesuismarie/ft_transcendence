@@ -2,9 +2,10 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY . .
+COPY ./backend/user-service .
+COPY ./secrets/backend/npmrc-secrets/npmrc-secret.txt ./.npmrc
 
-RUN npm install
+RUN npm ci
 
 RUN npm run build:prod
 
