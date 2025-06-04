@@ -44,7 +44,7 @@ export function loadHomePage() {
 export function loadSignInForm(context: BuildContext) {
     // loadTemplate("signin-template", "Sign In");
     initLoginForm(context);
-    initGoogleAuth();
+    initGoogleAuth(context);
 }
 
 export function loadSignUpForm(context: BuildContext) {

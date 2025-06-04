@@ -1,14 +1,50 @@
 import {StatelessWidget} from "@/core/framework/statelessWidget";
-import type {BuildContext} from "@/core/framework/buildContext";
-// import type {Widget} from "@/core/framework/widget";
+import {type BuildContext} from "@/core/framework/buildContext";
 import {HtmlWidget} from "@/core/framework/htmlWidget";
-import type {Widget} from "@/core/framework/base";
+import {type Widget} from "@/core/framework/base";
+import {hideModal, showModal} from "@/utils/modal_utils";
+import {ModalConstants} from "@/core/constants/modalConstants";
+import {BlocProvider} from "@/core/framework/blocProvider";
+import {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
+import {Resolver} from "@/di/resolver";
 
 export class FriendList extends StatelessWidget {
+    build(context: BuildContext): Widget {
+        return new BlocProvider(
+            {
+                create: () => new FriendBloc(
+                    Resolver.friendRepository()
+                ),
+                child: new FriendListContent()
+            }
+        )
+    }
+
+}
+
+export class FriendListContent extends StatelessWidget {
 
     constructor(public parentId?: string) {
         super();
     }
+
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
+        const previewContainer = document.getElementById("friends-preview") as HTMLElement;
+        const listContainer = document.getElementById("friend-modal-list") as HTMLElement;
+
+        const prevPageBtn = document.getElementById("prev-friends-page") as HTMLButtonElement;
+        const nextPageBtn = document.getElementById("next-friends-page") as HTMLButtonElement;
+        const pageInfo = document.getElementById("friend-page-info") as HTMLElement;
+        const paginatioBtns = document.getElementById("friend-pagination") as HTMLElement;
+
+        const closeModalBtn = document.getElementById("close-friends-modal") as HTMLButtonElement;
+
+        closeModalBtn?.addEventListener("click", () => {
+            hideModal(ModalConstants.friendsModalName)
+        })
+    }
+
     build(context: BuildContext): Widget {
         return new HtmlWidget(`
         <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">

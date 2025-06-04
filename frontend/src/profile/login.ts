@@ -9,13 +9,15 @@ import {Navigator} from "@/core/framework/navigator";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 
 
-export function initGoogleAuth() {
+export function initGoogleAuth(context: BuildContext) {
     const googleLoginButton = document.getElementById('google-login-btn');
     if (!googleLoginButton)
         return;
 
     googleLoginButton.addEventListener('click', async () => {
-        window.location.href = `${ApiConstants.baseUrlDev}${ApiConstants.auth}`;
+        const authBloc = context.read(AuthBloc);
+        await authBloc.loginWithGoogle();
+        // window.location.href = `${ApiConstants.baseUrlDev}${ApiConstants.auth}`;
     });
 }
 

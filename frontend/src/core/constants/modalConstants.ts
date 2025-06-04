@@ -5,4 +5,5 @@ export abstract class ModalConstants {
     static deleteTournamentModalName: string = "delete-tournament-modal";
     static twoFaModal: string = "twofa-modal";
     static editProfileModalName: string = "edit-profile-modal";
+    static friendsModalName: string = "friends-modal";
 }

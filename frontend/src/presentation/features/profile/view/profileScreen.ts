@@ -21,6 +21,8 @@ import {MatchHistoryModal} from "@/presentation/features/match/view/matchHistory
 import {NavigationMenu} from "@/presentation/features/navigation/view/navigationMenu";
 import {SearchUserModal} from "@/presentation/features/search/view/search_user_modal";
 import {isEqual} from "lodash";
+import {hideModal, showModal} from "@/utils/modal_utils";
+import {ModalConstants} from "@/core/constants/modalConstants";
 
 
 export class ProfileScreen extends StatefulWidget {
@@ -45,6 +47,8 @@ export class ProfileScreenState extends State<ProfileScreen> {
         if (userId) {
             context.read(ProfileBloc).getUserProfile(userId.toString()).then(profile => {})
         }
+
+
         // const authBloc = context.read(AuthBloc);
         // const profileBloc = context.read(ProfileBloc);
         // if (!authBloc.state.user?.userId) {

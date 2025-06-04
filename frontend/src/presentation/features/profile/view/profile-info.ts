@@ -2,7 +2,7 @@ import {type BuildContext} from "@/core/framework/buildContext";
 // import type {Widget} from "@/core/framework/widget";
 import {HtmlWidget} from "@/core/framework/htmlWidget";
 import {type Widget} from "@/core/framework/base";
-import {showModal} from "@/utils/modal_utils";
+import {hideModal, showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {BlocBuilder} from "@/core/framework/blocBuilder";
@@ -49,6 +49,8 @@ export class ProfileInfoContent extends State<ProfileInfo> {
             const editBtn = document.getElementById('edit-profile-btn');
             const uploadBtn = document.getElementById('avatar-upload-btn')
             const avatarInput = document.getElementById('avatar-input') as HTMLInputElement | null;
+            const openModalBtn = document.getElementById("friend-list-btn") as HTMLButtonElement;
+
             editBtn!.addEventListener('click', async (e) => {
                 e.preventDefault()
                 showModal(ModalConstants.editProfileModalName)
@@ -60,8 +62,12 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                 avatarInput?.click();
             });
 
+            openModalBtn?.addEventListener("click", () => {
+                showModal(ModalConstants.friendsModalName)
+            })
 
-            avatarInput?.addEventListener("change", async () => {
+
+            avatarInput?.addEventListener("input", async () => {
                 if (!avatarInput.files || avatarInput.files.length === 0)
                     return;
                 await context.read(ProfileBloc).selectAvatar(avatarInput?.files[0]);

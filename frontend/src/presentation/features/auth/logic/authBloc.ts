@@ -82,6 +82,26 @@ export class AuthBloc extends Cubit<AuthState>{
         });
     }
 
+    async loginWithGoogle(): Promise<void> {
+
+        const res: Either<GeneralException, UserEntity> = await this.authRepository.loginWithGoogle();
+        res.when({
+            onError: (err: any) => {
+                console.log('Error:', err)
+                let errorMessage: string | undefined;
+                if (err instanceof ApiException) {
+                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                }
+                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                // user = null;
+            },
+            onSuccess: (user) => {
+                this.preferenceService.setToken(user.accessToken);
+                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
+            }
+        });
+    }
+
     // async getUserProfile(id: string): Promise<void> {
     //     const res = await this.userRemoteRepository.getProfile(id);
     //     res.when({

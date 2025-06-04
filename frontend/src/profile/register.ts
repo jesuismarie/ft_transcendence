@@ -1,8 +1,6 @@
 import {clearErrors, showError } from "@/utils/error_messages";
-// import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
 import {AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import {ApiConstants} from "@/core/constants/apiConstants";
-import {Resolver} from "@/di/resolver";
 import type {BuildContext} from "@/core/framework/buildContext";
 import {Validator} from "@/utils/validation";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";

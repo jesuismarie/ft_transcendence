@@ -3,7 +3,7 @@ import type {UserEntity} from "@/domain/entity/user_entity";
 import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
 import {type Either, Left, Right} from "@/core/models/either";
 import {inject, injectable} from "tsyringe";
-import type {ApiClient} from "@/core/network/apiClient";
+import  {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
@@ -24,9 +24,10 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
             if (res.status >= 200 && res.status < 400) {
                 const user: UserEntity = {
                     userId: res.data.userId,
-                    accessToken: res.data.accessToken,
-                    refreshToken: res.data.refreshToken,
+                    accessToken: res.data.access_token,
+                    refreshToken: res.data.refresh_token,
                 }
+                // console.log(`AAAAAAA:::::: ${res.data.}`)
                 return new Right(user);
             }
             return new Left(new GeneralException());
@@ -47,6 +48,29 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
     }): Promise<Either<GeneralException, UserEntity>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.login, {email, password});
+            if (res.status >= 200 && res.status < 400) {
+                const user: UserEntity = {
+                    userId: res.data.userId,
+                    accessToken: res.data.accessToken,
+                    refreshToken: res.data.refreshToken,
+                }
+                return new Right(user);
+            }
+            return new Left(new GeneralException());
+        }
+        catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async loginWithGoogle(): Promise<Either<GeneralException, UserEntity>> {
+        try {
+            const res = await this.apiClient.axiosClient().post(`${ApiConstants.baseUrlDev}${ApiConstants.auth}`);
             if (res.status >= 200 && res.status < 400) {
                 const user: UserEntity = {
                     userId: res.data.userId,
