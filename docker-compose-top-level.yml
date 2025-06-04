@@ -34,7 +34,6 @@ services:
       restart: always
 
     user-service:
-      image: user-service
       container_name: user-service
       build:
         context: .
@@ -90,8 +89,10 @@ services:
       restart: always
 
     frontend:
-        build: frontend/
         container_name: frontend
+        build:
+          context: .
+          dockerfile: frontend/Dockerfile
         ports:
           - "80:80"
           - "443:443"
