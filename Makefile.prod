@@ -1,0 +1,19 @@
+include Makefile.mk
+
+do: build push
+
+build:
+	@docker build -f $(AUTH_SERVICE_DOCKER_PATH)        -t $(AUTH_SERVICE_IMAGE_NAME)      $(SERVICE_AUTH_CONTEXT)
+	@docker build -f $(GAME_SERVICE_DOCKER_PATH)        -t $(GAME_SERVICE_IMAGE_NAME)      $(SERVICE_AUTH_CONTEXT)
+	@docker build -f $(PONG_SERVICE_DOCKER_PATH)        -t $(PONG_SERVICE_IMAGE_NAME)      $(SERVICE_AUTH_CONTEXT)
+	@docker build -f $(PROXY_SERVICE_DOCKER_PATH)       -t $(PROXY_SERVICE_IMAGE_NAME)     $(SERVICE_AUTH_CONTEXT)
+	@docker build -f $(USER_SERVICE_DOCKER_PATH)        -t $(USER_SERVICE_IMAGE_NAME)      $(SERVICE_AUTH_CONTEXT)
+	@docker build -f $(FRONTEND_SERVICE_DOCKER_PATH)    -t $(FRONTEND_SERVICE_IMAGE_NAME)  $(SERVICE_AUTH_CONTEXT)
+
+push:
+	@docker push $(AUTH_SERVICE_IMAGE_NAME)
+	@docker push $(GAME_SERVICE_IMAGE_NAME)
+	@docker push $(PONG_SERVICE_IMAGE_NAME)
+	@docker push $(PROXY_SERVICE_IMAGE_NAME)
+	@docker push $(USER_SERVICE_IMAGE_NAME)
+	@docker push $(FRONTEND_SERVICE_IMAGE_NAME)
