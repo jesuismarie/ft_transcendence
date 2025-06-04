@@ -1,25 +1,34 @@
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
 import {type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig} from "axios";
 import axios from "axios";
+import {inject, injectable} from "tsyringe";
+import type {PreferenceService} from "@/core/services/preference_service";
 
+@injectable()
 export class ApiClient {
-    public axiosClient: AxiosInstance;
+    private _axiosClient?: AxiosInstance;
 
-    constructor() {
-        this.axiosClient = axios.create({
+    constructor(@inject("PreferenceService") private preferenceService: PreferenceService) {}
+
+    public axiosClient(): AxiosInstance {
+        const token: string = this.preferenceService.getToken() ?? ''
+
+        console.log(`GGGGGGGGGGGGGGG:::: ${token}`);
+        this._axiosClient = axios.create({
             baseURL: ApiConstants.baseUrlDev,
             headers: {
                 'Content-Type': 'application/json',
-                // 'Authorization': `Bearer `,
+                'Authorization': `Bearer ${token}`,
             },
         });
 
         this._initializeRequestInterceptor();
         this._initializeResponseInterceptor();
+        return this._axiosClient;
     }
 
     private _initializeRequestInterceptor() {
-        this.axiosClient.interceptors.request.use(
+        this._axiosClient?.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {
                 console.log('[Request]', config);
                 return config;
@@ -29,7 +38,7 @@ export class ApiClient {
                 return Promise.reject(error);
             }
         );
-        this.axiosClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+        this._axiosClient?.interceptors.request.use((config: InternalAxiosRequestConfig) => {
             const base = config.baseURL ?? '';
             const path = config.url ?? '';
             const fullUrl = base.endsWith('/') || path.startsWith('/') ? base + path : `${base}/${path}`;
@@ -40,7 +49,7 @@ export class ApiClient {
     }
 
     private _initializeResponseInterceptor() {
-        this.axiosClient.interceptors.response.use(
+        this._axiosClient?.interceptors.response.use(
             (response: AxiosResponse) => {
                 console.log('[Response]', response);
                 return response;

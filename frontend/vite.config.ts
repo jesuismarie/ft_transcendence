@@ -15,6 +15,7 @@
                 "@": path.resolve(__dirname, "src"),
             },
         },
+
         css: {
             modules: false,
             postcss: './postcss.config.js',

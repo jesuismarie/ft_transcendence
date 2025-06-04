@@ -1,15 +1,14 @@
-import {type PresenceMessage, Status} from "@/core/models/status.ts";
-import type {PersistenceService} from "@/core/services/persistance_service.ts";
-import {getCurrentUserId} from "@/utils/user.ts";
+import {type PresenceMessage, Status} from "@/core/models/status";
+import type {PersistenceService} from "@/core/services/persistance_service";
+import type {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 
 
 export class PersistenceServiceImpl implements PersistenceService {
     private ws: WebSocket | null = null;
     private readonly backendUrl: string;
 
-    constructor(backendUrl: string) {
+    constructor(backendUrl: string, private authBloc: AuthBloc) {
         this.backendUrl = backendUrl;
-        this.init();
     }
 
     public init(): void {
@@ -36,7 +35,7 @@ export class PersistenceServiceImpl implements PersistenceService {
 
     public sendStatus(status: Status): void {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            const userId = getCurrentUserId().toString();
+            const userId = this.authBloc.state.user?.userId?.toString() ?? '';
             const payload: PresenceMessage = {
                 userId: userId,
                 status,

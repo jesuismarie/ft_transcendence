@@ -1,13 +1,16 @@
 import { addModalEvents } from "@/utils/modal_utils";
 import { updatePaginationControls } from "@/utils/pagination";
 import type {FriendResponse, ModalInfo, PaginationInfo, QuickUserResponse } from "@/utils/types";
-import { currentUser } from "@/utils/user";
+import {Resolver} from "@/di/resolver";
+import type {BuildContext} from "@/core/framework/buildContext";
+import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+// import { currentUser } from "@/utils/user";
 
 export const FRIENDS_LIMIT = 10;
 let currentFriendOffset = 0;
 let totalFriendResults = 0;
 
-export function viewFriends(id: number) {
+export function viewFriends(context: BuildContext, id: number) {
 	const elements = getFriendElements();
 	if (!elements)
 		return;
@@ -15,8 +18,8 @@ export function viewFriends(id: number) {
 	const { modalInfo, paginationInfo } = elements;
 
 	addModalEvents(modalInfo, "friends-modal");
-	addFriendPaginationEvents(id, paginationInfo, modalInfo);
-	fetchFriendList(id, currentFriendOffset, modalInfo, paginationInfo);
+	addFriendPaginationEvents(context, id, paginationInfo, modalInfo);
+	fetchFriendList(context, id, currentFriendOffset, modalInfo, paginationInfo);
 }
 
 export function getFriendElements(): {
@@ -51,7 +54,9 @@ export function getFriendElements(): {
 	};
 }
 
-export function renderFriendItem(friend: QuickUserResponse): string {
+export function renderFriendItem(context: BuildContext, friend: QuickUserResponse): string {
+	const profileBloc = context.read(ProfileBloc);
+	const currentUser = profileBloc.state.profile?.username
 	const targetHash = friend.username === currentUser ? "#profile" : `#profile/${friend.username}`;
 	return `
 		<div onclick="location.hash = '${targetHash}'; initPersonalData(${friend.id});" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
@@ -61,7 +66,7 @@ export function renderFriendItem(friend: QuickUserResponse): string {
 	`;
 }
 
-export function renderFriendResults(data: FriendResponse, modalInfo: ModalInfo, offset: number) {
+export function renderFriendResults(context: BuildContext, data: FriendResponse, modalInfo: ModalInfo, offset: number) {
 	if (data.totalCount === 0 && modalInfo.previewContainer) {
 		modalInfo.previewContainer.innerHTML = `<p class="text-gray-500 p-4">No friends yet.</p>`;
 		return;
@@ -71,17 +76,18 @@ export function renderFriendResults(data: FriendResponse, modalInfo: ModalInfo, 
 		modalInfo.previewContainer.innerHTML = "";
 		const previewFriends = data.friends.slice(0, 3);
 		previewFriends.forEach(friend => {
-			modalInfo.previewContainer!.insertAdjacentHTML("beforeend", renderFriendItem(friend));
+			modalInfo.previewContainer!.insertAdjacentHTML("beforeend", renderFriendItem(context, friend));
 		});
 	}
 
 	if (data.totalCount > 3)
 		modalInfo.openModalBtn.classList.remove("hidden");
 	if (modalInfo.listContainer)
-		modalInfo.listContainer.innerHTML = data.friends.map(renderFriendItem).join("");
+		modalInfo.listContainer.innerHTML = data.friends.map((e) => renderFriendItem(context, e)).join("");
 }
 
 export async function fetchFriendList(
+	context: BuildContext,
 	id: number,
 	offset: number,
 	modalInfo: ModalInfo,
@@ -97,7 +103,7 @@ export async function fetchFriendList(
 
 		const data: FriendResponse = await res.json();
 
-		renderFriendResults(data, modalInfo, offset);
+		renderFriendResults(context, data, modalInfo, offset);
 		totalFriendResults = data.totalCount;
 		currentFriendOffset = offset;
 
@@ -115,18 +121,19 @@ export async function fetchFriendList(
 }
 
 export function addFriendPaginationEvents(
+	context: BuildContext,
 	id: number,
 	paginationInfo: PaginationInfo,
 	modalInfo: ModalInfo
 ) {
 	paginationInfo.prevPageBtn.addEventListener("click", () => {
 		if (currentFriendOffset >= FRIENDS_LIMIT) {
-			fetchFriendList(id, currentFriendOffset - FRIENDS_LIMIT, modalInfo, paginationInfo);
+			fetchFriendList(context, id, currentFriendOffset - FRIENDS_LIMIT, modalInfo, paginationInfo);
 		}
 	});
 	paginationInfo.nextPageBtn.addEventListener("click", () => {
 		if (currentFriendOffset + FRIENDS_LIMIT < totalFriendResults) {
-			fetchFriendList(id, currentFriendOffset + FRIENDS_LIMIT, modalInfo, paginationInfo);
+			fetchFriendList(context, id, currentFriendOffset + FRIENDS_LIMIT, modalInfo, paginationInfo);
 		}
 	});
 }

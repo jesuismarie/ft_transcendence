@@ -1,6 +1,7 @@
 export abstract class ApiConstants {
     // static baseUrl: string = import.meta.env.VITE_API_URL;
     static baseUrlDev: string = "http://localhost:5003";
+    static websocketUrl = "ws://localhost:5002/users/ws";
     static authBaseUrl = "/auth-service"
     static userBaseUrl = "/user-service"
     static gameBaseUrl = "/game-service"
@@ -22,7 +23,7 @@ export abstract class ApiConstants {
     static unregisterFromTournament: string = `${ApiConstants.gameBaseUrl}/unregister-from-tournament`;
     static matchHistoryByUser: string = `${ApiConstants.gameBaseUrl}/get-match-history-by-user`;
     static saveMatchResults: string = `${ApiConstants.gameBaseUrl}/save-match-result`;
-    static login: string = `${ApiConstants.authBaseUrl}/login`;
+    static login: string = `${ApiConstants.authBaseUrl}/auth/login`;
     static twoFA:string = `${ApiConstants.authBaseUrl}/login/2fa`;
     static refresh: string = `${ApiConstants.authBaseUrl}/refresh`;
     static logout: string = `${ApiConstants.authBaseUrl}/logout`;

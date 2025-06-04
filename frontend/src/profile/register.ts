@@ -1,13 +1,12 @@
 import {clearErrors, showError } from "@/utils/error_messages";
-import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
-import {container} from "tsyringe";
-import type {ApiClient} from "@/core/network/apiClient.ts";
-import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository.ts";
-import {AuthLogic} from "@/presentation/features/oauth/logic/auth_logic.ts";
-import {AuthStatus} from "@/presentation/features/oauth/state/auth_state.ts";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
-import {loadHomePage, loadProfilePage} from "@/presentation/templates/templates.ts";
-import {currentUser} from "@/utils/user.ts";
+// import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
+import {AuthStatus} from "@/presentation/features/auth/logic/auth_state";
+import {ApiConstants} from "@/core/constants/apiConstants";
+import {Resolver} from "@/di/resolver";
+import type {BuildContext} from "@/core/framework/buildContext";
+import {Validator} from "@/utils/validation";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {Navigator} from "@/core/framework/navigator";
 
 export function initGoogleRegister() {
 	const googleRegisterButton = document.getElementById('google-register-btn');
@@ -19,12 +18,13 @@ export function initGoogleRegister() {
 	});
 }
 
-export function initRegistrationForm() {
+export function initRegistrationForm(context: BuildContext) {
 	const registrationForm = document.getElementById('registrationForm') as HTMLFormElement | null;
 
 	if (!registrationForm) 
 		return;
 
+	const navigator = Navigator.of(context);
 	registrationForm.addEventListener('submit', async (event: Event) => {
 		event.preventDefault();
 
@@ -41,7 +41,7 @@ export function initRegistrationForm() {
 		if (!username) {
 			showError('reg_username', 'Username is required.');
 			hasError = true;
-		} else if (!isValidUsername(username)) {
+		} else if (!Validator.isValidUsername(username)) {
 			showError('reg_username', 'Invalid username.');
 			hasError = true;
 		}
@@ -49,7 +49,7 @@ export function initRegistrationForm() {
 		if (!email) {
 			showError('reg_email', 'Email is required.');
 			hasError = true;
-		} else if (!isValidEmail(email)) {
+		} else if (!Validator.isValidEmail(email)) {
 			showError('reg_email', 'Invalid email address.');
 			hasError = true;
 		}
@@ -64,7 +64,7 @@ export function initRegistrationForm() {
 			hasError = true;
 		}
 
-		if (!hasError && !isValidPassword(password)) {
+		if (!hasError && !Validator.isValidPassword(password)) {
 			showError('reg_password', 'Invalid password.');
 			showError('confirm_password', 'Invalid password.');
 			hasError = true;
@@ -78,46 +78,18 @@ export function initRegistrationForm() {
 		if (hasError)
 			return;
 
-		const authRepository = container.resolve<RemoteAuthRepository>('RemoteAuthRepository');
-		const authLogic = new AuthLogic(authRepository);
+		const authLogic = context.read(AuthBloc)
 		await authLogic.register({username, password, email});
 		if (authLogic.state.status === AuthStatus.Success) {
 			console.log('Registration successful:');
-			if (authLogic.state.user) {
-				localStorage.setItem("currentUser", JSON.stringify(authLogic.state.user));
-				localStorage.setItem("currentUserId", authLogic.state.user.userId.toString());
-			}
 			await authLogic.resetState();
-			// location.hash = '#profile';
-			loadProfilePage(currentUser);
+
+			navigator.pushNamed( '/profile');
 			return;
 		}
 		else if(authLogic.state.status === AuthStatus.Error) {
 			showError('reg_email', authLogic.state.errorMessage || 'Registration Failed.');
 			return;
 		}
-		// const res =
-		// try {
-		// 	const response = await fetch("/auth/register", {
-		// 		method: 'POST',
-		// 		headers: { 'Content-Type': 'application/json' },
-		// 		body: JSON.stringify({ email, username, password }),
-		// 		credentials: 'include'
-		// 	});
-		//
-		// 	const result = await response.json();
-		//
-		// 	if (!response.ok) {
-		// 		console.error('Registration failed:', result);
-		// 		showError('reg_email', result?.message || 'Server error');
-		// 		return;
-		// 	}
-		//
-		// 	console.log('Registration successful:', result);
-		// 	// window.location.href = '/login';
-		// } catch (error) {
-		// 	console.error('Network error during registration:', error);
-		// 	showError('reg_email', 'Network or server error.');
-		// }
 	});
 }

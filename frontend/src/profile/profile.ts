@@ -1,4 +1,4 @@
-import {currentUser, getCurrentUserId} from "@/utils/user";
+// import {currentUser, getCurrentUserId} from "@/utils/user";
 import {addFriend, checkIfFriend} from "./add_friend";
 import {editProfile} from "./edit";
 import {initTournaments} from "./tournaments";
@@ -7,10 +7,14 @@ import {addTournament} from "./tournament_details";
 import {initAvatarUpload} from "./avatar";
 import {viewFriends} from "./friends";
 import {viewMatches} from "./matches";
-import {searchUsers} from "./search";
+// import {searchUsers} from "./search";
 import type {UserView} from "@/utils/types";
 import {initWipeText} from "@/animation/animation";
-import {ApiConstants} from "@/core/constants/apiConstants.ts";
+import {ApiConstants} from "@/core/constants/apiConstants";
+import {Resolver} from "@/di/resolver";
+import type {BuildContext} from "@/core/framework/buildContext";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
 
 export function initData(user: UserView) {
     const playerName = document.getElementById("player-name") as HTMLElement | null;
@@ -36,38 +40,41 @@ export function initData(user: UserView) {
 	`;
 }
 
-export async function initPersonalData(id: number) {
+export async function initPersonalData(context: BuildContext, id: number) {
     initWipeText();
 
     const editProfileBtn = document.getElementById("edit-profile-btn") as HTMLButtonElement | null;
     const upcomingTournaments = document.getElementById("upcoming-tournaments") as HTMLElement | null;
     const friendRequestBtn = document.getElementById("friend-request-btn") as HTMLButtonElement | null;
     const addTournamentPreviewBtn = document.getElementById("add-tournament-preview-btn") as HTMLButtonElement | null;
-
+    console.warn("EEE:::: ", editProfileBtn)
     if (!editProfileBtn || !upcomingTournaments || !friendRequestBtn || !addTournamentPreviewBtn) {
         console.error("One or more required elements are missing in the DOM.");
         return;
     }
 
     try {
-        const currentUserId = getCurrentUserId();
+        const authBloc = context.read(AuthBloc);
+        const profileBloc = context.read(ProfileBloc);
+        const currentUserId = authBloc.state.user?.userId;
+        const username = profileBloc.state.profile?.username
         const targetUserId = id || currentUserId;
 
-        if (!targetUserId)
+        if (!username || !currentUserId || !targetUserId)
             throw new Error("Username is required to load user profile");
-
 
         // console.log(`CURRRRR:::: ${JSON.parse(currentUser!).accessToken}`);
 
-        const res = await fetch(`${ApiConstants.users}/:${targetUserId}`, {
-            method: 'GET',
-            headers: {Authorization: `Bearer ${JSON.parse(currentUser!).accessToken}`}
-            // credentials: 'include'
-        });
-        console.log("LLLLLL", res instanceof HTMLElement);
-        if (!res.ok)
-            throw new Error("Failed to load user profile");
-        const user: UserView = await res.json();
+        const user = profileBloc.state.profile;
+        // const res = await fetch(`${ApiConstants.users}/:${targetUserId}`, {
+        //     method: 'GET',
+        //     headers: {Authorization: `Bearer ${JSON.parse(currentUser!).accessToken}`}
+        //     // credentials: 'include'
+        // });
+        // console.log("LLLLLL", res instanceof HTMLElement);
+        // if (!res.ok)
+        //     throw new Error("Failed to load user profile");
+        // const user: UserView = await res.json();
 
 			// console.log("USSSSSSSS", user);
         // let targetUserId = 0;
@@ -80,22 +87,22 @@ export async function initPersonalData(id: number) {
         // 	losses: 5,
         // 	avatar: "https://example.com/avatar.png"
         // };
-        searchUsers();
-        // viewFriends(user.id);
-        // viewMatches(user.id, user.username);
-        // initData(user);
+        // searchUsers();
+        viewFriends(context, user.id);
+        viewMatches(user.id, user.username);
+        initData(user);
 
         if (targetUserId === currentUserId) {
-            initAvatarUpload(targetUserId);
-            editProfileBtn.classList.remove("hidden");
+            initAvatarUpload(context, targetUserId);
+            // editProfileBtn.classList.remove("hidden");
             editProfile(user);
-            setup2FA();
+            await setup2FA();
             // upcomingTournaments.classList.remove("hidden");
-            initTournaments(currentUser);
-            addTournament();
+            initTournaments(username);
+            addTournament(context);
         } else {
-            editProfileBtn.classList.add("hidden");
-            upcomingTournaments.classList.add("hidden");
+            // editProfileBtn.classList.add("hidden");
+            // upcomingTournaments.classList.add("hidden");
             const isAlreadyFriend = await checkIfFriend(currentUserId, targetUserId);
             if (!isAlreadyFriend) {
                 friendRequestBtn.classList.remove("hidden");

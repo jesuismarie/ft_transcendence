@@ -2,6 +2,7 @@ import type {ModalInfo} from "./types";
 
 export function showModal(modalId: string) {
 	const modal = document.getElementById(modalId) as HTMLElement | null;
+	console.log("MODALLLLLLL");
 	if (modal) {
 		modal.classList.remove("hidden");
 	}
