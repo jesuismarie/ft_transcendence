@@ -44,4 +44,10 @@ down:
 fclean:
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --volumes --rmi all --remove-orphans
 
-.PHONY: net rmnet mup mdown mfclean up down fclean
+build:
+	@$(MAKE) --no-print-directory -f Makefile.prod build
+
+push:
+	@$(MAKE) --no-print-directory -f Makefile.prod push
+
+.PHONY: net rmnet mup mdown mfclean up down fclean build push
