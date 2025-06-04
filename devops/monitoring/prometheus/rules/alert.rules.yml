@@ -1,3 +1,4 @@
+
 groups:
   - name: alert.rules
     rules:
@@ -5,44 +6,61 @@ groups:
         expr: up == 0
         for: 1m
         labels:
-          severity: "critical"
+          severity: critical
         annotations:
-          summary: "Endpoint {{ $labels.instance }} down"
-          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minutes."
+          summary: "Instance down: {{ $labels.instance }}"
+          description: "The target {{ $labels.instance }} (job: {{ $labels.job }}) has been unreachable for over 1 minute."
 
-      - alert: HostOutOfMemory
-        expr: node_memory_MemAvailable / node_memory_MemTotal * 100 < 25
-        for: 5m
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[1m]) > 0.9
+        for: 1m
         labels:
           severity: warning
         annotations:
-          summary: "Host out of memory (instance {{ $labels.instance }})"
-          description: "Node memory is filling up (< 25% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "The process is consuming > 90% of a single CPU core for over 1 minute."
 
-      - alert: HostOutOfDiskSpace
-        expr: (node_filesystem_avail{mountpoint="/"}  * 100) / node_filesystem_size{mountpoint="/"} < 50
-        for: 1s
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes > 500000000  # Adjust based on your app's normal usage
+        for: 1m
         labels:
           severity: warning
         annotations:
-          summary: "Host out of disk space (instance {{ $labels.instance }})"
-          description: "Disk is almost full (< 50% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Process is using more than 500MB of memory."
 
+      - alert: HeapMemoryLeak
+        expr: nodejs_heap_size_used_bytes / nodejs_heap_size_total_bytes > 0.9
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Possible memory leak on {{ $labels.instance }}"
+          description: "Heap memory usage > 90% for over 3 minutes. Might be a leak."
 
-      - alert: HostHighCpuLoad
-        expr: (sum by (instance) (irate(node_cpu{job="node_exporter_metrics",mode="idle"}[5m]))) > 80
-        for: 5m
+      - alert: EventLoopLagHigh
+        expr: nodejs_eventloop_lag_max_seconds > 0.05
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High event loop lag on {{ $labels.instance }}"
+          description: "Node.js event loop lag > 50ms. App may be struggling with blocking I/O or heavy CPU work."
+
+      - alert: GCSpikeDetected
+        expr: rate(nodejs_gc_duration_seconds_sum[1m]) > 0.1
+        for: 1m
         labels:
           severity: warning
         annotations:
-          summary: "Host high CPU load (instance {{ $labels.instance }})"
-          description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+          summary: "GC duration spike on {{ $labels.instance }}"
+          description: "Garbage collection taking unusually long. GC rate > 100ms/s."
 
-      - alert: HostHighLoadAverage
-        expr: node_load1 / count(node_cpu_seconds_total{mode="system"}) by (instance) > 1.5
-        for: 5m
+      - alert: TooManyOpenFileDescriptors
+        expr: process_open_fds / process_max_fds > 0.8
+        for: 2m
         labels:
           severity: warning
         annotations:
-          summary: "High load average on {{ $labels.instance }}"
-          description: "Load average per core > 1.5 for 5 minutes.\n  VALUE = {{ $value | printf \"%.2f\" }}\n  LABELS = {{ $labels }}"
+          summary: "High file descriptor usage on {{ $labels.instance }}"
+          description: "More than 80% of allowed file descriptors in use. Might lead to 'EMFILE' errors."
