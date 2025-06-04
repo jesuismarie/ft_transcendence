@@ -1,27 +1,47 @@
 import {StatelessWidget} from "@/core/framework/statelessWidget";
 import {type BuildContext} from "@/core/framework/buildContext";
-import type {Widget} from "@/core/framework/widget";
 import {HtmlWidget} from "@/core/framework/htmlWidget";
-import {initGoogleAuth, initLoginForm} from "@/profile/login";
 import {loadSignInForm} from "@/presentation/templates/templates";
+import {Navigator} from "@/core/framework/navigator";
+import type {Widget} from "@/core/framework/base";
+import {BlocListener} from "@/core/framework/blocListener";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
+import {showError} from "@/utils/error_messages";
+import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileState, ProfileStatus} from "@/presentation/profile/bloc/profileState";
+import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 
 export class LoginScreen extends StatelessWidget {
     afterMounted(context: BuildContext) {
         super.afterMounted(context);
-        const nav = context.navigator();
+        const authGuard = new AuthGuard('/login', false, true);
+        authGuard.guard(context)
+        const nav = Navigator.of(context);
         const btn = document.getElementById('close-btn-login');
-        // const googleSignBtn = document.getElementById('google-login-btn');
         btn?.addEventListener('click', () => {
             console.log("Clicccc")
-            nav.pop(context)
+            nav.pop()
         })
         loadSignInForm(context);
-        // initGoogleAuth();
-        // initLoginForm(context);
     }
 
     build(context: BuildContext): Widget {
-        return new HtmlWidget(`<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
+        return new BlocListener<AuthBloc, AuthState>({
+            blocType: AuthBloc,
+            listener: (context, state) => {
+                if (state.status == AuthStatus.Success) {
+                    context.read(AuthBloc).resetState().then();
+                    // context.read(ProfileBloc).getUserProfile(state.user?.userId?.toString() ?? '').then(r => r);
+                    Navigator.of(context).pushNamed('/profile')
+                }
+                if (state.status == AuthStatus.Error) {
+                    console.error('Login failed:', state.errorMessage);
+                    showError('login_password', state.errorMessage ?? "UNKNOWN ERROR");
+                    context.read(AuthBloc).resetState().then();
+                }
+            },
+            child: new HtmlWidget(`<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
   <div class="w-[400px] h-[500px]">
     <button id="close-btn-login" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-neon">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
@@ -42,6 +62,7 @@ export class LoginScreen extends StatelessWidget {
     </form>
   </div>
 </div>
-        `);
+        `)
+        });
     }
 }

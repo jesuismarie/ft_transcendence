@@ -1,9 +1,10 @@
-import {Widget} from "./widget";
 import {WidgetElement} from "@/core/framework/ElementWidget";
 import {BuildContext} from "@/core/framework/buildContext";
+import {type IWidgetElement, Widget} from "@/core/framework/base";
+import {WidgetBinding} from "@/core/framework/widgetBinding";
 
 export abstract class StatelessWidget extends Widget {
-    createElement(): WidgetElement {
+    createElement(): IWidgetElement {
         return new StatelessElement(this);
     }
 
@@ -14,28 +15,32 @@ export abstract class StatelessWidget extends Widget {
 
 export class StatelessElement extends WidgetElement {
 
-    constructor(widget: StatelessWidget) {
+    constructor(widget: StatelessWidget, public parentId?: string) {
         super(widget);
         this.currentContext = new BuildContext(this);
     }
 
     render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
-        const builtWidget = (this.widget as StatelessWidget).build(context);
-        this.child = builtWidget.createElement();
-
-        // Create a container to hold the child
-        const template = document.createElement("template");
-
-        const cont = new BuildContext(this.child);
+        const template = document.createElement("my-widget");
+        const builtWidget = (this.widget as StatelessWidget).build(this.currentContext);
+        this.child = builtWidget.createElement() as WidgetElement;
         this.child.parent = this;
-        // Mount the child inside the container
-        this.child.mount(parentDom, cont);
 
-        Array.from(template.content.childNodes).forEach((node) => {
-            parentDom.appendChild(node);
-        });
-        (this.widget as StatelessWidget).afterMounted(context);
-        // Return the container as the rendered DOM
-        return parentDom;
+        const mountPoint = this.parentId ? document.getElementById(this.parentId) : template;
+
+        if (!mountPoint) {
+            throw new Error(`Mount point with id "${this.parentId}" not found.`);
+        }
+
+        const parent = this.parentId ? mountPoint : parentDom;
+        this.child.mount(template, new BuildContext(this.child));
+        parent.appendChild(template)
+        WidgetBinding.getInstance().postFrameCallback(() => {
+            (this.widget as StatelessWidget).afterMounted(this.currentContext);
+        })
+        // const widget = this.widget as StatelessWidget;
+        // widget.afterMounted(context);
+        // (this.widget as StatelessWidget).afterMounted(context);
+        return template; // Important: return where you actually mounted
     }
 }

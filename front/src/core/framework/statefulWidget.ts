@@ -1,11 +1,13 @@
-import {Widget} from "./widget";
 import {WidgetElement} from "@/core/framework/ElementWidget";
 import {BuildContext} from "@/core/framework/buildContext";
+import {type IWidgetElement, Widget} from "@/core/framework/base";
+import {WidgetBinding} from "@/core/framework/widgetBinding";
+import {EventBindingManager} from "@/core/framework/listenersRegisty";
 
 export abstract class StatefulWidget extends Widget {
     state?: State<StatefulWidget>;
 
-    createElement(): WidgetElement {
+    createElement(): IWidgetElement {
         return new StatefulElement(this);
     }
 
@@ -15,18 +17,29 @@ export abstract class StatefulWidget extends Widget {
 export abstract class State<T extends StatefulWidget> {
     widget!: T;
     _element!: StatefulElement;
+    private _isMounted: boolean = false;
 
     abstract build(context: BuildContext): Widget;
 
     initState(context: BuildContext): void {}
 
-    didUpdateWidget(oldWidget: Widget): void {
+    didUpdateWidget(oldWidget: Widget, context: BuildContext): void {
     }
 
     setState(cb: () => void): void {
-        console.log("HHHHHHHH")
         cb();
-        this._element.update(this.widget);
+        this._element.markNeedsBuild();
+        // this._element.update(this.widget);
+    }
+
+    dispose(): void {}
+
+    onMount(isMounted: boolean): void {
+        this._isMounted = isMounted
+    }
+
+    isMounted(): boolean {
+        return this._isMounted;
     }
 
     afterMounted(context: BuildContext): void {}
@@ -34,56 +47,55 @@ export abstract class State<T extends StatefulWidget> {
 
 export class StatefulElement extends WidgetElement {
     state: State<StatefulWidget>;
+    stateInitialized: boolean = false;
 
-    constructor(widget: StatefulWidget) {
+    constructor(widget: StatefulWidget, public parentId?: string) {
         super(widget);
         this.state = widget.createState();
-        this.state._element = this;
         this.state.widget = widget;
-        this.currentContext = new BuildContext(this.state._element)
-        this.state.initState(this.currentContext);
+        this.state._element = this;
+        this.currentContext = new BuildContext(this)
+    }
+
+    unmount() {
+        super.unmount();
+        this.state.onMount(false)
     }
 
     render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
-        const builtWidget = this.state.build(context);
-        this.child = builtWidget.createElement();
-
-        const template = document.createElement("template");
-        const cont = new BuildContext(this.child);
+        if (!this.stateInitialized) {
+            this.stateInitialized = true;
+            this.state.initState(this.currentContext)
+        }
+        const template = document.createElement("my-widget");
+        const builtWidget = this.state.build(this.currentContext);
+        this.child = builtWidget.createElement() as WidgetElement;
         this.child.parent = this;
-        this.child.mount(parentDom, cont);
-        // parentDom.appendChild(template);
-        Array.from(template.content.childNodes).forEach((node) => {
-            parentDom.appendChild(node);
-        });
 
-        this.state.afterMounted(this.currentContext);
-        return parentDom;
+        // Determine where to mount: element by id or fallback to parentDom
+        const mountPoint = this.parentId ? document.getElementById(this.parentId) : template;
+
+        if (!mountPoint) {
+            throw new Error(`Mount point with id "${this.parentId}" not found.`);
+        }
+
+        const parent = this.parentId ? mountPoint : parentDom;
+        this.child.mount(template, new BuildContext(this.child));
+        parent.appendChild(template);
+        WidgetBinding.getInstance().postFrameCallback(() => {
+            this.state.onMount(true);
+            this.state.afterMounted(this.currentContext);
+        })
+
+        return template;
     }
 
     update(newWidget: Widget): void {
         const oldWidget = this.widget;
         this.widget = newWidget;
         this.state.widget = newWidget as StatefulWidget;
-        this.state.didUpdateWidget(oldWidget);
+        this.state.didUpdateWidget(oldWidget, this.currentContext);
 
-        if (!this.dom) {
-            this.dom = this.render(document.body, new BuildContext(this)); // or whatever root
-        }
-
-        while (this.dom.firstChild) {
-            this.dom.removeChild(this.dom.firstChild);
-        }
-
-        // Rebuild the widget tree:
-        const cont = new BuildContext(this);
-        const newBuiltWidget = this.state.build(cont);
-        this.child = newBuiltWidget.createElement();
-        this.child.parent = this;
-        // Mount the child inside the existing root container (this.dom)
-        const context = new BuildContext(this.child)
-        this.child.mount(this.dom, context);
-
-        this.state.afterMounted(this.currentContext);
+        this.markNeedsBuild(); // schedule rebuild instead of immediate manual update
     }
 }

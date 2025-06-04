@@ -1,9 +1,12 @@
 import "reflect-metadata";
 
 // import {configureDependencies} from "@/di/service_locator.ts";
-import {App} from "@/app";
+import {App, navigatorKey, routes} from "@/app";
 import {runApp} from "@/core/framework/runApp";
-// import {CounterWidget} from "@/app.ts";
+import {configureDependencies} from "@/di/service_locator";
+import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
+import {WidgetsBinding} from "@/core/framework/widgetBinding";
+import type {RouteBuilder} from "@/core/framework/navigator";
 //
 // import '../index.css';
 // import {
@@ -25,5 +28,36 @@ import {runApp} from "@/core/framework/runApp";
 // (window as any).loadHomePage = loadHomePage;
 // (window as any).loadGamePage = loadGamePage;
 
-const app = new App();
-runApp(app);
+
+function waitForNavigatorReady(callback: () => void) {
+    const check = () => {
+        const context = navigatorKey.currentContext();
+        if (context) {
+            callback();
+        } else {
+            requestAnimationFrame(check);
+        }
+    };
+    requestAnimationFrame(check);
+}
+
+
+
+async function bootstrap() {
+    WidgetsBinding.ensureInitialized();
+    await configureDependencies();
+    // register dependencies
+    runApp(new App());
+    waitForNavigatorReady(() => {
+        const context = navigatorKey.currentContext();
+        if (context) {
+            AuthGuard.navigationGuard(context!, routes);
+        } else {
+            console.warn("Navigator context still unavailable.");
+        }
+    });
+}
+
+
+
+bootstrap().then(() => {})

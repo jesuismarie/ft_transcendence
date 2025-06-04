@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.8",
+    "@types/lodash": "^4.17.17",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
@@ -20,10 +21,12 @@
     "@types/node": "^22.15.24",
     "autoprefixer": "^10.4.21",
     "axios": "^1.9.0",
+    "lodash": "^4.17.21",
     "path": "^0.12.7",
     "postcss": "^8.5.3",
     "reflect-metadata": "^0.2.2",
     "tsyringe": "^4.10.0",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "uuid": "^11.1.0"
   }
 }

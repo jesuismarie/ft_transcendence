@@ -7,8 +7,9 @@ import type {
     TwoFAVerifyRequest,
     TwoFAVerifyResponse
 } from "@/utils/types";
-import {isValidTwoFACode} from "@/utils/validation";
+// import {isValidTwoFACode} from "@/utils/validation";
 import {ApiConstants} from "@/core/constants/apiConstants";
+import {Validator} from "@/utils/validation";
 
 export async function setup2FA() {
     const enable2faBtn = document.getElementById("enable-2fs-btn") as HTMLButtonElement | null;
@@ -137,7 +138,7 @@ export function handle2FAModal(): void {
     twaInfo.verifyBtn.addEventListener("click", async () => {
         const code = twaInfo.twofaInput.value.trim();
 
-        if (!isValidTwoFACode(code)) {
+        if (!Validator.isValidTwoFACode(code)) {
             showError("twofa-code", "Please enter a valid 6-digit code");
             return;
         }

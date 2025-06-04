@@ -1,4 +1,7 @@
 // Define possible statuses as enum
+import type {Equatable} from "@/core/framework/equatable";
+import { isEqual } from 'lodash';
+
 export enum AuthStatus {
     Initial = 'initial',
     Loading = 'loading',
@@ -10,7 +13,7 @@ export enum AuthStatus {
 // Your user type
 import type { UserEntity } from "@/domain/entity/user_entity";
 
-export class AuthState {
+export class AuthState implements Equatable<AuthState>{
     readonly status: AuthStatus;
     readonly user?: UserEntity;
     readonly errorMessage?: string;
@@ -35,5 +38,9 @@ export class AuthState {
             user: params.user ?? this.user,
             errorMessage: params.errorMessage ?? this.errorMessage,
         });
+    }
+
+    equals(value: AuthState, value2: AuthState): boolean {
+        return isEqual(value, value2);
     }
 }

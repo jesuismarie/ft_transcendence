@@ -1,8 +1,11 @@
 import {clearErrors, showError } from "@/utils/error_messages";
 import {addModalEvents, hideModal } from "@/utils/modal_utils";
 import type { ApiError, ModalInfo } from "@/utils/types";
-import { currentUser } from "@/utils/user";
 import {ApiConstants} from "@/core/constants/apiConstants";
+import {Resolver} from "@/di/resolver";
+import type {BuildContext} from "@/core/framework/buildContext";
+import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 
 export function getAddTournamentElements(): {
 	modalInfo: ModalInfo,
@@ -30,7 +33,7 @@ export function getAddTournamentElements(): {
 	}
 }
 
-export function addTournament() {
+export function addTournament(context: BuildContext) {
 	const elements = getAddTournamentElements();
 	if (!elements)
 		return;
@@ -41,40 +44,54 @@ export function addTournament() {
 	if (modalInfo.saveBtn) {
 		modalInfo.saveBtn.addEventListener("click", () => {
 			clearErrors();
-			fetchAddTournament(nameInput, capacityInput);
+			fetchAddTournament(context, nameInput, capacityInput);
 		});
 	}
 }
 
+// function setSessionAuthToken(token: string) {
+//
+// }
+
 export async function fetchAddTournament(
+	context: BuildContext,
 	nameInput: HTMLInputElement,
 	capacityInput: HTMLSelectElement
 ) {
 	const name = nameInput.value.trim();
-	const capacity = parseInt(capacityInput.value);
+	const max_player_count = parseInt(capacityInput.value);
 	if (!name) {
 		showError("add_tournament", "Please enter a tournament name.");
 		return ;
 	}
-	try {
-		const response = await fetch(`${ApiConstants.createTournament}`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ name, capacity, currentUser }),
-			credentials: "include",
-		});
+	const profileBloc = context.read(ProfileBloc)
+	// const profileLogic = Resolver.profileLogic()
+	const created_by = profileBloc.state.profile?.username;
+	if (!created_by) {
 
-		if (!response.ok) {
-			const result: ApiError = await response.json();
-			showError("add_tournament", result.message);
-			return;
-		}
-		hideModal("add-tournament-modal");
-	} catch (err) {
-		console.error("Error adding tournament:", err);
-		showError("tournament1", "Failed to add tournament. Please try again.");
-		showError("tournament2", "Failed to add tournament. Please try again.");
 	}
+
+	const tournamentBloc = context.read(TournamentBloc);
+	await tournamentBloc.createTournament(name, max_player_count, created_by ?? '');
+	// try {
+	// 	const response = await fetch(`${ApiConstants.createTournament}`, {
+	// 		method: "POST",
+	// 		headers: { "Content-Type": "application/json" },
+	// 		body: JSON.stringify({ name, max_player_count, created_by}),
+	// 		credentials: "include",
+	// 	});
+	//
+	// 	if (!response.ok) {
+	// 		const result: ApiError = await response.json();
+	// 		showError("add_tournament", result.message);
+	// 		return;
+	// 	}
+	// 	hideModal("add-tournament-modal");
+	// } catch (err) {
+	// 	console.error("Error adding tournament:", err);
+	// 	showError("tournament1", "Failed to add tournament. Please try again.");
+	// 	showError("tournament2", "Failed to add tournament. Please try again.");
+	// }
 	nameInput.value = "";
 	capacityInput.selectedIndex = 0;
 }

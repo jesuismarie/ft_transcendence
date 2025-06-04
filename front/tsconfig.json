@@ -9,6 +9,7 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
+
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     /* Bundler mode */

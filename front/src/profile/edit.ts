@@ -1,8 +1,9 @@
 import { clearErrors, showError } from "@/utils/error_messages";
 import { addModalEvents, hideModal } from "@/utils/modal_utils";
 import type {ApiError, ChangePasswordRequest, EditProfileElements, ModalInfo, UpdateUserRequest, UserView } from "@/utils/types";
-import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
+// import {isValidEmail, isValidPassword, isValidUsername } from "@/utils/validation";
 import {ApiConstants} from "@/core/constants/apiConstants";
+import {Validator} from "@/utils/validation";
 
 export function getEditProfileElements(): EditProfileElements | null {
 	const usernameInput = document.getElementById("edit-username") as HTMLInputElement | null;
@@ -59,7 +60,7 @@ export function validateForm(elements: EditProfileElements, currentUser: UserVie
 	if (!updatedUsername) {
 		showError("edit_username", "Username is required.");
 		hasError = true;
-	} else if (!isValidUsername(updatedUsername)) {
+	} else if (!Validator.isValidUsername(updatedUsername)) {
 		showError("edit_username", "Invalid username.");
 		hasError = true;
 	}
@@ -67,7 +68,7 @@ export function validateForm(elements: EditProfileElements, currentUser: UserVie
 	if (!updatedEmail) {
 		showError("edit_email", "Email is required.");
 		hasError = true;
-	} else if (!isValidEmail(updatedEmail)) {
+	} else if (!Validator.isValidEmail(updatedEmail)) {
 		showError("edit_email", "Invalid email.");
 		hasError = true;
 	}
@@ -82,7 +83,7 @@ export function validateForm(elements: EditProfileElements, currentUser: UserVie
 		showError("new_password", "New password can't be the same as old password.");
 		hasError = true;
 	} else if (updatedPassword || confirmPassword) {
-		if (!isValidPassword(updatedPassword)) {
+		if (!Validator.isValidPassword(updatedPassword)) {
 			showError("new_password", "Password must be at least 8 characters, include a capital letter and a symbol.");
 			hasError = true;
 		}

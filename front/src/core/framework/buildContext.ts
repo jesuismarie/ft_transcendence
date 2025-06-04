@@ -1,9 +1,8 @@
-import type { Widget } from "./widget";
+// import {InheritedProviderElement} from "@/core/framework/inheritedProviderElement";
+import type {IBuildContext, Widget} from "@/core/framework/base";
 import type {WidgetElement} from "@/core/framework/ElementWidget";
-import {StatefulElement} from "@/core/framework/statefulWidget";
-import  {NavigatorState} from "@/core/framework/navigator";
 
-export class BuildContext {
+export class BuildContext implements IBuildContext{
     element: WidgetElement;
 
     constructor(element: WidgetElement) {
@@ -12,6 +11,29 @@ export class BuildContext {
 
     get widget(): Widget {
         return this.element.widget;
+    }
+
+
+
+
+    read<T>(type: new (...args: any[]) => T): T {
+        const provider = this.element.findInheritedProvider<T>(type);
+        if (!provider) throw new Error(`No provider found for type ${type}`);
+        return provider.getValue();
+    }
+
+    watch<T>(type: new (...args: any[]) => T): T {
+        const provider = this.element.findInheritedProvider<T>(type);
+        if (!provider) throw new Error(`No provider found for type ${type}`);
+
+        const element = this.element;
+
+        // Subscribe to rebuild this widget
+        provider.subscribe(() => {
+            element.markNeedsBuild?.(); // You must ensure this exists on StatefulElement
+        });
+
+        return provider.getValue();
     }
 
     logWidgetTree(context: BuildContext) {
@@ -23,7 +45,7 @@ export class BuildContext {
     }
 
     /// Finds the closest ancestor widget of the given type
-    findAncestorOfExactType<T extends Widget>(type: new (...args: any[]) => T): T | undefined {
+    public findAncestorOfExactType<T extends Widget>(type: new (...args: any[]) => T): T | undefined {
         let parent = this.element.parent;
         while (parent) {
             if (parent.widget instanceof type) {
@@ -46,17 +68,5 @@ export class BuildContext {
             this.element.dom.replaceChild(newChild.dom, oldChild.dom);
         }
     }
-
-    navigator(): NavigatorState {
-        let current: WidgetElement | undefined = this.element;
-
-        while (current) {
-            if (current instanceof StatefulElement && current.state instanceof NavigatorState) {
-                return current.state;
-            }
-            current = current.parent;
-        }
-
-        throw new Error("Navigator not found in widget tree.");
-    }
+    //
 }

@@ -1,8 +1,11 @@
 import {clearErrors, showError } from "@/utils/error_messages";
 import type {ApiError, AvatarElements } from "@/utils/types";
-import { isValidAvatar } from "@/utils/validation";
-import {currentUserId} from "@/utils/user";
+// import { isValidAvatar } from "@/utils/validation";
 import {ApiConstants} from "@/core/constants/apiConstants";
+import {Resolver} from "@/di/resolver";
+import {Validator} from "@/utils/validation";
+import type {BuildContext} from "@/core/framework/buildContext";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -33,7 +36,7 @@ export function readImageFile(file: File): Promise<string | null> {
 		
 		reader.onload = () => {
 			const result = reader.result as string;
-			if (!isValidAvatar(result)) {
+			if (!Validator.isValidAvatar(result)) {
 				showError("avatar", "Please select a valid image file (JPEG, PNG, GIF, or WebP).");
 				resolve(null);
 				return;
@@ -93,14 +96,15 @@ export async function handleAvatarChange(id: number, elements: AvatarElements, f
 	await uploadAvatar(id, file);
 }
 
-export function initAvatarUpload(id: number) {
+export function initAvatarUpload(context: BuildContext, id: number) {
 	clearErrors();
 
 	const elements = getAvatarElements();
 	if (!elements)
 		return;
 
-	if (id !== currentUserId) {
+	const authBloc = context.read(AuthBloc);
+	if (id !== authBloc.state.user?.userId) {
 		elements.uploadBtn.remove();
 		elements.fileInput.remove();
 		return;

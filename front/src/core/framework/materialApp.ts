@@ -1,25 +1,34 @@
 // material_app.ts
-import {Navigator} from "./navigator";
+import {Navigator, type RouteBuilder, type RouteListen} from "./navigator";
 import {BuildContext} from "@/core/framework/buildContext";
-import {Widget} from "@/core/framework/widget";
 import {StatelessWidget} from "@/core/framework/statelessWidget";
 import {Builder} from "@/core/framework/builder";
+import type {Widget} from "@/core/framework/base";
+import {type Key, UniqueKey} from "@/core/framework/key";
 
-type RouteBuilder = (context: BuildContext) => Widget;
 
 interface MaterialAppProps {
     home: Widget;
     routes?: { [key: string]: RouteBuilder };
+    routeListen?: RouteListen;
+    key?: string;
+    navigatorKey?: Key;
 }
 
 export class MaterialApp extends StatelessWidget {
     home: Widget;
     routes: { [key: string]: RouteBuilder };
+    key: string;
+    routeListen?: RouteListen;
+    navigatorKey?: Key;
 
     constructor(props: MaterialAppProps) {
         super();
         this.home = props.home;
+        this.routeListen = props.routeListen;
         this.routes = props.routes || {};
+        this.key = props.key ?? new UniqueKey().toString()
+        this.navigatorKey = props.navigatorKey
     }
 
     build(context: BuildContext): Widget {
@@ -32,6 +41,8 @@ export class MaterialApp extends StatelessWidget {
 
         // Pass initial route and route map to Navigator
         return new Navigator({
+            navigatorKey: this.navigatorKey,
+            routeListen: this.routeListen,
             initialRoute: "/",
             routes: fullRoutes,
         });
