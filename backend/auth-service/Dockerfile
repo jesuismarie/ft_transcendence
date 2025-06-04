@@ -5,11 +5,7 @@ WORKDIR /app
 COPY ./backend/auth-service .
 COPY ./secrets/backend/npmrc-secrets/npmrc-secret.txt ./.npmrc
 
-RUN npm install
-
-RUN npm run build
-RUN npm run generate
-RUN npm run migrate:deploy
+RUN npm install && npm run generate && npm run migrate:deploy && npm run build:prod
 
 FROM node:20-alpine
 WORKDIR /app

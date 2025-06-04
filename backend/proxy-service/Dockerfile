@@ -5,10 +5,7 @@ WORKDIR /app
 COPY ./backend/proxy-service .
 COPY ./secrets/backend/npmrc-secrets/npmrc-secret.txt ./.npmrc
 
-RUN npm install
-
-RUN npm run build:prod
-
+RUN npm install && npm run build:prod
 
 FROM node:20-alpine
 
