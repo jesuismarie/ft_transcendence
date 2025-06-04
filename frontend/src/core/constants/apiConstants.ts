@@ -27,8 +27,8 @@ export abstract class ApiConstants {
     static twoFA:string = `${ApiConstants.authBaseUrl}/login/2fa`;
     static refresh: string = `${ApiConstants.authBaseUrl}/refresh`;
     static logout: string = `${ApiConstants.authBaseUrl}/logout`;
-    static twoFAEnable: string = `${ApiConstants.authBaseUrl}/2fa/enable`;
-    static twoFAVerify: string = `${ApiConstants.authBaseUrl}/2fa/verify`;
+    static twoFAEnable: string = `${ApiConstants.authBaseUrl}/auth/2fa/enable`;
+    static twoFAVerify: string = `${ApiConstants.authBaseUrl}/auth/2fa/verify`;
 
 
 }

@@ -28,6 +28,10 @@ export class MultiChildRenderer extends StatelessElement {
             element.parent = this;
             element.mount(template, childContext);
         }
+        const comp = parent?.querySelectorAll('my-widget');
+        if (comp && comp.length > 0) {
+            comp.forEach((e) => e.remove())
+        }
        parent?.appendChild(template)
         WidgetBinding.getInstance().postFrameCallback(() => {
             (this.widget as StatelessWidget).afterMounted(this.currentContext);

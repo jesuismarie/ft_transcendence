@@ -7,6 +7,7 @@ import {showError} from "@/utils/error_messages";
 import {Validator} from "@/utils/validation";
 import type {ProfileValueObject} from "@/domain/value_objects/profile_value_object";
 import {AxiosError} from "axios";
+import {ApiException} from "@/core/exception/exception";
 
 
 @injectable()
@@ -37,7 +38,13 @@ export class ProfileBloc extends BlocBase<ProfileState> {
             const res = await this.userRemoteRepository.updateAvatar(this.state.profile.id, formData);
             res.when({
                 onError: (error) => {
-                    this.emit(this.state.copyWith({status: ProfileStatus.Error, errorMessage: error.message}));
+                    let errorMsg: string | null;
+                    if (error instanceof ApiException) {
+                        errorMsg = error.message;
+                    } else {
+                        errorMsg = error?.toString()
+                    }
+                    this.emit(this.state.copyWith({status: ProfileStatus.Error, errorMessage: errorMsg}));
                 }, onSuccess: (data) => {
                     this.emit(this.state.copyWith({status: ProfileStatus.Uploaded, errorMessage: undefined}));
                 }
@@ -50,7 +57,13 @@ export class ProfileBloc extends BlocBase<ProfileState> {
         const res = await this.userRemoteRepository.getProfile(id);
         res.when({
             onError: (error) => {
-                this.emit(this.state.copyWith({errorMessage: error.message, status: ProfileStatus.Error}));
+                let errorMsg: string | null;
+                if (error instanceof ApiException) {
+                    errorMsg = error.message;
+                } else {
+                    errorMsg = error?.toString()
+                }
+                this.emit(this.state.copyWith({errorMessage: errorMsg, status: ProfileStatus.Error}));
             },
             onSuccess: (user) => {
                 this.emit(this.state.copyWith({status: ProfileStatus.Success, profile: user}));
@@ -94,7 +107,7 @@ export class ProfileBloc extends BlocBase<ProfileState> {
                         res.when({
                             onError: (e) => {
                                 let errorMsg: string | null;
-                                if (e instanceof AxiosError) {
+                                if (e instanceof ApiException) {
                                     errorMsg = e.message;
                                 } else {
                                     errorMsg = e?.toString()

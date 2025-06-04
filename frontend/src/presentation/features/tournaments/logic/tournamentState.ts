@@ -39,7 +39,7 @@ export class TournamentState implements Equatable<TournamentState>{
         });
     }
 
-    equals(value: TournamentState, value2: TournamentState): boolean {
-        return isEqual(value, value2);
+    equals(value: TournamentState): boolean {
+        return isEqual(value, this);
     }
 }

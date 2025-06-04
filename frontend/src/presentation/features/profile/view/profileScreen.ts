@@ -106,7 +106,7 @@ export class ProfileScreenState extends State<ProfileScreen> {
         // return new EmptyWidget()
         return new BlocBuilder<ProfileBloc, ProfileState>(
             {
-                buildWhen: (oldState, newState) => !isEqual(oldState, newState),
+                buildWhen: (oldState, newState) => !oldState.equals(newState),
                 blocType: ProfileBloc,
                 builder: (context, state) => {
                     const currentId = state.profile?.id;

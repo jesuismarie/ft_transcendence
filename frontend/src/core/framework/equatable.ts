@@ -1,3 +1,4 @@
 export interface Equatable<T> {
-    equals(value: T, value2: T): boolean;
+    equals(value2: T): boolean;
+
 }

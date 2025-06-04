@@ -34,9 +34,10 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
         catch (e) {
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
-                return new Left(new ApiException(500, error.message, error))
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
             }
-            return new Left(new GeneralException(e?.toString()));
         }
     }
 
@@ -59,9 +60,10 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
         catch (e) {
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
-                return new Left(new ApiException(500, error.message, error))
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
             }
-            return new Left(new GeneralException(e?.toString()))
         }
     }
 }

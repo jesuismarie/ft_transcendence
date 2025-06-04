@@ -52,7 +52,7 @@ export class SearchState implements Equatable<SearchState>{
         });
     }
 
-    equals(value: SearchState, value2: SearchState): boolean {
-        return isEqual(value, value2);
+    equals(value: SearchState): boolean {
+        return isEqual(value, this);
     }
 }
