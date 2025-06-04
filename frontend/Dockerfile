@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY ./frontend .
 
-RUN npm i && npm run build:prod
+RUN npm install && npm run build:prod
 
 FROM nginx:alpine AS production
 
