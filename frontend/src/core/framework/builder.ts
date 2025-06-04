@@ -8,7 +8,7 @@ export class Builder<T> extends StatefulWidget {
     constructor(
         public valueListenable: ValueListenable<T>,
         public builder: (context: BuildContext, value: T) => Widget,
-        public key?: string,
+        public key: string = new UniqueKey().toString(),
     ) {
         super(key);
     }

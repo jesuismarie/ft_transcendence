@@ -7,6 +7,8 @@ import  {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {SEARCH_LIMIT} from "@/profile/search";
 import {showError} from "@/utils/error_messages";
+import {data} from "autoprefixer";
+import type {ProfileValueObject} from "@/domain/value_objects/profile_value_object";
 
 @injectable()
 export class UserRemoteRepositoryImpl implements UserRemoteRepository {
@@ -68,5 +70,41 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
        catch (e) {
            return new Left(new GeneralException(e?.toString()));
        }
+    }
+
+
+
+    async updateProfile(id: number, username: string, email: string): Promise<Either<GeneralException, void>> {
+        try {
+            const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/:${id}`, {
+                data: {username: username, email: email}
+            });
+
+            if (response.status >= 200 && response.status < 400) {
+                return new Right(undefined);
+            } else {
+                return new Left(new GeneralException());
+            }
+        }
+        catch (e) {
+            return new Left(new GeneralException(e?.toString()));
+        }
+    }
+
+    async updatePassword(id: number, oldPassword: string, newPassword: string): Promise<Either<GeneralException, void>> {
+        try {
+            const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/:${id}${ApiConstants.updatePassword}`, {
+                data: {currentPwd: oldPassword, newPwd: newPassword}
+            });
+
+            if (response.status >= 200 && response.status < 400) {
+                return new Right(undefined);
+            } else {
+                return new Left(new GeneralException());
+            }
+        }
+        catch (e) {
+            return new Left(new GeneralException(e?.toString()));
+        }
     }
 }

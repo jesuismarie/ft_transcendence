@@ -1,28 +1,25 @@
 import {HtmlWidget} from "@/core/framework/htmlWidget";
 import {type BuildContext} from "@/core/framework/buildContext";
-// import type {Widget} from "@/core/framework/widget";
 import {State, StatefulWidget} from "@/core/framework/statefulWidget";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {Composite} from "@/core/framework/composite";
-import {ProfileInfo} from "@/presentation/common/widget/profile-info";
-// import {BlocBuilder} from "@/core/framework/blocBuilder";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
-import {ProfileState, ProfileStatus} from "@/presentation/profile/bloc/profileState";
+import {ProfileInfo} from "@/presentation/features/profile/view/profile-info";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
+import {ProfileState} from "@/presentation/features/profile/bloc/profileState";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import type {Widget} from "@/core/framework/base";
 import {Navigator} from "@/core/framework/navigator";
 import {BlocBuilder} from "@/core/framework/blocBuilder";
 import {MountAwareComposite} from "@/core/framework/mountAwareComposite";
-import {AddTournament} from "@/presentation/common/widget/addTournament";
-import {UpcomingTournaments} from "@/presentation/common/widget/upcomingTournaments";
-import {MatchHistory} from "@/presentation/common/widget/matchHistory";
-import {FriendList} from "@/presentation/common/widget/friendList";
-import {EditProfile} from "@/presentation/common/widget/editProfile";
-import {UpcomingTournamentsModal} from "@/presentation/common/widget/upcomingTournamentsModal";
-import {MatchHistoryModal} from "@/presentation/common/widget/matchHistoryModal";
+import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
+import {UpcomingTournaments} from "@/presentation/features/tournaments/view/upcomingTournaments";
+import {MatchHistory} from "@/presentation/features/match/view/matchHistory";
+import {FriendList} from "@/presentation/features/friend/view/friendList";
+import {EditProfile} from "@/presentation/features/profile/view/editProfile";
+import {UpcomingTournamentsModal} from "@/presentation/features/tournaments/view/upcomingTournamentsModal";
+import {MatchHistoryModal} from "@/presentation/features/match/view/matchHistoryModal";
 import {NavigationMenu} from "@/presentation/features/navigation/view/navigationMenu";
-import {SearchUserModal} from "@/presentation/common/widget/search_user_modal";
-import {WidgetBinding} from "@/core/framework/widgetBinding";
+import {SearchUserModal} from "@/presentation/features/search/view/search_user_modal";
 import {isEqual} from "lodash";
 
 
@@ -46,8 +43,7 @@ export class ProfileScreenState extends State<ProfileScreen> {
         const authBloc = context.read(AuthBloc);
         const userId = this.widget.userId ?? authBloc.state.user?.userId;
         if (userId) {
-            context.read(ProfileBloc).getUserProfile(userId.toString()).then(profile => {
-            })
+            context.read(ProfileBloc).getUserProfile(userId.toString()).then(profile => {})
         }
         // const authBloc = context.read(AuthBloc);
         // const profileBloc = context.read(ProfileBloc);

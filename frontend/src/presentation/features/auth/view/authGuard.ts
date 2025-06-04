@@ -5,7 +5,7 @@ import type {BuildContext} from "@/core/framework/buildContext";
 import {HtmlWidget} from "@/core/framework/htmlWidget";
 import {Resolver} from "@/di/resolver";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {Navigator, type RouteBuilder} from "@/core/framework/navigator";
 
 

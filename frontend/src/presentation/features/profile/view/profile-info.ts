@@ -4,15 +4,17 @@ import {HtmlWidget} from "@/core/framework/htmlWidget";
 import {type Widget} from "@/core/framework/base";
 import {showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {BlocBuilder} from "@/core/framework/blocBuilder";
-import {ProfileState, ProfileStatus} from "@/presentation/profile/bloc/profileState";
+import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import {BlocListener} from "@/core/framework/blocListener";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {State, StatefulWidget} from "@/core/framework/statefulWidget";
 import {WidgetBinding} from "@/core/framework/widgetBinding";
 import {isEqual} from "lodash";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {Navigator} from "@/core/framework/navigator";
+import {AppRoutes} from "@/core/constants/appRoutes";
 
 
 export class ProfileInfo extends StatefulWidget {
@@ -71,6 +73,10 @@ export class ProfileInfoContent extends State<ProfileInfo> {
     initState(context: BuildContext) {
         super.initState(context);
         console.log(`AAAAA:::: HHHHHHHH}`)
+        const openGameBtn = document.getElementById('open-game-btn');
+        openGameBtn?.addEventListener('click', () => {
+            Navigator.of(context).pushNamed(AppRoutes.game)
+        })
         // const authBloc = context.read(AuthBloc);
         // const userId = this.widget.userId ?? authBloc.state.user?.userId
         // if (userId) {
@@ -149,7 +155,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         <p id="player-losses" class="text-black font-bold">0</p>
                     </div>
                 </div>
-                <button onclick="loadGamePage()" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
+                <button id="open-game-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
                 <button id="friend-request-btn" class="hidden mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
                 <button id="edit-profile-btn" class="${this.widget.userId != state.profile?.id ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
             </div>

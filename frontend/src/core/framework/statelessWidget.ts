@@ -11,10 +11,12 @@ export abstract class StatelessWidget extends Widget {
     abstract build(context: BuildContext): Widget;
 
     afterMounted(context: BuildContext): void {}
+    didMounted(context: BuildContext): void {}
 }
 
 export class StatelessElement extends WidgetElement {
 
+    stateInitialized: boolean = false;
     constructor(widget: StatelessWidget, public parentId?: string) {
         super(widget);
         this.currentContext = new BuildContext(this);
@@ -37,10 +39,19 @@ export class StatelessElement extends WidgetElement {
         parent.appendChild(template)
         WidgetBinding.getInstance().postFrameCallback(() => {
             (this.widget as StatelessWidget).afterMounted(this.currentContext);
+            if (!this.stateInitialized) {
+                this.stateInitialized = true;
+                (this.widget as StatelessWidget).didMounted(context);
+            }
         })
         // const widget = this.widget as StatelessWidget;
         // widget.afterMounted(context);
         // (this.widget as StatelessWidget).afterMounted(context);
         return template; // Important: return where you actually mounted
+    }
+
+    unmount() {
+        super.unmount();
+        this.stateInitialized = false;
     }
 }

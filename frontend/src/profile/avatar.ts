@@ -33,7 +33,7 @@ export function validateImageFile(file: File): string | null {
 export function readImageFile(file: File): Promise<string | null> {
 	return new Promise((resolve) => {
 		const reader = new FileReader();
-		
+
 		reader.onload = () => {
 			const result = reader.result as string;
 			if (!Validator.isValidAvatar(result)) {
@@ -81,7 +81,7 @@ export async function uploadAvatar(id: number, file: File): Promise<boolean> {
 
 export async function handleAvatarChange(id: number, elements: AvatarElements, file: File) {
 	clearErrors();
-	
+
 	const validationError = validateImageFile(file);
 	if (validationError) {
 		showError("avatar", validationError);
