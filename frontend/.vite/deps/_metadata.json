@@ -1,0 +1,15 @@
+{
+  "hash": "bed9226c",
+  "configHash": "25421228",
+  "lockfileHash": "58d9a7df",
+  "browserHash": "97f5f7cf",
+  "optimized": {
+    "reflect-metadata": {
+      "src": "../../node_modules/reflect-metadata/Reflect.js",
+      "file": "reflect-metadata.js",
+      "fileHash": "1bacf0b9",
+      "needsInterop": true
+    }
+  },
+  "chunks": {}
+}
