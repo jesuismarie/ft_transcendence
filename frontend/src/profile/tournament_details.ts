@@ -4,7 +4,7 @@ import type { ApiError, ModalInfo } from "@/utils/types";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {Resolver} from "@/di/resolver";
 import type {BuildContext} from "@/core/framework/buildContext";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 
 export function getAddTournamentElements(): {

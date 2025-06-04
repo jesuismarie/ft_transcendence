@@ -3,7 +3,7 @@ import { updatePaginationControls } from "@/utils/pagination";
 import type {FriendResponse, ModalInfo, PaginationInfo, QuickUserResponse } from "@/utils/types";
 import {Resolver} from "@/di/resolver";
 import type {BuildContext} from "@/core/framework/buildContext";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 // import { currentUser } from "@/utils/user";
 
 export const FRIENDS_LIMIT = 10;

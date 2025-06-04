@@ -1,4 +1,4 @@
-import {ProfileScreen} from "@/presentation/profile/view/profileScreen";
+import {ProfileScreen} from "@/presentation/features/profile/view/profileScreen";
 import {RegisterScreen} from "@/presentation/features/auth/view/register_screen";
 import {PongGameScreen} from "@/presentation/features/pongGame/view/pongGameScreen";
 

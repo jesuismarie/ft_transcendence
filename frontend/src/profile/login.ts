@@ -6,7 +6,7 @@ import {AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import type {BuildContext} from "@/core/framework/buildContext";
 import {Validator} from "@/utils/validation";
 import {Navigator} from "@/core/framework/navigator";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 
 
 export function initGoogleAuth() {

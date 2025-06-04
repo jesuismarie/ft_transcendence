@@ -8,8 +8,8 @@ import {BlocListener} from "@/core/framework/blocListener";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import {showError} from "@/utils/error_messages";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
-import {ProfileState, ProfileStatus} from "@/presentation/profile/bloc/profileState";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
+import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 
 export class LoginScreen extends StatelessWidget {

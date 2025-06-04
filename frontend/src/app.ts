@@ -6,7 +6,7 @@ import {AuthScreen} from "@/presentation/features/auth/view/auth_screen";
 import type {BuildContext} from "@/core/framework/buildContext";
 import {StatelessWidget} from "@/core/framework/statelessWidget";
 import {LoginScreen} from "@/presentation/features/auth/view/login_screen";
-import {ProfileScreen} from "@/presentation/profile/view/profileScreen";
+import {ProfileScreen} from "@/presentation/features/profile/view/profileScreen";
 import {RegisterScreen} from "@/presentation/features/auth/view/register_screen";
 import {PongGameScreen} from "@/presentation/features/pongGame/view/pongGameScreen";
 import {provideBlocProviders} from "@/core/provideBlocProviders";
@@ -39,7 +39,7 @@ export class App extends StatelessWidget {
     build(context: BuildContext): Widget {
         console.log("ZZZZZ")
         window.addEventListener('load', () => {
-            AuthGuard.navigationGuard(context, routes)
+            // AuthGuard.navigationGuard(context, routes)
         });
         return provideBlocProviders(new MaterialApp(
                 {

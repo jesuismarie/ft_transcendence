@@ -1,7 +1,7 @@
 import {inject, injectable} from "tsyringe";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import {BlocBase} from "@/core/framework/blocBase";
-import {SearchState, SearchStatus} from "@/presentation/profile/bloc/searchState";
+import {SearchState, SearchStatus} from "@/presentation/features/search/logic/searchState";
 
 @injectable()
 export class SearchBloc extends BlocBase<SearchState>{

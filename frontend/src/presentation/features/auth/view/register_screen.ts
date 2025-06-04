@@ -8,7 +8,7 @@ import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {BlocListener} from "@/core/framework/blocListener";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {showError} from "@/utils/error_messages";
 
 export class RegisterScreen extends StatelessWidget {

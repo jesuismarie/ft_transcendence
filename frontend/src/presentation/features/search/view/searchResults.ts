@@ -3,7 +3,7 @@ import {StatelessWidget} from "@/core/framework/statelessWidget";
 import type {BuildContext} from "@/core/framework/buildContext";
 import {HtmlWidget} from "@/core/framework/htmlWidget";
 import type {QuickUserResponse} from "@/utils/types";
-import {SearchItem} from "@/presentation/common/widget/searchItem";
+import {SearchItem} from "@/presentation/features/search/view/searchItem";
 import {Composite} from "@/core/framework/composite";
 import type {Widget} from "@/core/framework/base";
 

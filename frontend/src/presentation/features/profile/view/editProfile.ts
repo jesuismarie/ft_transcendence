@@ -4,20 +4,72 @@ import {HtmlWidget} from "@/core/framework/htmlWidget";
 import type {Widget} from "@/core/framework/base";
 import {hideModal, showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
+import {TextController} from "@/core/framework/textController";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
+import {initiate2FASetup} from "@/profile/twofa";
+import {clearErrors} from "@/utils/error_messages";
 
 export class EditProfile extends StatelessWidget {
     constructor(public parentId?: string) {
         super();
     }
 
+    userNameController: TextController = new TextController();
+    emailController: TextController = new TextController();
+    oldPasswordController: TextController = new TextController();
+    passwordController: TextController = new TextController();
+    confirmPasswordController: TextController = new TextController();
+
+
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
+        console.log("MOUNTEDDDD");
+        const profileBloc = context.read(ProfileBloc)
+        const usernameInput = document.getElementById("edit-username") as HTMLInputElement;
+        const emailInput = document.getElementById("edit-email") as HTMLInputElement;
+        const oldPasswordInput = document.getElementById("edit-old-password") as HTMLInputElement;
+        const passwordInput = document.getElementById("edit-password") as HTMLInputElement;
+        const confirmPasswordInput = document.getElementById("edit-confirm-password") as HTMLInputElement;
+        const closeBtn = document.getElementById('close-edit-modal');
+        const enable2faBtn = document.getElementById('enable-2fs-btn');
+        const saveBtn = document.getElementById('save-profile-btn');
+        const twoFaContainer = document.getElementById("twofa-container") as HTMLElement | null;
+
+        closeBtn?.addEventListener('click', ()=> {
+            hideModal(ModalConstants.editProfileModalName)
+        })
+        enable2faBtn?.addEventListener('click', async ()=> {
+            if (twoFaContainer) {
+                await initiate2FASetup(twoFaContainer);
+            }
+        })
+
+
+
+        saveBtn?.addEventListener('click', () => {
+            clearErrors();
+            profileBloc.onSaveProfile({
+                username: this.userNameController.text,
+                email: this.emailController.text,
+                confirmPassword: this.confirmPasswordController.text,
+                password: this.passwordController.text,
+                newPassword: this.passwordController.text,
+            }).then(r => r)
+        })
+
+        this.userNameController.bindInput(usernameInput!);
+        this.emailController.bindInput(emailInput!);
+        this.oldPasswordController.bindInput(oldPasswordInput!);
+        this.passwordController.bindInput(passwordInput!);
+        this.confirmPasswordController.bindInput(confirmPasswordInput!);
+    }
+
+
+
     afterMounted(context: BuildContext) {
         super.afterMounted(context);
 
-        const closeBtn = document.getElementById('close-edit-modal');
-        closeBtn?.addEventListener('click', () => {
-            hideModal(ModalConstants.editProfileModalName)
-        })
-
+        console.log(`USERNAME::: ${this.userNameController.text}`);
     }
 
     build(context: BuildContext): Widget {

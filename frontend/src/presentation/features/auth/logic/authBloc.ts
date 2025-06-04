@@ -9,7 +9,7 @@ import {Cubit} from "@/core/framework/cubit";
 import type {PersistenceService} from "@/core/services/persistance_service";
 import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
 import {ApiConstants} from "@/core/constants/apiConstants";
-import {ProfileStatus} from "@/presentation/profile/bloc/profileState";
+import {ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import type {PreferenceService} from "@/core/services/preference_service";
 import '@/core/extensions/stringExtension';

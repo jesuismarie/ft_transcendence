@@ -5,7 +5,7 @@ WORKDIR /app
 COPY ./backend/user-service .
 COPY ./secrets/backend/npmrc-secrets/npmrc-secret.txt ./.npmrc
 
-RUN npm ci
+RUN npm install
 
 RUN npm run build:prod
 

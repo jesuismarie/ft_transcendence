@@ -4,7 +4,7 @@ import {editProfile} from "./edit";
 import {initTournaments} from "./tournaments";
 import {setup2FA} from "./twofa";
 import {addTournament} from "./tournament_details";
-import {initAvatarUpload} from "./avatar";
+// import {initAvatarUpload} from "./avatar";
 import {viewFriends} from "./friends";
 import {viewMatches} from "./matches";
 // import {searchUsers} from "./search";
@@ -14,7 +14,7 @@ import {ApiConstants} from "@/core/constants/apiConstants";
 import {Resolver} from "@/di/resolver";
 import type {BuildContext} from "@/core/framework/buildContext";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 
 export function initData(user: UserView) {
     const playerName = document.getElementById("player-name") as HTMLElement | null;
@@ -93,7 +93,7 @@ export async function initPersonalData(context: BuildContext, id: number) {
         initData(user);
 
         if (targetUserId === currentUserId) {
-            initAvatarUpload(context, targetUserId);
+            // initAvatarUpload(context, targetUserId);
             // editProfileBtn.classList.remove("hidden");
             editProfile(user);
             await setup2FA();

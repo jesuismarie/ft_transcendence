@@ -3,6 +3,7 @@ import {BuildContext} from "@/core/framework/buildContext";
 import {type IWidgetElement, Widget} from "@/core/framework/base";
 import {WidgetBinding} from "@/core/framework/widgetBinding";
 import {EventBindingManager} from "@/core/framework/listenersRegisty";
+import {StatelessWidget} from "@/core/framework/statelessWidget";
 
 export abstract class StatefulWidget extends Widget {
     state?: State<StatefulWidget>;
@@ -31,6 +32,8 @@ export abstract class State<T extends StatefulWidget> {
         this._element.markNeedsBuild();
         // this._element.update(this.widget);
     }
+    didMounted(context: BuildContext): void {}
+
 
     dispose(): void {}
 
@@ -48,6 +51,7 @@ export abstract class State<T extends StatefulWidget> {
 export class StatefulElement extends WidgetElement {
     state: State<StatefulWidget>;
     stateInitialized: boolean = false;
+    didMount: boolean = false;
 
     constructor(widget: StatefulWidget, public parentId?: string) {
         super(widget);
@@ -59,7 +63,9 @@ export class StatefulElement extends WidgetElement {
 
     unmount() {
         super.unmount();
-        this.state.onMount(false)
+        this.state.onMount(false);
+        // this.stateInitialized = false
+        this.didMount = false
     }
 
     render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
@@ -85,10 +91,15 @@ export class StatefulElement extends WidgetElement {
         WidgetBinding.getInstance().postFrameCallback(() => {
             this.state.onMount(true);
             this.state.afterMounted(this.currentContext);
+            if (!this.didMount) {
+                this.didMount = true;
+                this.state.didMounted(context);
+            }
         })
 
         return template;
     }
+
 
     update(newWidget: Widget): void {
         const oldWidget = this.widget;

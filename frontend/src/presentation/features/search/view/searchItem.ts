@@ -4,7 +4,7 @@ import  {type BuildContext} from "@/core/framework/buildContext";
 import {HtmlWidget} from "@/core/framework/htmlWidget";
 import type {QuickUserResponse} from "@/utils/types";
 import { initPersonalData } from "@/profile/profile";
-import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {Navigator} from "@/core/framework/navigator";
 import type {Widget} from "@/core/framework/base";
 
