@@ -11,12 +11,14 @@ import {EventBindingManager} from "@/core/framework/listenersRegisty";
 export interface BlocBuilderProps<B extends BlocBase<S>, S extends Equatable<S>> {
     bloc?: B;
     blocType?: new (...args: any[]) => B;
+    parentId?: string;
     buildWhen?: (previous: S, current: S) => boolean;
     builder: (context: BuildContext, state: S) => Widget;
 }
 
 export class BlocBuilder<B extends BlocBase<S>, S extends Equatable<S>> extends Widget {
     readonly bloc?: B;
+    readonly parentId?: string;
     readonly blocType?: new (...args: any[]) => B;
     readonly buildWhen?: (previous: S, current: S) => boolean;
     readonly builder: (context: BuildContext, state: S) => Widget;
@@ -26,6 +28,7 @@ export class BlocBuilder<B extends BlocBase<S>, S extends Equatable<S>> extends 
     constructor(props: BlocBuilderProps<B, S>) {
         super();
         this.bloc = props.bloc;
+        this.parentId = props.parentId
         this.blocType = props.blocType;
         this.buildWhen = props.buildWhen;
         this.builder = props.builder;
@@ -33,11 +36,15 @@ export class BlocBuilder<B extends BlocBase<S>, S extends Equatable<S>> extends 
 
     createElement() {
         // Create a BlocBuilderElement to manage subscription & rebuilding
-        return new BlocBuilderElement<B, S>(this);
+        return new BlocBuilderElement<B, S>(this, this.parentId);
     }
+
+    onMount(value: boolean) {}
 
     afterMounted(context: BuildContext): void {
     }
+
+    didMounted(context: BuildContext): void {}
 }
 
 class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends WidgetElement {
@@ -47,8 +54,9 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
     private currentState!: S;
     private unsubscribe?: () => void;
     private rebuildScheduled = false;
+    private didMount: boolean = false;
 
-    constructor(widget: BlocBuilder<B, S>) {
+    constructor(widget: BlocBuilder<B, S>, private parentId?: string) {
         super(widget);
         this.widget = widget;
     }
@@ -105,19 +113,37 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
         if (this.unsubscribe) {
             this.unsubscribe();
         }
+        this.didMount = false
     }
 
     render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
         const template = document.createElement("my-widget");
         const builtWidget = this.widget.builder(this.currentContext, this.currentState);
-        const element = builtWidget.createElement() as WidgetElement;
-        element.parent = this;
-        element.mount(template, this.currentContext);
-        parentDom.appendChild(template);
-        // template.addEventListener('mounted')
+        this.child= builtWidget.createElement() as WidgetElement;
+        this.child.parent = this;
+        const mountPoint = this.parentId ? document.getElementById(this.parentId) : template;
+
+        if (!mountPoint) {
+            throw new Error(`Mount point with id "${this.parentId}" not found.`);
+        }
+        this.child.mount(template, this.currentContext);
+
+        const parent = this.parentId ? mountPoint : parentDom;
+        this.child.mount(template, new BuildContext(this.child));
+        const comp = parent?.querySelectorAll('my-widget');
+        if (comp && comp.length > 0) {
+            comp.forEach((e) => e.remove())
+        }
+        parent.appendChild(template);
         WidgetBinding.getInstance().postFrameCallback(() => {
+            this.widget.onMount(true);
             this.widget.afterMounted(this.currentContext);
+            if (!this.didMount) {
+                this.didMount = true;
+                this.widget.didMounted(context);
+            }
         })
-        return parentDom;
+
+        return template;
     }
 }

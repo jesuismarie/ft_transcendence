@@ -8,6 +8,10 @@ export class Validator {
 		return /^[^\d][^@]*@[^@]+\.[^@]+$/.test(email);
 	}
 
+	static isValidToken(token: string | undefined): boolean {
+		return token !== undefined && token.length === 6 && /^\d+$/.test(token);
+	}
+
 	static isValidPassword(password: string): boolean {
 		return (
 			password.length >= 8 &&

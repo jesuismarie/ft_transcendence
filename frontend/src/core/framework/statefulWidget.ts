@@ -87,6 +87,7 @@ export class StatefulElement extends WidgetElement {
 
         const parent = this.parentId ? mountPoint : parentDom;
         this.child.mount(template, new BuildContext(this.child));
+
         parent.appendChild(template);
         WidgetBinding.getInstance().postFrameCallback(() => {
             this.state.onMount(true);

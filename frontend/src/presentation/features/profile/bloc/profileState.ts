@@ -53,7 +53,7 @@ export class ProfileState implements Equatable<ProfileState>{
         });
     }
 
-    equals(value: ProfileState, value2: ProfileState): boolean {
-        return isEqual(value, value2);
+    equals(value: ProfileState): boolean {
+        return isEqual(value, this);
     }
 }

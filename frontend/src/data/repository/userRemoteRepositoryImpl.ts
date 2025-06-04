@@ -1,7 +1,7 @@
 import type {ApiError, SearchUserResponse, UserView} from "@/utils/types";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import {type Either, Left, Right} from "@/core/models/either";
-import {GeneralException} from "@/core/exception/exception";
+import {ApiException, GeneralException} from "@/core/exception/exception";
 import {inject, injectable} from "tsyringe";
 import  {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
@@ -9,6 +9,7 @@ import {SEARCH_LIMIT} from "@/profile/search";
 import {showError} from "@/utils/error_messages";
 import {data} from "autoprefixer";
 import type {ProfileValueObject} from "@/domain/value_objects/profile_value_object";
+import {AxiosError} from "axios";
 
 @injectable()
 export class UserRemoteRepositoryImpl implements UserRemoteRepository {
@@ -33,7 +34,12 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
             }
         }
         catch (e) {
-            return new Left(new GeneralException())
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
         }
     }
 
@@ -51,7 +57,12 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
             }
         }
         catch (e) {
-            return new Left(new GeneralException())
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
         }
     }
 
@@ -68,7 +79,12 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
            }
        }
        catch (e) {
-           return new Left(new GeneralException(e?.toString()));
+           if (e instanceof AxiosError) {
+               const error: ApiError = e.response?.data
+               return new Left(new ApiException(500, error.message, error));
+           } else {
+               return new Left(new ApiException(500, e?.toString()));
+           }
        }
     }
 
@@ -87,7 +103,12 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
             }
         }
         catch (e) {
-            return new Left(new GeneralException(e?.toString()));
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
         }
     }
 
@@ -104,7 +125,12 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
             }
         }
         catch (e) {
-            return new Left(new GeneralException(e?.toString()));
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
         }
     }
 }

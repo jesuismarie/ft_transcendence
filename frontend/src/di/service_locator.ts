@@ -10,6 +10,8 @@ import type {PreferenceService} from "@/core/services/preference_service";
 import {PreferenceServiceImpl} from "@/core/services/preferenceServiceImpl";
 import type {TournamentRemoteRepository} from "@/domain/respository/tournamentRemoteRepository";
 import {TournamentRemoteRepositoryImpl} from "@/data/repository/tournamentRemoteRepositoryImpl";
+import type {TwoFARepository} from "@/domain/respository/twoFARepository";
+import {TwoFARepositoryImpl} from "@/data/repository/twoFARepositoryImpl";
 
 export async function configureDependencies() {
     container.register('ApiClient', {useClass: ApiClient});
@@ -25,6 +27,9 @@ export async function configureDependencies() {
 
     container.register<UserRemoteRepository>("UserRepository", {
         useClass: UserRemoteRepositoryImpl,
+    });
+    container.register<TwoFARepository>("TwoFARepository", {
+        useClass: TwoFARepositoryImpl,
     });
 
 }

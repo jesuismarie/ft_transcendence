@@ -1,15 +1,43 @@
 import {StatelessWidget} from "@/core/framework/statelessWidget";
-import  {type BuildContext} from "@/core/framework/buildContext";
+import {type BuildContext} from "@/core/framework/buildContext";
 import {HtmlWidget} from "@/core/framework/htmlWidget";
-import type {Widget} from "@/core/framework/base";
+import {type Widget} from "@/core/framework/base";
 import {hideModal, showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
 import {TextController} from "@/core/framework/textController";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {initiate2FASetup} from "@/profile/twofa";
 import {clearErrors} from "@/utils/error_messages";
+import {Composite} from "@/core/framework/composite";
+import {OtpScreen} from "@/presentation/features/otp/view/otpScreen";
+import {BlocProvider} from "@/core/framework/blocProvider";
+import {OTPBloc} from "@/presentation/features/otp/logic/otpBloc";
+import {Resolver} from "@/di/resolver";
+import {BlocBuilder} from "@/core/framework/blocBuilder";
+import type {OTPState} from "@/presentation/features/otp/logic/otpState";
+import {MountAwareComposite} from "@/core/framework/mountAwareComposite";
+import {BuilderWidget} from "@/core/framework/builderWidget";
+
 
 export class EditProfile extends StatelessWidget {
+    constructor(public parentId?: string) {
+        super();
+    }
+
+    build(context: BuildContext): Widget {
+        return new BlocProvider(
+            {
+                create: () => new OTPBloc(
+                    Resolver.twoFaRepository()
+                ),
+                child: new BuilderWidget((context) => new EditProfileContent(this.parentId))
+            }
+        );
+    }
+
+}
+
+export class EditProfileContent extends StatelessWidget {
     constructor(public parentId?: string) {
         super();
     }
@@ -25,25 +53,26 @@ export class EditProfile extends StatelessWidget {
         super.didMounted(context);
         console.log("MOUNTEDDDD");
         const profileBloc = context.read(ProfileBloc)
+        const otpBloc = context.read(OTPBloc)
         const usernameInput = document.getElementById("edit-username") as HTMLInputElement;
         const emailInput = document.getElementById("edit-email") as HTMLInputElement;
         const oldPasswordInput = document.getElementById("edit-old-password") as HTMLInputElement;
         const passwordInput = document.getElementById("edit-password") as HTMLInputElement;
         const confirmPasswordInput = document.getElementById("edit-confirm-password") as HTMLInputElement;
         const closeBtn = document.getElementById('close-edit-modal');
-        const enable2faBtn = document.getElementById('enable-2fs-btn');
         const saveBtn = document.getElementById('save-profile-btn');
+        const enable2faBtn = document.getElementById("enable-2fs-btn") as HTMLButtonElement | null;
         const twoFaContainer = document.getElementById("twofa-container") as HTMLElement | null;
 
-        closeBtn?.addEventListener('click', ()=> {
+        closeBtn?.addEventListener('click', () => {
             hideModal(ModalConstants.editProfileModalName)
+            profileBloc.resetStatus().then(r => r);
+            otpBloc.resetOtp()
         })
-        enable2faBtn?.addEventListener('click', async ()=> {
-            if (twoFaContainer) {
-                await initiate2FASetup(twoFaContainer);
-            }
+        enable2faBtn?.addEventListener('click', async () => {
+            otpBloc.initializeOtp();
+            otpBloc.enableOTP().then()
         })
-
 
 
         saveBtn?.addEventListener('click', () => {
@@ -65,15 +94,12 @@ export class EditProfile extends StatelessWidget {
     }
 
 
-
     afterMounted(context: BuildContext) {
         super.afterMounted(context);
-
-        console.log(`USERNAME::: ${this.userNameController.text}`);
     }
 
     build(context: BuildContext): Widget {
-        return new HtmlWidget(`
+        return new Composite([new HtmlWidget(`
         <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 			<div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
 				<h3 class="text-lg font-medium">
@@ -116,7 +142,11 @@ export class EditProfile extends StatelessWidget {
 				<button id="close-edit-modal" type="button" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
 			</div>
 		</div>
-        `, this.parentId);
+        `, this.parentId),
+            new MountAwareComposite((context) =>
+                new BuilderWidget((context) => new OtpScreen('twofa-container'))
+            )
+        ]);
     }
 
 

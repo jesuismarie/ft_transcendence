@@ -1,6 +1,6 @@
 // import {currentUser, getCurrentUserId} from "@/utils/user";
 import {addFriend, checkIfFriend} from "./add_friend";
-import {editProfile} from "./edit";
+// import {editProfile} from "./edit";
 import {initTournaments} from "./tournaments";
 import {setup2FA} from "./twofa";
 import {addTournament} from "./tournament_details";
@@ -95,8 +95,8 @@ export async function initPersonalData(context: BuildContext, id: number) {
         if (targetUserId === currentUserId) {
             // initAvatarUpload(context, targetUserId);
             // editProfileBtn.classList.remove("hidden");
-            editProfile(user);
-            await setup2FA();
+            // editProfile(user);
+            // await setup2FA();
             // upcomingTournaments.classList.remove("hidden");
             initTournaments(username);
             addTournament(context);

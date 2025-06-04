@@ -69,7 +69,7 @@ export abstract class BlocBase<State extends Equatable<State>> {
         if (this._isClosed) {
             throw new Error("Cannot emit new states after close");
         }
-        if (this._emitted && newState.equals(newState, this._state)) {
+        if (this._emitted && newState.equals(this._state)) {
             return; // Ignore equal states except the first emit
         }
         this.onChange({ currentState: this._state, nextState: newState });

@@ -40,7 +40,7 @@ export class AuthState implements Equatable<AuthState>{
         });
     }
 
-    equals(value: AuthState, value2: AuthState): boolean {
-        return isEqual(value, value2);
+    equals(value: AuthState): boolean {
+        return isEqual(value, this);
     }
 }

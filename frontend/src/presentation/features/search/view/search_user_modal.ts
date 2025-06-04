@@ -200,7 +200,7 @@ export class SearchUserModalContentState extends State<SearchUserModalContent> {
             blocType: SearchBloc,
             child: new BlocBuilder<SearchBloc, SearchState>(
                 {
-                    buildWhen: (oldState, newState) => !isEqual(oldState, newState),
+                    buildWhen: (oldState, newState) => !oldState.equals(newState),
                     blocType: SearchBloc,
                     builder: (context, state) => {
                         const totalPages = state.results ? Math.ceil(state.results.totalCount / SEARCH_LIMIT) : 0;
