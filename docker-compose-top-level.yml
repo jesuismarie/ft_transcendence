@@ -14,6 +14,7 @@ services:
         - secrets/backend/common/common-secrets.txt
       volumes:
         - auth-service-db-data:/app/backend/auth-service/prisma
+        - auth-service-logs-data:/var/log/app
       restart: always
 
     game-service:
@@ -31,6 +32,7 @@ services:
         - secrets/backend/common/common-secrets.txt
       volumes:
         - game-service-db-date:/app/data
+        - game-service-logs-data:/var/log/app
       restart: always
 
     user-service:
@@ -48,6 +50,7 @@ services:
         - secrets/backend/common/common-secrets.txt
       volumes:
         - user-service-db-date:/app/data
+        - user-service-logs-data:/var/log/app
       restart: always
 
     proxy-service:
@@ -65,6 +68,7 @@ services:
         - secrets/backend/common/common-secrets.txt
       volumes:
         - proxy-service-db-date:/example/path
+        - proxy-service-logs-data:/var/log/app
       depends_on:
         - auth-service
         - user-service
@@ -86,6 +90,7 @@ services:
         - secrets/backend/common/common-secrets.txt
       volumes:
         - pong-service-db-date:/example/path
+        - pong-service-logs-data:/var/log/app
       restart: always
 
     frontend:
@@ -99,7 +104,7 @@ services:
         networks:
           - bridge-network
         volumes:
-          - pong-service-db-date:/example/path
+          - frontend-nginx-logs:/var/log/nginx
         depends_on:
           - proxy-service
         restart: always
@@ -110,6 +115,12 @@ volumes:
   user-service-db-date:
   pong-service-db-date:
   proxy-service-db-date:
+  pong-service-logs-data:
+  user-service-logs-data:
+  auth-service-logs-data:
+  game-service-logs-data:
+  proxy-service-logs-data:
+  frontend-nginx-logs:
 
 networks:
   bridge-network:
