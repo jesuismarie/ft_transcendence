@@ -29,3 +29,4 @@ down:
 fclean: down rmnet
 	@docker-compose -f $(MONITOR_COMPOSE) --project-name $(MONITORING_PROJECT_NAME) down --volumes --rmi all --remove-orphans
 
+re: fclean up
