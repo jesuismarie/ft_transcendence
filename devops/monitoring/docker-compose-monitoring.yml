@@ -15,18 +15,10 @@ services:
     restart: always
 
   prometheus:
-    image: prom/prometheus
+    build: ./prometheus
     container_name: prometheus
     volumes:
       - prometheus-data:/prometheus
-      - ./prometheus/global/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/rules/alert.rules.yml:/etc/prometheus/alert.rules.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.retention.time=30d'         # Keep data for 30 days
-      - '--storage.tsdb.retention.size=10GB'        # Or until 10GB max (whichever comes first)
-      - '--storage.tsdb.path=/prometheus'           # Local path for DB files
-      - '--storage.tsdb.wal-compression'            # Compress WAL to save disk
     ports:
       - 9090:9090
     networks:
@@ -36,16 +28,14 @@ services:
     restart: always
 
   alertmanager:
-    image: prom/alertmanager
+    build: ./alertmanager
     container_name: alertmanager
     ports:
       - "9093:9093"
+    env_file:
+      - ../../secrets/devops/alertmanager/alertmanager-secrets.txt
     volumes:
       - alertmanager-data:/alertmanager
-      - ./alertmanager/config/slack-alertmenager.yml:/etc/alertmanager/config/slack-alertmenager.yml
-      - ./alertmanager/template/alert.tmpl:/etc/alertmanager/template/alert.tmpl
-    command:
-      - '--config.file=/etc/alertmanager/config/slack-alertmenager.yml'
     networks:
       - bridge-network
     restart: always
