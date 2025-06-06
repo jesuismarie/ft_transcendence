@@ -37,15 +37,15 @@ mfclean:
 	@$(MAKE) --no-print-directory -C devops/monitoring fclean
 
 # TODO: Add dependency from (net, mup, init) dont push secrets on repo set rull (init).
-up: net
+up: net mup
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans
 
 # TODO: Add dependency from (mdown).
-down:
+down: mdown
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --remove-orphans
 
 # TODO: Add dependency from (mfclean).
-fclean:
+fclean: mfclean
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --volumes --rmi all --remove-orphans
 
 build:
