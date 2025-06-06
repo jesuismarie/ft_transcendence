@@ -1,19 +1,22 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import {type BuildContext} from "@/core/framework/buildContext";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import {type BuildContext} from "@/core/framework/core/buildContext";
 // import type {Widget} from "@/core/framework/widget";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
-import {type Widget} from "@/core/framework/base";
-import {State, StatefulWidget} from "@/core/framework/statefulWidget";
-import {addTournament, fetchAddTournament} from "@/profile/tournament_details";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
+import {type Widget} from "@/core/framework/core/base";
+import {State, StatefulWidget} from "@/core/framework/widgets/statefulWidget";
+import {fetchAddTournament} from "@/profile/tournament_details";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {hideModal, showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
-import {WidgetBinding} from "@/core/framework/widgetBinding";
-import {BlocProvider} from "@/core/framework/blocProvider";
+import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 import {type TournamentState, TournamentStatus} from "@/presentation/features/tournaments/logic/tournamentState";
 import {Resolver} from "@/di/resolver";
-import {BlocListener} from "@/core/framework/blocListener";
+import {BlocListener} from "@/core/framework/bloc/blocListener";
+import {TextController} from "@/core/framework/controllers/textController";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {SelectController} from "@/core/framework/controllers/selectController";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 
 export class AddTournament extends StatelessWidget {
     constructor(public parentId?: string) {
@@ -44,30 +47,35 @@ export class AddTournamentContent extends StatefulWidget {
 
 class AddTournamentContentState extends State<AddTournamentContent> {
 
+    nameInputController: TextController = new TextController()
+    capacityInputController: SelectController = new SelectController()
 
-    initState(context: BuildContext) {
-        super.initState(context);
-        WidgetBinding.getInstance().postFrameCallback(() => {
-            addTournament(context);
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
+        // addTournament(context);
+        const profileBloc = context.read(ProfileBloc)
+        const tournamentBloc = context.read(TournamentBloc);
 
-            const openModalBtn = document.getElementById("add-tournament-preview-btn") as HTMLButtonElement | null;
-            const closeModalBtn = document.getElementById("close-add-tournament-modal") as HTMLButtonElement | null;
-            const saveBtn = document.getElementById("add-tournament-btn") as HTMLButtonElement | null;
-            const nameInput = document.getElementById("tournament-name") as HTMLInputElement | null;
-            const capacityInput = document.getElementById("tournament-capacity") as HTMLSelectElement | null;
-            openModalBtn?.addEventListener("click", () => {
-                showModal(ModalConstants.addTournamentModalName)
-            });
-            closeModalBtn?.addEventListener("click", () => {
-                hideModal(ModalConstants.addTournamentModalName)
-            })
-            saveBtn?.addEventListener("click", () => {
-                clearErrors();
-                if (nameInput && capacityInput) {
-                    fetchAddTournament(context, nameInput, capacityInput).then();
-                }
-            });
+        const closeModalBtn = document.getElementById("close-add-tournament-modal") as HTMLButtonElement | null;
+        const saveBtn = document.getElementById("add-tournament-btn") as HTMLButtonElement | null;
+        const nameInput = document.getElementById("tournament-name") as HTMLInputElement | null;
+        const capacityInput = document.getElementById("tournament-capacity") as HTMLSelectElement | null;
+
+        closeModalBtn?.addEventListener("click", () => {
+            hideModal(ModalConstants.addTournamentModalName)
+            tournamentBloc.resetAfterSubmit()
         })
+        this.nameInputController.bindInput(nameInput!);
+        this.capacityInputController.bindSelect(capacityInput!)
+
+        saveBtn?.addEventListener("click", () => {
+            clearErrors();
+            console.log(`NAMEEEEEE::: ${this.nameInputController.text}`)
+            const max_player_count = parseInt(this.capacityInputController.value)
+            tournamentBloc.validateTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '')
+            tournamentBloc.createTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '').then(r => r)
+            tournamentBloc.resetAfterSubmit()
+        });
 
     }
 
@@ -75,6 +83,9 @@ class AddTournamentContentState extends State<AddTournamentContent> {
         return new BlocListener<TournamentBloc, TournamentState>(
             {
                 listener: (context: BuildContext, state) => {
+                    if (!state.isValid) {
+                        showError("add_tournament", "Please enter a tournament name.");
+                    }
                     if (state.status == TournamentStatus.Error) {
                         showError("tournament1", state.errorMessage ?? "Failed to add tournament. Please try again.");
                         showError("tournament2", state.errorMessage ?? "Failed to add tournament. Please try again.");

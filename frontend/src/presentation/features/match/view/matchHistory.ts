@@ -1,8 +1,8 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import type {BuildContext} from "@/core/framework/buildContext";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 // import type {Widget} from "@/core/framework/widget";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
-import type {Widget} from "@/core/framework/base";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
+import type {Widget} from "@/core/framework/core/base";
 
 export class MatchHistory extends StatelessWidget {
     constructor(public parentId?: string) {

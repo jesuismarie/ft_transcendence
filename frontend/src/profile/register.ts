@@ -1,10 +1,10 @@
 import {clearErrors, showError } from "@/utils/error_messages";
 import {AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import {ApiConstants} from "@/core/constants/apiConstants";
-import type {BuildContext} from "@/core/framework/buildContext";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 import {Validator} from "@/utils/validation";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
-import {Navigator} from "@/core/framework/navigator";
+import {Navigator} from "@/core/framework/widgets/navigator";
 
 export function initGoogleRegister() {
 	const googleRegisterButton = document.getElementById('google-register-btn');

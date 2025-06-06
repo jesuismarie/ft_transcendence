@@ -4,7 +4,7 @@ import type {ApiError, AvatarElements } from "@/utils/types";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {Resolver} from "@/di/resolver";
 import {Validator} from "@/utils/validation";
-import type {BuildContext} from "@/core/framework/buildContext";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;

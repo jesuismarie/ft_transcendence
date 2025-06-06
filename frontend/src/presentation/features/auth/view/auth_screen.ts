@@ -1,12 +1,12 @@
-import {HtmlWidget} from "@/core/framework/htmlWidget";
-import  {type BuildContext} from "@/core/framework/buildContext";
-import {State, StatefulWidget} from "@/core/framework/statefulWidget";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
+import  {type BuildContext} from "@/core/framework/core/buildContext";
+import {State, StatefulWidget} from "@/core/framework/widgets/statefulWidget";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
-import {Navigator} from "@/core/framework/navigator";
-import type {Widget} from "@/core/framework/base";
-import {BlocListener} from "@/core/framework/blocListener";
+import {Navigator} from "@/core/framework/widgets/navigator";
+import type {Widget} from "@/core/framework/core/base";
+import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {showError} from "@/utils/error_messages";
 
 
@@ -20,6 +20,8 @@ export class  AuthScreenState extends State<AuthScreen> {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
+        const authGuard = new AuthGuard('/', false, true);
+        authGuard.guard(context)
         const authBloc = context.read(AuthBloc);
         const navigator = Navigator.of(context);
         const btn = document.getElementById('to-sign-in');
@@ -50,17 +52,7 @@ export class  AuthScreenState extends State<AuthScreen> {
         });
     }
 
-    afterMounted(context: BuildContext) {
-        super.afterMounted(context);
-        const authGuard = new AuthGuard('/', false, true);
-        authGuard.guard(context)
 
-
-
-
-
-        // AuthGuard()
-    }
 
     build(context: BuildContext): Widget {
         return new HtmlWidget(`

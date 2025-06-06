@@ -1,17 +1,17 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import {type BuildContext} from "@/core/framework/buildContext";
-import type {Widget} from "@/core/framework/base";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
-import {BlocBuilder} from "@/core/framework/blocBuilder";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import {type BuildContext} from "@/core/framework/core/buildContext";
+import type {Widget} from "@/core/framework/core/base";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
+import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
 import {OTPBloc} from "@/presentation/features/otp/logic/otpBloc";
 import {OTPState, OTPStatus} from "@/presentation/features/otp/logic/otpState";
-import {TextController} from "@/core/framework/textController";
-import {EmptyWidget} from "@/core/framework/emptyWidget";
-import {BlocListener} from "@/core/framework/blocListener";
-import {Composite} from "@/core/framework/composite";
+import {TextController} from "@/core/framework/controllers/textController";
+import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
+import {BlocListener} from "@/core/framework/bloc/blocListener";
+import {Composite} from "@/core/framework/widgets/composite";
 import {OtpButton} from "@/presentation/features/otp/view/otpButton";
-import {MountAwareComposite} from "@/core/framework/mountAwareComposite";
-import {BuilderWidget} from "@/core/framework/builderWidget";
+import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
+import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
 
 export class OtpScreen extends StatelessWidget {
 

@@ -1,11 +1,11 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import {type BuildContext} from "@/core/framework/buildContext";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import {type BuildContext} from "@/core/framework/core/buildContext";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {loadSignUpForm} from "@/presentation/templates/templates";
-import {Navigator} from "@/core/framework/navigator";
-import type {Widget} from "@/core/framework/base";
+import {Navigator} from "@/core/framework/widgets/navigator";
+import type {Widget} from "@/core/framework/core/base";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
-import {BlocListener} from "@/core/framework/blocListener";
+import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
@@ -13,8 +13,8 @@ import {showError} from "@/utils/error_messages";
 
 export class RegisterScreen extends StatelessWidget {
 
-    afterMounted(context: BuildContext) {
-        super.afterMounted(context);
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
         const authGuard = new AuthGuard('/register', false, true);
         authGuard.guard(context)
         const nav = Navigator.of(context);
@@ -22,6 +22,7 @@ export class RegisterScreen extends StatelessWidget {
         btn?.addEventListener('click', () => {
             nav.pop()
         })
+
         loadSignUpForm(context)
         // initGoogleRegister();
         // initRegistrationForm();

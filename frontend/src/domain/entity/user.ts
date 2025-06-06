@@ -1,5 +1,8 @@
 export interface User {
     id:			number;
     username:	string;
-    avatarPath:	string | null;
+    email:		string;
+    wins:		number;
+    losses:		number;
+    avatar?:	string | null;
 }

@@ -1,6 +1,6 @@
-import type {User} from "@/domain/entity/user";
+import type {FriendUser} from "@/domain/entity/friendUser";
 
 export interface FriendEntity {
     totalCount:	number;
-    friends:	User[];
+    friends:	FriendUser[];
 }

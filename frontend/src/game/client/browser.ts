@@ -1,6 +1,6 @@
 import {init} from "./init";
 import {CanvasRender} from "./lib/canvas";
-import type {BuildContext} from "@/core/framework/buildContext";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 
 // document.addEventListener('DOMContentLoaded', () => {
 //

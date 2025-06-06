@@ -3,9 +3,9 @@ import {clearErrors, showError} from "@/utils/error_messages";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {AuthStatus} from "@/presentation/features/auth/logic/auth_state";
-import type {BuildContext} from "@/core/framework/buildContext";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 import {Validator} from "@/utils/validation";
-import {Navigator} from "@/core/framework/navigator";
+import {Navigator} from "@/core/framework/widgets/navigator";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 
 
@@ -17,7 +17,10 @@ export function initGoogleAuth(context: BuildContext) {
     googleLoginButton.addEventListener('click', async () => {
         const authBloc = context.read(AuthBloc);
         await authBloc.loginWithGoogle();
+
         // window.location.href = `${ApiConstants.baseUrlDev}${ApiConstants.auth}`;
+        // listen /auth/redirect route params and
+        // send second request with code
     });
 }
 

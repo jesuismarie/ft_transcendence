@@ -2,11 +2,11 @@ import "reflect-metadata";
 
 // import {configureDependencies} from "@/di/service_locator.ts";
 import {App, navigatorKey, routes} from "@/app";
-import {runApp} from "@/core/framework/runApp";
+import {runApp} from "@/core/framework/core/runApp";
 import {configureDependencies} from "@/di/service_locator";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
-import {WidgetsBinding} from "@/core/framework/widgetBinding";
-import type {RouteBuilder} from "@/core/framework/navigator";
+import {WidgetsBinding} from "@/core/framework/core/widgetBinding";
+import type {RouteBuilder} from "@/core/framework/widgets/navigator";
 //
 // import '../index.css';
 // import {

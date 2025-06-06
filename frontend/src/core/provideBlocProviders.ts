@@ -1,9 +1,11 @@
-import {MultiBlocProvider} from "@/core/framework/multiBlocProvider";
-import {BlocProvider} from "@/core/framework/blocProvider";
+import {MultiBlocProvider} from "@/core/framework/bloc/multiBlocProvider";
+import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {Resolver} from "@/di/resolver";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import type {Widget} from "@/core/framework/base";
+import type {Widget} from "@/core/framework/core/base";
+import {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
+import {SearchBloc} from "@/presentation/features/search/logic/searchBloc";
 
 export function provideBlocProviders(child: Widget): Widget {
     return new MultiBlocProvider(
@@ -23,7 +25,15 @@ export function provideBlocProviders(child: Widget): Widget {
                             Resolver.userRepository()
                         )
                     }
-                )
+                ),
+                // new BlocProvider(
+                //     {
+                //         create: () => new FriendBloc(Resolver.friendRepository()),
+                //     },),
+                // new BlocProvider(
+                //     {
+                //         create: () => new SearchBloc(Resolver.userRepository()),
+                //     },)
             ],
             child: child
         },

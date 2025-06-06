@@ -1,6 +1,6 @@
 import {inject, injectable} from "tsyringe";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
-import {BlocBase} from "@/core/framework/blocBase";
+import {BlocBase} from "@/core/framework/bloc/blocBase";
 import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import {readImageFile, validateImageFile} from "@/profile/avatar";
 import {showError} from "@/utils/error_messages";
@@ -8,10 +8,11 @@ import {Validator} from "@/utils/validation";
 import type {ProfileValueObject} from "@/domain/value_objects/profile_value_object";
 import {AxiosError} from "axios";
 import {ApiException} from "@/core/exception/exception";
+import {Cubit} from "@/core/framework/bloc/cubit";
 
 
 @injectable()
-export class ProfileBloc extends BlocBase<ProfileState> {
+export class ProfileBloc extends Cubit<ProfileState> {
 
     constructor(@inject('UserRepository') private userRemoteRepository: UserRemoteRepository) {
         super(new ProfileState({}));
@@ -52,7 +53,7 @@ export class ProfileBloc extends BlocBase<ProfileState> {
         }
     }
 
-    async getUserProfile(id: string): Promise<void> {
+    async getUserProfile(id: string, isOtherProfile: boolean): Promise<void> {
         this.emit(this.state.copyWith({status: ProfileStatus.Loading}))
         const res = await this.userRemoteRepository.getProfile(id);
         res.when({
@@ -66,7 +67,12 @@ export class ProfileBloc extends BlocBase<ProfileState> {
                 this.emit(this.state.copyWith({errorMessage: errorMsg, status: ProfileStatus.Error}));
             },
             onSuccess: (user) => {
-                this.emit(this.state.copyWith({status: ProfileStatus.Success, profile: user}));
+                if (isOtherProfile) {
+                    this.emit(this.state.copyWith({status: ProfileStatus.Success, otherProfile: user}));
+                }
+                else {
+                    this.emit(this.state.copyWith({status: ProfileStatus.Success, profile: user}));
+                }
             }
         })
     }
@@ -122,7 +128,7 @@ export class ProfileBloc extends BlocBase<ProfileState> {
                         })
                     }
                 });
-                await this.getUserProfile(currentUser.id.toString());
+                await this.getUserProfile(currentUser.id.toString(), false);
             }
         }
     }

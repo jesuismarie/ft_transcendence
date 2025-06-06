@@ -1,7 +1,11 @@
 import type {Either} from "@/core/models/either";
 import type {GeneralException} from "@/core/exception/exception";
 import type {TournamentEntity} from "@/domain/entity/tournamentEntity";
+import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
 
 export interface TournamentRemoteRepository {
     createTournament(name: string, maxPlayerCount: number, createdBy: string): Promise<Either<GeneralException, TournamentEntity>>;
+    getAllTournaments(offset: number, limit: number): Promise<Either<GeneralException, TournamentInfoEntity>>
+    deleteTournament(id: number, createdBy: string): Promise<Either<GeneralException, void>>;
+    startTournament(id: number): Promise<Either<GeneralException, void>>;
 }

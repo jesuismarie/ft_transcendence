@@ -1,12 +1,12 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import  {type BuildContext} from "@/core/framework/buildContext";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import  {type BuildContext} from "@/core/framework/core/buildContext";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {showModal} from "@/utils/modal_utils";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
-import type {Widget} from "@/core/framework/base";
-import {State, StatefulWidget} from "@/core/framework/statefulWidget";
-import {WidgetBinding} from "@/core/framework/widgetBinding";
-import {Navigator} from "@/core/framework/navigator";
+import type {Widget} from "@/core/framework/core/base";
+import {State, StatefulWidget} from "@/core/framework/widgets/statefulWidget";
+import {WidgetBinding} from "@/core/framework/core/widgetBinding";
+import {Navigator} from "@/core/framework/widgets/navigator";
 
 export class NavigationMenu extends StatefulWidget {
     constructor(public parentId?: string) {

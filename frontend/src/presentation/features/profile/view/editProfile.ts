@@ -1,22 +1,22 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import {type BuildContext} from "@/core/framework/buildContext";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
-import {type Widget} from "@/core/framework/base";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import {type BuildContext} from "@/core/framework/core/buildContext";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
+import {type Widget} from "@/core/framework/core/base";
 import {hideModal, showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
-import {TextController} from "@/core/framework/textController";
+import {TextController} from "@/core/framework/controllers/textController";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {initiate2FASetup} from "@/profile/twofa";
 import {clearErrors} from "@/utils/error_messages";
-import {Composite} from "@/core/framework/composite";
+import {Composite} from "@/core/framework/widgets/composite";
 import {OtpScreen} from "@/presentation/features/otp/view/otpScreen";
-import {BlocProvider} from "@/core/framework/blocProvider";
+import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {OTPBloc} from "@/presentation/features/otp/logic/otpBloc";
 import {Resolver} from "@/di/resolver";
-import {BlocBuilder} from "@/core/framework/blocBuilder";
+import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
 import type {OTPState} from "@/presentation/features/otp/logic/otpState";
-import {MountAwareComposite} from "@/core/framework/mountAwareComposite";
-import {BuilderWidget} from "@/core/framework/builderWidget";
+import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
+import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
 
 
 export class EditProfile extends StatelessWidget {

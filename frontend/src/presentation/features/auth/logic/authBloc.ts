@@ -4,8 +4,8 @@ import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_reposi
 import {ApiException, type GeneralException} from "@/core/exception/exception";
 import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import type { Either } from "@/core/models/either";
-import {BlocBase} from "@/core/framework/blocBase";
-import {Cubit} from "@/core/framework/cubit";
+import {BlocBase} from "@/core/framework/bloc/blocBase";
+import {Cubit} from "@/core/framework/bloc/cubit";
 import type {PersistenceService} from "@/core/services/persistance_service";
 import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
 import {ApiConstants} from "@/core/constants/apiConstants";

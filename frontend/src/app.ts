@@ -1,19 +1,19 @@
 // counter_widget.ts
 
 
-import {MaterialApp} from "@/core/framework/materialApp";
+import {MaterialApp} from "@/core/framework/widgets/materialApp";
 import {AuthScreen} from "@/presentation/features/auth/view/auth_screen";
-import type {BuildContext} from "@/core/framework/buildContext";
-import {StatelessWidget} from "@/core/framework/statelessWidget";
+import type {BuildContext} from "@/core/framework/core/buildContext";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import {LoginScreen} from "@/presentation/features/auth/view/login_screen";
 import {ProfileScreen} from "@/presentation/features/profile/view/profileScreen";
 import {RegisterScreen} from "@/presentation/features/auth/view/register_screen";
 import {PongGameScreen} from "@/presentation/features/pongGame/view/pongGameScreen";
 import {provideBlocProviders} from "@/core/provideBlocProviders";
-import type {Widget} from "@/core/framework/base";
-import {GlobalKey, UniqueKey} from "@/core/framework/key";
+import type {Widget} from "@/core/framework/core/base";
+import {GlobalKey, UniqueKey} from "@/core/framework/core/key";
 import {Resolver} from "@/di/resolver";
-import {Navigator} from "@/core/framework/navigator";
+import {Navigator} from "@/core/framework/widgets/navigator";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {NotFoundWidget} from "@/presentation/common/widget/notFound";
 import {AppRoutes} from "@/core/constants/appRoutes";
