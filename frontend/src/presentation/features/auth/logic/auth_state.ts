@@ -1,5 +1,5 @@
 // Define possible statuses as enum
-import type {Equatable} from "@/core/framework/equatable";
+import type {Equatable} from "@/core/framework/core/equatable";
 import { isEqual } from 'lodash';
 
 export enum AuthStatus {

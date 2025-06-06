@@ -4,8 +4,8 @@ import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_reposi
 import {ApiException, type GeneralException} from "@/core/exception/exception";
 import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import type { Either } from "@/core/models/either";
-import {BlocBase} from "@/core/framework/blocBase";
-import {Cubit} from "@/core/framework/cubit";
+import {BlocBase} from "@/core/framework/bloc/blocBase";
+import {Cubit} from "@/core/framework/bloc/cubit";
 import type {PersistenceService} from "@/core/services/persistance_service";
 import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
 import {ApiConstants} from "@/core/constants/apiConstants";
@@ -65,6 +65,26 @@ export class AuthBloc extends Cubit<AuthState>{
     }): Promise<void> {
 
         const res: Either<GeneralException, UserEntity> = await this.authRepository.login({email, password});
+        res.when({
+            onError: (err: any) => {
+                console.log('Error:', err)
+                let errorMessage: string | undefined;
+                if (err instanceof ApiException) {
+                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                }
+                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                // user = null;
+            },
+            onSuccess: (user) => {
+                this.preferenceService.setToken(user.accessToken);
+                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
+            }
+        });
+    }
+
+    async loginWithGoogle(): Promise<void> {
+
+        const res: Either<GeneralException, UserEntity> = await this.authRepository.loginWithGoogle();
         res.when({
             onError: (err: any) => {
                 console.log('Error:', err)

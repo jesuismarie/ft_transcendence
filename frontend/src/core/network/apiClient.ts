@@ -27,6 +27,17 @@ export class ApiClient {
         return this._axiosClient;
     }
 
+    public get(url: string) {
+        const token: string = this.preferenceService.getToken() ?? ''
+        return fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+        })
+    }
+
     private _initializeRequestInterceptor() {
         this._axiosClient?.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {

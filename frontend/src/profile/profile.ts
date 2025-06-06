@@ -12,7 +12,7 @@ import type {UserView} from "@/utils/types";
 import {initWipeText} from "@/animation/animation";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {Resolver} from "@/di/resolver";
-import type {BuildContext} from "@/core/framework/buildContext";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 

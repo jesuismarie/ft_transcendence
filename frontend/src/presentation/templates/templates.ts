@@ -2,7 +2,7 @@ import {initWipeText} from "@/animation/animation";
 import {initGoogleAuth, initLoginForm} from "@/profile/login";
 import {initGoogleRegister, initRegistrationForm} from "@/profile/register";
 import {initializePongGame} from "@/game/pong";
-import type {BuildContext} from "@/core/framework/buildContext";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 
 export const mainWrapper = document.getElementById("wrapper") as HTMLElement | null;
 
@@ -44,7 +44,7 @@ export function loadHomePage() {
 export function loadSignInForm(context: BuildContext) {
     // loadTemplate("signin-template", "Sign In");
     initLoginForm(context);
-    initGoogleAuth();
+    initGoogleAuth(context);
 }
 
 export function loadSignUpForm(context: BuildContext) {

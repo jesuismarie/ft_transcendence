@@ -1,4 +1,4 @@
-import {EventBindingManager} from "@/core/framework/listenersRegisty";
+import {EventBindingManager} from "@/core/framework/core/listenersRegisty";
 
 const originalAddEventListener = HTMLElement.prototype.addEventListener;
 

@@ -3,7 +3,7 @@ import {addModalEvents, hideModal } from "@/utils/modal_utils";
 import type { ApiError, ModalInfo } from "@/utils/types";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {Resolver} from "@/di/resolver";
-import type {BuildContext} from "@/core/framework/buildContext";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 

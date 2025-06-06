@@ -1,6 +1,6 @@
 // import { addModalEvents } from "@/utils/modal_utils";
 // import { updatePaginationControls } from "@/utils/pagination";
-// import type { ModalInfo, PaginationInfo, QuickUserResponse, SearchUserResponse } from "@/utils/types";
+import type { ModalInfo, PaginationInfo, QuickUserResponse, SearchUserResponse } from "@/utils/types";
 // // import { currentUser } from "@/utils/user";
 // import {ApiConstants} from "@/core/constants/apiConstants";
 // import {Resolver} from "@/di/resolver";
@@ -8,7 +8,7 @@
 // import {ProfileBloc} from "@/presentation/profile/bloc/profileBloc";
 // import {Navigator} from "@/core/framework/navigator";
 //
-export const SEARCH_LIMIT = 10;
+// export const SEARCH_LIMIT = 10;
 // let currentSearchOffset = 0;
 // let totalSearchResults = 0;
 //

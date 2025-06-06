@@ -1,4 +1,4 @@
-import {Cubit} from "@/core/framework/cubit";
+import {Cubit} from "@/core/framework/bloc/cubit";
 import {OTPState, OTPStatus} from "@/presentation/features/otp/logic/otpState";
 import {inject} from "tsyringe";
 import type {TwoFARepository} from "@/domain/respository/twoFARepository";

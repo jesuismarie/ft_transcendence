@@ -1,12 +1,12 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import type {BuildContext} from "@/core/framework/buildContext";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 // import type {Widget} from "@/core/framework/widget";
 // import {currentUser, currentUserId} from "@/utils/user";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {Resolver} from "@/di/resolver";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import {Navigator, type RouteBuilder} from "@/core/framework/navigator";
+import {Navigator, type RouteBuilder} from "@/core/framework/widgets/navigator";
 
 
 export class RouteInformationParser {

@@ -12,6 +12,9 @@ import type {TournamentRemoteRepository} from "@/domain/respository/tournamentRe
 import {TournamentRemoteRepositoryImpl} from "@/data/repository/tournamentRemoteRepositoryImpl";
 import type {TwoFARepository} from "@/domain/respository/twoFARepository";
 import {TwoFARepositoryImpl} from "@/data/repository/twoFARepositoryImpl";
+import type {FriendAddResponse} from "@/domain/entity/friendAddResponse";
+import type {FriendRepository} from "@/domain/respository/friendRepository";
+import {FriendRepositoryImpl} from "@/data/repository/friendRepositoryImpl";
 
 export async function configureDependencies() {
     container.register('ApiClient', {useClass: ApiClient});
@@ -30,6 +33,9 @@ export async function configureDependencies() {
     });
     container.register<TwoFARepository>("TwoFARepository", {
         useClass: TwoFARepositoryImpl,
+    });
+    container.register<FriendRepository>("FriendRepository", {
+        useClass: FriendRepositoryImpl,
     });
 
 }

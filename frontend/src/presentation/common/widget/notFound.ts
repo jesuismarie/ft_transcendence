@@ -1,7 +1,7 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import {BuildContext} from "@/core/framework/buildContext";
-import {Widget} from "@/core/framework/base";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import {BuildContext} from "@/core/framework/core/buildContext";
+import {Widget} from "@/core/framework/core/base";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 
 export class NotFoundWidget extends StatelessWidget {
     build(context: BuildContext): Widget {

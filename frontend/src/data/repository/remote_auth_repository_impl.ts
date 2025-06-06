@@ -3,10 +3,11 @@ import type {UserEntity} from "@/domain/entity/user_entity";
 import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
 import {type Either, Left, Right} from "@/core/models/either";
 import {inject, injectable} from "tsyringe";
-import type {ApiClient} from "@/core/network/apiClient";
+import {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
+import {PreferenceKeys} from "@/core/services/preferenceKeys";
 
 
 @injectable()
@@ -27,6 +28,7 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
                     accessToken: res.data.accessToken,
                     refreshToken: res.data.refreshToken,
                 }
+                console.log(`AAAAAAA:::::: ${res.data.accessAoken}`);
                 return new Right(user);
             }
             return new Left(new GeneralException());
@@ -62,6 +64,32 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
                 const error: ApiError = e.response?.data
                 return new Left(new ApiException(500, error.message, error));
             } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async loginWithGoogle(): Promise<Either<GeneralException, UserEntity>> {
+        try {
+            const response = await this.apiClient.get(`${ApiConstants.baseUrlDev}${ApiConstants.auth}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                const user: UserEntity = {
+                    userId: data.userId,
+                    accessToken: data.accessToken,
+                    refreshToken: data.refreshToken,
+                };
+                return new Right(user);
+            }
+
+            // Handle non-2xx responses
+            return new Left(new GeneralException());
+        } catch (e: any) {
+            try {
+                const error: ApiError = await e?.response?.json();
+                return new Left(new ApiException(500, error.message, error));
+            } catch (parseErr) {
                 return new Left(new ApiException(500, e?.toString()));
             }
         }

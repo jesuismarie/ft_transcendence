@@ -1,7 +1,8 @@
 // Define possible statuses as enum
 import type {UserView} from "@/utils/types";
-import type {Equatable} from "@/core/framework/equatable";
+import type {Equatable} from "@/core/framework/core/equatable";
 import {isEqual} from "lodash";
+import type {User} from "@/domain/entity/user";
 
 export enum ProfileStatus {
     Initial = 'initial',
@@ -13,7 +14,8 @@ export enum ProfileStatus {
 
 export class ProfileState implements Equatable<ProfileState>{
     readonly status: ProfileStatus;
-    readonly profile?: UserView;
+    readonly profile?: User;
+    readonly otherProfile?: User;
     readonly selectedAvatar?: File;
     readonly isValid: boolean
     readonly selectedAvatarUrl?: string;
@@ -21,7 +23,8 @@ export class ProfileState implements Equatable<ProfileState>{
 
     constructor(params: {
         status?: ProfileStatus;
-        profile?: UserView;
+        profile?: User;
+        otherProfile?: User;
         isValid?: boolean;
         selectedAvatar?: File;
         selectedAvatarUrl?: string;
@@ -29,6 +32,7 @@ export class ProfileState implements Equatable<ProfileState>{
     }) {
         this.status = params.status ?? ProfileStatus.Initial;
         this.profile = params.profile;
+        this.otherProfile = params.otherProfile
         this.isValid = params.isValid ?? true;
         this.selectedAvatarUrl = params.selectedAvatarUrl;
         this.selectedAvatar = params.selectedAvatar;
@@ -37,7 +41,8 @@ export class ProfileState implements Equatable<ProfileState>{
 
     copyWith(params: Partial<{
         status: ProfileStatus;
-        profile?: UserView;
+        profile?: User;
+        otherProfile?: User;
         isValid?: boolean
         selectedAvatarUrl?: string;
         selectedAvatar?: File;
@@ -46,6 +51,7 @@ export class ProfileState implements Equatable<ProfileState>{
         return new ProfileState({
             status: params.status ?? this.status,
             profile: params.profile ?? this.profile,
+            otherProfile: params.otherProfile ?? this.otherProfile,
             isValid: params.isValid ?? this.isValid,
             selectedAvatarUrl: params.selectedAvatarUrl ?? this.selectedAvatarUrl,
             selectedAvatar: params.selectedAvatar ?? this.selectedAvatar,

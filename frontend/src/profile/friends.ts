@@ -2,7 +2,7 @@ import { addModalEvents } from "@/utils/modal_utils";
 import { updatePaginationControls } from "@/utils/pagination";
 import type {FriendResponse, ModalInfo, PaginationInfo, QuickUserResponse } from "@/utils/types";
 import {Resolver} from "@/di/resolver";
-import type {BuildContext} from "@/core/framework/buildContext";
+import type {BuildContext} from "@/core/framework/core/buildContext";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 // import { currentUser } from "@/utils/user";
 

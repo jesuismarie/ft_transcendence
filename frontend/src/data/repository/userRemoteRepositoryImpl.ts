@@ -5,11 +5,8 @@ import {ApiException, GeneralException} from "@/core/exception/exception";
 import {inject, injectable} from "tsyringe";
 import  {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
-import {SEARCH_LIMIT} from "@/profile/search";
-import {showError} from "@/utils/error_messages";
-import {data} from "autoprefixer";
-import type {ProfileValueObject} from "@/domain/value_objects/profile_value_object";
 import {AxiosError} from "axios";
+import type {SearchEntity} from "@/domain/entity/searchEntity";
 
 @injectable()
 export class UserRemoteRepositoryImpl implements UserRemoteRepository {
@@ -43,11 +40,11 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
         }
     }
 
-    async searchUser(query: string, offset: number): Promise<Either<GeneralException, SearchUserResponse>> {
-        const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}?q=${encodeURIComponent(query)}&limit=${SEARCH_LIMIT}&offset=${offset}`);
+    async searchUser(query: string, offset: number, limit: number): Promise<Either<GeneralException, SearchEntity>> {
+        const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`);
         try {
             if (res.status >= 200 && res.status < 400) {
-                const user: SearchUserResponse = {
+                const user: SearchEntity = {
                     totalCount: res.data.totalCount,
                     users: res.data.users
                 }

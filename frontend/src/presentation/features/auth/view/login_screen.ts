@@ -1,10 +1,10 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import {type BuildContext} from "@/core/framework/buildContext";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import {type BuildContext} from "@/core/framework/core/buildContext";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {loadSignInForm} from "@/presentation/templates/templates";
-import {Navigator} from "@/core/framework/navigator";
-import type {Widget} from "@/core/framework/base";
-import {BlocListener} from "@/core/framework/blocListener";
+import {Navigator} from "@/core/framework/widgets/navigator";
+import type {Widget} from "@/core/framework/core/base";
+import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import {showError} from "@/utils/error_messages";
@@ -13,8 +13,8 @@ import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 
 export class LoginScreen extends StatelessWidget {
-    afterMounted(context: BuildContext) {
-        super.afterMounted(context);
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
         const authGuard = new AuthGuard('/login', false, true);
         authGuard.guard(context)
         const nav = Navigator.of(context);

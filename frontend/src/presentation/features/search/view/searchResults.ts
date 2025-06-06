@@ -1,25 +1,27 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-// import {type Widget} from "@/core/framework/widget";
-import type {BuildContext} from "@/core/framework/buildContext";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
-import type {QuickUserResponse} from "@/utils/types";
+import type {User} from "@/domain/entity/user";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import type {BuildContext} from "@/core/framework/core/buildContext";
+import {Composite} from "@/core/framework/widgets/composite";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {SearchItem} from "@/presentation/features/search/view/searchItem";
-import {Composite} from "@/core/framework/composite";
-import type {Widget} from "@/core/framework/base";
+import type {Widget} from "@/core/framework/core/base";
+import type {SearchUser} from "@/domain/entity/searchUser";
 
 export class SearchResults extends StatelessWidget {
-    constructor(public key: string, public users: QuickUserResponse[], public hasError: boolean = false) {
+
+    constructor(public users: SearchUser[], public parentId?: string, public hasError: boolean = false) {
         super();
+        this.users = users;
+        this.parentId = parentId;
+        this.hasError = hasError;
     }
 
     build(context: BuildContext): Widget {
         if (this.hasError) {
-            return new HtmlWidget(`<p class="text-red-500 p-4">Failed to load users.</p>`);
+            return new HtmlWidget(`<p class="text-red-500 p-4">Failed to load users.</p>`, this.parentId);
         }
-        return this.users.length === 0 ? new HtmlWidget(`
-            <p class="text-gray-500 p-4">No users found.</p>`, this.key) :
-                new Composite(this.users.map((e: QuickUserResponse) => new SearchItem(e)));
+        return this.users.length === 0
+            ? new HtmlWidget(`<p class="text-gray-500 p-4">No users found.</p>`, this.parentId)
+            : new Composite(this.users.map((e: SearchUser) => new SearchItem(e)), this.parentId);
     }
-
-
 }

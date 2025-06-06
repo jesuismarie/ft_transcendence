@@ -1,7 +1,7 @@
-import {StatelessWidget} from "@/core/framework/statelessWidget";
-import  {type BuildContext} from "@/core/framework/buildContext";
-import type {Widget} from "@/core/framework/base";
-import {HtmlWidget} from "@/core/framework/htmlWidget";
+import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
+import  {type BuildContext} from "@/core/framework/core/buildContext";
+import type {Widget} from "@/core/framework/core/base";
+import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {OTPBloc} from "@/presentation/features/otp/logic/otpBloc";
 
 export class OtpButton extends StatelessWidget {
