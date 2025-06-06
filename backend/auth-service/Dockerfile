@@ -18,4 +18,8 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/package.json ./package.json
 
+RUN mkdir -p /var/log/app \
+    && ln -sf /dev/stdout /var/log/app/access.log \
+    && ln -sf /dev/stderr /var/log/app/error.log
+
 CMD ["npm", "run", "start:prod"]
