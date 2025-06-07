@@ -4,9 +4,9 @@ import type { Status } from "../types/index.ts";
 
 interface Match {
   id: number;
-  player_1: string;
-  player_2: string;
-  winner_username: string | null;
+  player_1: number;
+  player_2: number;
+  winner: number | null;
   score_1: number;
   score_2: number;
   status: Status;
@@ -47,8 +47,8 @@ export class MatchRepo {
       tournament_id: number;
       group_id: number;
       game_level: number;
-      player_1: string;
-      player_2: string;
+      player_1: number;
+      player_2: number;
     },
     db?: Database
   ): number {
@@ -77,7 +77,7 @@ export class MatchRepo {
     return result.id;
   }
 
-  countUserMatchHistory(username: string): number {
+  countUserMatchHistory(user_id: number): number {
     const stmt = this.db.prepare(`
       SELECT COUNT(*) as count
       FROM match
@@ -85,12 +85,12 @@ export class MatchRepo {
         (player_1 = ? OR player_2 = ?)
         AND status IN ('ended', 'error')
     `);
-    const row = stmt.get(username, username) as { count: number };
+    const row = stmt.get(user_id, user_id) as { count: number };
     return row.count;
   }
 
   getUserMatchHistory(
-    username: string,
+    user_id: number,
     limit: number,
     offset: number
   ): Match[] {
@@ -99,7 +99,7 @@ export class MatchRepo {
         id,
         player_1,
         player_2,
-        winner_username,
+        winner,
         score_1,
         score_2,
         started_at,
@@ -115,7 +115,7 @@ export class MatchRepo {
       LIMIT ? OFFSET ?
     `);
 
-    return stmt.all(username, username, limit, offset) as Match[];
+    return stmt.all(user_id, user_id, limit, offset) as Match[];
   }
 
   getTournamentMatches(params: GetTournamentMatchesParams): {
@@ -131,7 +131,7 @@ export class MatchRepo {
         id AS id, 
         player_1,
         player_2,
-        winner_username, 
+        winner, 
         score_1, 
         score_2, 
         started_at, 
@@ -177,13 +177,13 @@ export class MatchRepo {
   }
 
   getIncompleteTournamentMatchesWithPlayer(
-    username: string,
+    user_id: number,
     tournament_id: number,
     db: Database
   ): {
     id: number;
-    player_1: string;
-    player_2: string;
+    player_1: number;
+    player_2: number;
   }[] {
     const database = db ?? this.db;
     const stmt = database.prepare(`
@@ -194,33 +194,33 @@ export class MatchRepo {
         AND status IN ('created', 'in_progress')
     `);
 
-    return stmt.all(tournament_id, username, username) as {
+    return stmt.all(tournament_id, user_id, user_id) as {
       id: number;
-      player_1: string;
-      player_2: string;
+      player_1: number;
+      player_2: number;
     }[];
   }
 
-  setMatchWinner(match_id: number, winner_username: string, db?: Database) {
+  setMatchWinner(match_id: number, winner: number, db?: Database) {
     const database = db ?? this.db;
     const stmt = database.prepare(`
       UPDATE match
-      SET winner_username = ?, status = 'ended'
+      SET winner = ?, status = 'ended'
       WHERE id = ?
     `);
-    stmt.run(winner_username, match_id);
+    stmt.run(winner, match_id);
   }
 
   updateMatchResult(
     match_id: number,
-    winner: string,
+    winner: number,
     score: { score_1: number; score_2: number },
     db?: Database
   ): void {
     const database = db ?? this.db;
     const stmt = database.prepare(`
       UPDATE match
-      SET winner_username = ?, score_1 = ?, score_2 = ?, status = 'ended'
+      SET winner = ?, score_1 = ?, score_2 = ?, status = 'ended'
       WHERE id = ?
     `);
     stmt.run(winner, score.score_1, score.score_2, match_id);

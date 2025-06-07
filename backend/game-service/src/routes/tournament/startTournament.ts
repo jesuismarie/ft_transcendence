@@ -2,17 +2,18 @@ import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
 import { MatchRepo } from "../../repositories/match";
+import {startTournamentSchema} from "../../schemas/schemas";
 
 interface StartTournamentRequestBody {
   tournament_id: number;
-  created_by: string; // Добавлено поле created_by
+  created_by: number;
 }
 
 interface StartTournamentResponse {
   match_id?: number;
-  player_1?: string;
-  player_2?: string;
-  participants?: string[];
+  player_1?: number;
+  player_2?: number;
+  participants?: number[];
   status: string;
 }
 
@@ -21,7 +22,13 @@ export default async function startTournamentRoute(app: FastifyInstance) {
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
   const matchRepo = new MatchRepo(app);
 
-  app.post("/start-tournament", async (request, reply) => {
+  app.post("/start-tournament",
+      {
+        schema: {
+          body: startTournamentSchema,
+        },
+      },
+      async (request, reply) => {
     const { tournament_id, created_by } =
       request.body as StartTournamentRequestBody;
 
@@ -29,11 +36,11 @@ export default async function startTournamentRoute(app: FastifyInstance) {
       return reply.status(400).send({ message: "Invalid tournament_id" });
     }
 
-    if (!created_by || created_by.trim().length === 0) {
+    if (!created_by || created_by < 0) {
       return reply.status(400).send({ message: "Invalid created_by" });
     }
 
-    const tournament = await tournamentRepo.getById(tournament_id);
+    const tournament = tournamentRepo.getById(tournament_id);
     if (!tournament) {
       return reply.status(404).send({ message: "Tournament not found" });
     }
@@ -52,7 +59,7 @@ export default async function startTournamentRoute(app: FastifyInstance) {
       return reply.status(400).send({ message: "Tournament is not full yet" });
     }
 
-    const players = await tournamentPlayerRepo.getPlayersByTournament(
+    const players = tournamentPlayerRepo.getPlayersByTournament(
       tournament_id
     );
 
@@ -63,14 +70,14 @@ export default async function startTournamentRoute(app: FastifyInstance) {
       const shuffled = [...players].sort(() => Math.random() - 0.5);
 
       const totalPlayers = shuffled.length;
-
+      console.log(`Total players: ${totalPlayers}`);
       if (![2, 4, 8, 16].includes(totalPlayers)) {
         throw new Error("Invalid number of players for tournament bracket");
       }
 
       const matchesToCreate = totalPlayers / 2;
       let firstMatchId: number | undefined; // Инициализация переменной
-
+      console.log(`Matches to create: ${matchesToCreate}`);
       for (let i = 0; i < matchesToCreate; i++) {
         const player1 = shuffled[i * 2];
         const player2 = shuffled[i * 2 + 1];
@@ -85,10 +92,10 @@ export default async function startTournamentRoute(app: FastifyInstance) {
           },
           txn
         );
-
         if (!firstMatchId) {
           firstMatchId = createdMatchId; // Сохраняем ID первого созданного матча
         }
+        console.log(`Created match: ${createdMatchId} for players ${player1} and ${player2}`);
       }
 
       // Устанавливаем статус "in_progress" для первого матча
@@ -103,7 +110,7 @@ export default async function startTournamentRoute(app: FastifyInstance) {
       tournamentRepo.updateStatus(tournament_id, "in_progress", txn);
 
       return firstMatchId;
-    }) as unknown as () => void;
+    }) as unknown as () => number | undefined;
 
     try {
       const firstMatchId = tx();

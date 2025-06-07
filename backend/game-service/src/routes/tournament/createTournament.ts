@@ -1,23 +1,35 @@
 import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import {createTournamentSchema} from "../../schemas/schemas";
 
 export interface CreateTournamentRequestBody {
   name: string;
   max_players_count: number;
-  created_by: string;
+  created_by: number;
 }
 
 export default async function createTournamentRoute(app: FastifyInstance) {
   const tournamentRepo = new TournamentRepo(app);
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
-  app.post("/create-tournament", async (request, reply) => {
+  app.post("/create-tournament", {
+    schema: {
+      body: createTournamentSchema,
+    },
+  },
+      async (request, reply) => {
     const { name, max_players_count, created_by } =
       request.body as CreateTournamentRequestBody;
 
     if (!name || name.trim().length === 0) {
       return reply.status(400).send({ message: "Tournament name is required" });
+    }
+
+    if (created_by < 0) {
+      return reply.status(400).send({
+        message: "creator id must be greater than 0",
+      })
     }
 
     if (![2, 4, 8, 16].includes(max_players_count)) {

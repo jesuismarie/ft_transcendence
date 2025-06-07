@@ -1,9 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import {unregisterFromTournamentSchema} from "../../schemas/schemas";
 
 interface UnregisterRequestBody {
-  username: string;
+  user_id: number;
   tournament_id: number;
 }
 
@@ -13,29 +14,37 @@ export default async function unregisterFromTournamentRoute(
   const tournamentRepo = new TournamentRepo(app);
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
-  app.post("/unregister-from-tournament", async (request, reply) => {
-    const { username, tournament_id } = request.body as UnregisterRequestBody;
+  app.post("/unregister-from-tournament",
+      {
+        schema: {
+          body: unregisterFromTournamentSchema,
+        },
+      },
+      async (request, reply) => {
+    const { user_id, tournament_id } = request.body as UnregisterRequestBody;
 
-    if (!username || !tournament_id || tournament_id <= 0) {
+    if (!user_id || !tournament_id || tournament_id <= 0) {
       return reply
         .status(400)
-        .send({ message: "Invalid username or tournament_id" });
+        .send({ message: "Invalid user_id or tournament_id" });
+    }
+
+    if (user_id < 0) {
+      return reply.status(400).send({message: "user_id must be greater than zero"})
     }
 
     try {
-      // Check if the user is the tournament creator
       const tournament = tournamentRepo.getById(tournament_id);
-      if (tournament?.created_by === username) {
+      if (tournament?.created_by === user_id) {
         return reply.status(400).send({
           message:
             "Tournament creator cannot unregister from their own tournament",
         });
       }
 
-      // Вся логика (включая проверки) внутри транзакции
       const tx = app.db.transaction((txn) => {
         const isInTournament = tournamentPlayerRepo.isPlayerInTournament(
-          username,
+          user_id,
           tournament_id,
           txn
         );
@@ -50,7 +59,7 @@ export default async function unregisterFromTournamentRoute(
           );
         }
 
-        tournamentPlayerRepo.unregister(username, tournament_id, txn);
+        tournamentPlayerRepo.unregister(user_id, tournament_id, txn);
         tournamentRepo.decrementPlayerCount(tournament_id, txn);
       }) as unknown as () => void;
 

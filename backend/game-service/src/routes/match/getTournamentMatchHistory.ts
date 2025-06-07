@@ -15,10 +15,10 @@ interface GetMatchHistoryByTournamentResponse {
 }
 interface TournamentMatchHistory {
   id: number;
-  user1: string;
-  user2: string;
+  user1: number;
+  user2: number;
   status: Status;
-  winner_username: string | null;
+  winner: number | null;
   score: {
     score_1: number;
     score_2: number;
@@ -78,7 +78,7 @@ export default async function getTournamentMatchHistoryRoute(
               user1: match.player_1,
               user2: match.player_2,
               status: match.status as Status,
-              winner_username: match.winner_username,
+              winner: match.winner,
               score: {
                 score_1: match.score_1,
                 score_2: match.score_2,

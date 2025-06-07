@@ -1,12 +1,13 @@
 import type { FastifyInstance } from "fastify";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import {gamestatsSchema, getMatchHistoryByUserSchema} from "../../schemas/schemas";
 
 interface GamestatsRequest {
-  Params: { username: string };
+  Params: { user: number };
 }
 
 interface GamestatsResponse {
-  username: string;
+  user: number;
   wins: number;
   losses: number;
 }
@@ -15,23 +16,28 @@ export default async function gamestatsRoute(app: FastifyInstance) {
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
   app.get<GamestatsRequest>(
-    "/internal/gamestats/:username",
+    "/internal/gamestats/:user",
+      {
+          schema: {
+              params: gamestatsSchema,
+          }
+      },
     async (request, reply) => {
-      const { username } = request.params;
+      const { user } = request.params;
 
-      if (!username || username.trim().length === 0) {
-        return reply.status(400).send({ message: "Invalid username" });
+      if (!user || user < 0) {
+        return reply.status(400).send({ message: "Invalid user_id" });
       }
 
       try {
-        const stats = tournamentPlayerRepo.getUserStats(username);
+        const stats = tournamentPlayerRepo.getUserStats(user);
 
         if (!stats) {
           return reply.status(404).send({ message: "User not found" });
         }
 
         const response: GamestatsResponse = {
-          username,
+          user,
           wins: stats.wins,
           losses: stats.losses,
         };

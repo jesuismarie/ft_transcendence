@@ -218,7 +218,7 @@ Game Service предоставляет API для управления турн
 - **400 Bad Request**
 
 ```json
-{ "message": "Invalid username or tournament_id" }
+{ "message": "Invalid user_id or tournament_id" }
 ```
 
 ```json
@@ -376,7 +376,7 @@ Game Service предоставляет API для управления турн
 - **400 Bad Request**
 
 ```json
-{ "message": "Invalid username or tournament_id" }
+{ "message": "Invalid user_id or tournament_id" }
 ```
 
 ```json

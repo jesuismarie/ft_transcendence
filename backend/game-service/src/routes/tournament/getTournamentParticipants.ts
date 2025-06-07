@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import {getTournamentParticipantsSchema} from "../../schemas/schemas";
 
 interface GetTournamentParticipantsQuery {
   id: number;
@@ -9,7 +10,7 @@ interface GetTournamentParticipantsQuery {
 interface GetTournamentParticipantsResponse {
   maxPlayersCount: number;
   currentPlayersCount: number;
-  participants: string[];
+  participants: number[];
 }
 
 export default async function getTournamentParticipantsRoute(
@@ -18,7 +19,13 @@ export default async function getTournamentParticipantsRoute(
   const tournamentRepo = new TournamentRepo(app);
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
-  app.get("/get-tournament-participants", async (request, reply) => {
+  app.get("/get-tournament-participants",
+      {
+        schema: {
+          querystring: getTournamentParticipantsSchema,
+        },
+      },
+      async (request, reply) => {
     const { id } = request.query as GetTournamentParticipantsQuery;
 
     if (!id || id <= 0) {

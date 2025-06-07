@@ -19,7 +19,7 @@ export class TournamentRepo extends BaseRepo {
     return row ? row.status : null;
   }
 
-  checkIsActiveTournamentByUsername(createdBy: string, db?: Database): boolean {
+  checkIsActiveTournamentByUsername(createdBy: number, db?: Database): boolean {
     const database = db ?? this.db;
     const stmt = database.prepare(
       `SELECT 1 FROM tournament WHERE created_by = ? AND status IN ('created', 'in_progress')`
@@ -29,7 +29,7 @@ export class TournamentRepo extends BaseRepo {
   }
 
   createTournament(
-    data: { name: string; maxPlayersCount: number; createdBy: string },
+    data: { name: string; maxPlayersCount: number; createdBy: number },
     db?: Database
   ): { id: number; name: string } {
     const database = db ?? this.db;
@@ -84,7 +84,7 @@ export class TournamentRepo extends BaseRepo {
     ).run(tournament_id);
   }
 
-  registerPlayerToTournament(tournament_id: number, username: string): void {
+  registerPlayerToTournament(tournament_id: number, user_id: number): void {
     const tx = this.db.transaction(() => {
       const tournament = this.getByIdForUpdate(tournament_id, this.db);
 
@@ -96,7 +96,7 @@ export class TournamentRepo extends BaseRepo {
         throw new Error("Tournament is not available for registration");
       }
 
-      this.insertPlayer(tournament_id, username, this.db);
+      this.insertPlayer(tournament_id, user_id, this.db);
       this.incrementPlayerCount(tournament_id, this.db);
     });
 
@@ -105,15 +105,15 @@ export class TournamentRepo extends BaseRepo {
 
   private insertPlayer(
     tournament_id: number,
-    username: string,
+    user_id: number,
     db: Database
   ): void {
     db.prepare(
       `
-      INSERT INTO tournament_player (tournament_id, player_username)
+      INSERT INTO tournament_player (tournament_id, user_id)
       VALUES (?, ?)
     `
-    ).run(tournament_id, username);
+    ).run(tournament_id, user_id);
   }
 
   decrementPlayerCount(tournament_id: number, db?: Database): void {
@@ -145,7 +145,7 @@ export class TournamentRepo extends BaseRepo {
       .run(status, tournament_id);
   }
 
-  updateWinner(tournament_id: number, winner: string, db?: Database): void {
+  updateWinner(tournament_id: number, winner: number, db?: Database): void {
     const database = db ?? this.db;
     database
       .prepare(

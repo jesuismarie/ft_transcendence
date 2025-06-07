@@ -2,10 +2,11 @@ import type { FastifyInstance } from "fastify";
 import { MatchRepo } from "../../repositories/match";
 import { TournamentRepo } from "../../repositories/tournament";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import {saveMatchResultSchema} from "../../schemas/schemas";
 
 interface SaveMatchResultBody {
   match_id: number;
-  winner: string;
+  winner: number;
   score: {
     score_1: number;
     score_2: number;
@@ -17,7 +18,13 @@ export default async function saveMatchResultRoute(app: FastifyInstance) {
   const tournamentRepo = new TournamentRepo(app);
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
-  app.post("/save-match-result", async (request, reply) => {
+  app.post("/save-match-result",
+      {
+        schema: {
+          body: saveMatchResultSchema,
+        },
+      },
+      async (request, reply) => {
     const { match_id, winner, score } = request.body as SaveMatchResultBody;
 
     if (
@@ -28,6 +35,9 @@ export default async function saveMatchResultRoute(app: FastifyInstance) {
       score.score_2 < 0
     ) {
       return reply.status(400).send({ message: "Invalid input parameters" });
+    }
+    if (winner < 0) {
+      return reply.status(400).send({ message: "Invalid input parameters: winner" });
     }
 
     const match = matchRepo.getById(match_id);
