@@ -25,7 +25,7 @@ export abstract class ApiConstants {
     static saveMatchResults: string = `${ApiConstants.gameBaseUrl}/save-match-result`;
     static login: string = `${ApiConstants.authBaseUrl}/auth/login`;
     static twoFA:string = `${ApiConstants.authBaseUrl}/login/2fa`;
-    static refresh: string = `${ApiConstants.authBaseUrl}/refresh`;
+    static refresh: string = `${ApiConstants.authBaseUrl}/auth/refresh`;
     static logout: string = `${ApiConstants.authBaseUrl}/logout`;
     static twoFAEnable: string = `${ApiConstants.authBaseUrl}/auth/2fa/enable`;
     static twoFAVerify: string = `${ApiConstants.authBaseUrl}/auth/2fa/verify`;

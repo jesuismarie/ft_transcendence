@@ -20,8 +20,9 @@ export class  AuthScreenState extends State<AuthScreen> {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        const authGuard = new AuthGuard('/', false, true);
-        authGuard.guard(context)
+        console.log("AUTHH MOUNTEDDDDD");
+        // const authGuard = new AuthGuard('/', false, true);
+        // authGuard.guard(context)
         const authBloc = context.read(AuthBloc);
         const navigator = Navigator.of(context);
         const btn = document.getElementById('to-sign-in');

@@ -42,32 +42,9 @@ export class RouteInformationParser {
 }
 
 
-export class AuthGuard {
-    constructor(public route: string, public isAuthRoute: boolean, public isInitial: boolean = false) {
-    }
-
-    guard(context: BuildContext) {
-        const nav = Navigator.of(context);
-        const authBloc = context.read(AuthBloc);
-        const profileBloc = context.read(ProfileBloc);
-        const currentUserId = authBloc.state.user?.userId;
-        const currentUser = profileBloc.state.profile?.username
-        console.log(`USER:::: ${currentUser} ${currentUserId}`)
-        if (currentUserId && currentUser && currentUser.length > 0 && currentUserId > 0) {
-            console.log("INITIALLLLL")
-            if (this.isInitial) {
-                nav.replace('/profile');
-            }
-        } else if (!this.isAuthRoute) {
-            if (this.isInitial) {
-                return;
-            }
-            nav.replace('/login');
-        }
-    }
-
+export abstract class AuthGuard {
     static navigationGuard(context: BuildContext, routes: { [key: string]: string }) {
-        const publicRoutes = ['/login', '/register'];
+        const publicRoutes = ['/login', '/register', '/'];
         const path = window.location.pathname;
         const preferenceService = Resolver.preferenceService();
         const token = preferenceService.getToken();

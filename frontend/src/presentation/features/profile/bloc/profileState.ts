@@ -34,6 +34,7 @@ export class ProfileState implements Equatable<ProfileState>{
         this.profile = params.profile;
         this.otherProfile = params.otherProfile
         this.isValid = params.isValid ?? true;
+
         this.selectedAvatarUrl = params.selectedAvatarUrl;
         this.selectedAvatar = params.selectedAvatar;
         this.errorMessage = params.errorMessage;

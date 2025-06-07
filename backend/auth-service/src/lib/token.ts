@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { FastifyInstance } from 'fastify';
+import { v4 as uuidv4 } from 'uuid';
 import { AuthTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 
 /** Hash refresh token deterministically using HMAC‑SHA256 + service salt */
@@ -13,8 +14,9 @@ export function hashRefresh(token: string, salt: string) {
  */
 export async function issueTokenPair(app: FastifyInstance, userId: number): Promise<AuthTypes.TokenPair> {
 	const accessToken = app.jwt.sign({ sub: userId });
-	const rawRefresh  = crypto.randomBytes(32).toString('hex');
-	const tokenHash   = hashRefresh(rawRefresh, app.config.REFRESH_TOKEN_SALT);
+	// const rawRefresh  = crypto.randomBytes(32).toString('hex');
+	const refreshToken = uuidv4();
+	const tokenHash   = hashRefresh(refreshToken, app.config.REFRESH_TOKEN_SALT);
 	
 	console.log(userId + ' recieved new refresh token: ' + tokenHash);
 	await app.prisma.refreshToken.create({
@@ -27,7 +29,7 @@ export async function issueTokenPair(app: FastifyInstance, userId: number): Prom
 	
 	return {
 		accessToken,
-		refreshToken: rawRefresh,
+		refreshToken: refreshToken,
 		userId
 	};
 }

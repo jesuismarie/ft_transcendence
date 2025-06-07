@@ -15,8 +15,8 @@ import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 export class LoginScreen extends StatelessWidget {
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        const authGuard = new AuthGuard('/login', false, true);
-        authGuard.guard(context)
+        // const authGuard = new AuthGuard('/login', false, true);
+        // authGuard.guard(context)
         const nav = Navigator.of(context);
         const btn = document.getElementById('close-btn-login');
         btn?.addEventListener('click', () => {

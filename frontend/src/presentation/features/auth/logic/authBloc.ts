@@ -3,7 +3,7 @@ import {inject, injectable} from "tsyringe";
 import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
 import {ApiException, type GeneralException} from "@/core/exception/exception";
 import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
-import type { Either } from "@/core/models/either";
+import type {Either} from "@/core/models/either";
 import {BlocBase} from "@/core/framework/bloc/blocBase";
 import {Cubit} from "@/core/framework/bloc/cubit";
 import type {PersistenceService} from "@/core/services/persistance_service";
@@ -16,20 +16,21 @@ import '@/core/extensions/stringExtension';
 
 
 @injectable()
-export class AuthBloc extends Cubit<AuthState>{
+export class AuthBloc extends Cubit<AuthState> {
 
     persistenceService: PersistenceService
+
     constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository,
                 @inject("PreferenceService") private readonly preferenceService: PreferenceService
-                ) {
-       super(new AuthState({}))
+    ) {
+        super(new AuthState({}))
         this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
-       // this.persistenceService.init();
+        // this.persistenceService.init();
     }
 
 
     async resetState() {
-       this.emit(this.state.copyWith({status: AuthStatus.Initial, errorMessage: ""}));
+        this.emit(this.state.copyWith({status: AuthStatus.Initial, errorMessage: ""}));
     }
 
     async register({email, username, password}: {
@@ -54,6 +55,7 @@ export class AuthBloc extends Cubit<AuthState>{
             },
             onSuccess: (user) => {
                 this.preferenceService.setToken(user.accessToken);
+                this.preferenceService.setRefreshToken(user.refreshToken);
                 this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
             }
         });
@@ -77,6 +79,28 @@ export class AuthBloc extends Cubit<AuthState>{
             },
             onSuccess: (user) => {
                 this.preferenceService.setToken(user.accessToken);
+                this.preferenceService.setRefreshToken(user.refreshToken);
+                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
+            }
+        });
+    }
+
+    async requestRefresh(accessToken: string): Promise<void> {
+        const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(accessToken);
+        res.when({
+            onError: (err: any) => {
+                console.log('Error:', err)
+                let errorMessage: string | undefined;
+                if (err instanceof ApiException) {
+                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                }
+                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                // user = null;
+            },
+            onSuccess: (user) => {
+                console.log(`USERRR:::: ${user.userId}`)
+                this.preferenceService.setToken(user.accessToken);
+                this.preferenceService.setRefreshToken(user.refreshToken);
                 this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
             }
         });
@@ -114,11 +138,12 @@ export class AuthBloc extends Cubit<AuthState>{
     //     })
     // }
 
-    validate()  {
+    validate() {
 
     }
 
     async logout(): Promise<void> {
-        localStorage.removeItem("token");
+        this.preferenceService.unsetToken();
+        this.preferenceService.unsetRefreshToken();
     }
 }
