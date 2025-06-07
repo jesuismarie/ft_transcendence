@@ -13,4 +13,21 @@ export class PreferenceServiceImpl implements PreferenceService {
         localStorage.setItem(PreferenceKeys.token, token);
     }
 
+    setRefreshToken(token: string): void {
+        document.cookie = `refresh_token=${encodeURIComponent(token)}; path=/; secure; samesite=strict`;
+        localStorage.setItem(PreferenceKeys.refreshToken, token);
+    }
+
+    getRefreshToken(): string | null {
+        return localStorage.getItem(PreferenceKeys.refreshToken);
+    }
+
+    unsetRefreshToken(): void {
+        localStorage.removeItem(PreferenceKeys.refreshToken);
+    }
+
+    unsetToken(): void {
+        localStorage.removeItem(PreferenceKeys.token);
+    }
+
 }

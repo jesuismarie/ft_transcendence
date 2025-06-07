@@ -8,6 +8,8 @@ import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
 import {PreferenceKeys} from "@/core/services/preferenceKeys";
+import * as console from "node:console";
+import {data} from "autoprefixer";
 
 
 @injectable()
@@ -90,6 +92,29 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
                 const error: ApiError = await e?.response?.json();
                 return new Left(new ApiException(500, error.message, error));
             } catch (parseErr) {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async requestRefresh(accessToken: string): Promise<Either<GeneralException, UserEntity>> {
+        try {
+            const res = await this.apiClient.axiosClient().post(ApiConstants.refresh, {refreshToken: accessToken});
+            if (res.status >= 200 && res.status < 400) {
+                const user: UserEntity = {
+                    userId: res.data.userId,
+                    accessToken: res.data.accessToken,
+                    refreshToken: res.data.refreshToken,
+                }
+                return new Right(user);
+            }
+            return new Left(new GeneralException());
+        }
+        catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
                 return new Left(new ApiException(500, e?.toString()));
             }
         }

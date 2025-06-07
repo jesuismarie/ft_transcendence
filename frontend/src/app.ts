@@ -17,17 +17,19 @@ import {Navigator} from "@/core/framework/widgets/navigator";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {NotFoundWidget} from "@/presentation/common/widget/notFound";
 import {AppRoutes} from "@/core/constants/appRoutes";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
 
 export const navigatorKey = new GlobalKey<Navigator>();
 
-export const routes: { [key: string]: string }  = {
-        '/': AppRoutes.root,
-        '/login': AppRoutes.login,
-        '/profile': AppRoutes.profile,
-        '/profile/:id': AppRoutes.profile,
-        '/register': AppRoutes.register,
-        '/game': AppRoutes.game,
-        '/404': AppRoutes.notFound,
+export const routes: { [key: string]: string } = {
+    '/': AppRoutes.root,
+    '/login': AppRoutes.login,
+    '/profile': AppRoutes.profile,
+    '/profile/:id': AppRoutes.profile,
+    '/register': AppRoutes.register,
+    '/game': AppRoutes.game,
+    '/404': AppRoutes.notFound,
 }
 
 
@@ -37,25 +39,39 @@ export class App extends StatelessWidget {
     }
 
     build(context: BuildContext): Widget {
-        console.log("ZZZZZ")
-        window.addEventListener('load', () => {
-            // AuthGuard.navigationGuard(context, routes)
-        });
-        return provideBlocProviders(new MaterialApp(
-                {
-                    navigatorKey: navigatorKey,
-                    home: new AuthScreen(),
-                    routes: {
-                        '/': (context) => new AuthScreen(),
-                        '/login': (context) => new LoginScreen(),
-                        '/profile': (context) => new ProfileScreen(),
-                        '/profile/:id': (context, params) => new ProfileScreen(params?.id),
-                        '/register': (context) => new RegisterScreen(),
-                        '/game': (context) => new PongGameScreen(),
-                        '/404': (context) => new NotFoundWidget(),
+        console.log("HELLLLLLLLL")
+        // window.addEventListener('load', () => {
+        //     // AuthGuard.navigationGuard(context, routes)
+        // });
+        return provideBlocProviders(new BuilderWidget((context) => {
+            const authBloc = context.read(AuthBloc);
+
+            const preferenceService = Resolver.preferenceService();
+            const token = preferenceService.getRefreshToken();
+            if (token && token.length > 0) {
+                authBloc.requestRefresh(token).then()
+
+            }
+                return new MaterialApp(
+                    {
+                        routeListen: (context, url) => {
+                            console.log("HHHHHHHHHHHHH")
+                            AuthGuard.navigationGuard(context!, routes);
+                        },
+                        navigatorKey: navigatorKey,
+                        home: new AuthScreen(),
+                        routes: {
+                            '/': (context) => new AuthScreen(),
+                            '/login': (context) => new LoginScreen(),
+                            '/profile': (context) => new ProfileScreen(),
+                            '/profile/:id': (context, params) => new ProfileScreen(params?.id),
+                            '/register': (context) => new RegisterScreen(),
+                            '/game': (context) => new PongGameScreen(),
+                            '/404': (context) => new NotFoundWidget(),
+                        }
                     }
-                }
-            )
-        );
+                )
+            }
+        ));
     }
 }

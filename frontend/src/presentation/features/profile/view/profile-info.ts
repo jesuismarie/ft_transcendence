@@ -2,7 +2,7 @@ import {type BuildContext} from "@/core/framework/core/buildContext";
 // import type {Widget} from "@/core/framework/widget";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {type Widget} from "@/core/framework/core/base";
-import {hideModal, showModal} from "@/utils/modal_utils";
+import {showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
@@ -10,9 +10,7 @@ import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/
 import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {State, StatefulWidget} from "@/core/framework/widgets/statefulWidget";
-import {WidgetBinding} from "@/core/framework/core/widgetBinding";
 import {isEqual} from "lodash";
-import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {Navigator} from "@/core/framework/widgets/navigator";
 import {AppRoutes} from "@/core/constants/appRoutes";
 import {Composite} from "@/core/framework/widgets/composite";
@@ -20,10 +18,11 @@ import {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
 import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
 import {FriendState} from "@/presentation/features/friend/logic/friendState";
 import {SubmitButton} from "@/presentation/common/widget/submitButton";
+import {ModalsBloc, ModalType} from "@/presentation/features/modals/bloc/modalsBloc";
 
 
 export class ProfileInfo extends StatefulWidget {
-    constructor(public parentId?: string, public userId?: number,) {
+    constructor(public profileState: ProfileState, public parentId?: string, public userId?: number) {
         super();
     }
 
@@ -39,6 +38,9 @@ export class ProfileInfoContent extends State<ProfileInfo> {
         super.didMounted(context);
         console.log("ProfileAUDDDDD")
         const profileBloc = context.read(ProfileBloc)
+        const modalBloc = context.read(ModalsBloc)
+
+        console.log(`PROFILEEEE STATEEEE::: ${JSON.stringify(profileBloc.state)}`)
         // const friendBloc =
         const editBtn = document.getElementById('edit-profile-btn');
         const uploadBtn = document.getElementById('avatar-upload-btn')
@@ -50,8 +52,9 @@ export class ProfileInfoContent extends State<ProfileInfo> {
         openGameBtn?.addEventListener('click', () => {
             Navigator.of(context).pushNamed(AppRoutes.game)
         })
-        editBtn!.addEventListener('click', async (e) => {
+        editBtn?.addEventListener('click', async (e) => {
             e.preventDefault()
+            modalBloc.onOpenModal(ModalType.editProfile);
             showModal(ModalConstants.editProfileModalName)
         })
         console.log(`AVATARRRRR :::: ${avatarInput}`)
@@ -62,6 +65,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
         });
 
         openModalBtn?.addEventListener("click", () => {
+            modalBloc.onOpenModal(ModalType.friends);
             showModal(ModalConstants.friendsModalName)
         })
 
@@ -98,19 +102,14 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                             profileBloc.resetStatus().then();
                         }
                     },
-                    child: new BlocBuilder<ProfileBloc, ProfileState>(
-                        {
-                            buildWhen: (oldState, newState) => !oldState.equals(newState),
-                            blocType: ProfileBloc,
-                            builder: (context, state) => {
-                                return new Composite([new HtmlWidget(`
+                    child: new Composite([new HtmlWidget(`
         <div class="rounded-md border border-hover">
             <div class="bg-hover h-24"></div>
             <div class="px-4 pb-6 relative">
                 <div class="flex justify-center -mt-12">
                     <div class="relative">
-                        <img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="${state.selectedAvatarUrl ?? state.profile?.avatar ?? "/images/background1.jpg"}" alt="User avatar">
-                       ${this.widget.userId == state.profile?.id ?
+                        <img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="${this.widget.profileState.selectedAvatarUrl ?? this.widget.profileState.profile?.avatar ?? "/images/background1.jpg"}" alt="User avatar">
+                       ${this.widget.userId == this.widget.profileState.profile?.id ?
                                     `<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-white hover:shadow-neon focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -142,7 +141,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                 </div>
                 <button id="open-game-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
                 <button id="friend-request-btn" class="hidden mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
-                <button id="edit-profile-btn" class="${this.widget.userId != state.profile?.id ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
+                <button id="edit-profile-btn" class="${this.widget.userId != this.widget.profileState.profile?.id ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
             </div>
         </div>
         <div class="px-4 py-3 rounded-md border border-hover">
@@ -168,8 +167,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                         }))
 
                                 ])
-                            }
-                        })
+
                 })
         })
     }

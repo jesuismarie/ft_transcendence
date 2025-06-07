@@ -31,6 +31,8 @@ import {Resolver} from "@/di/resolver";
 import {SearchBloc} from "@/presentation/features/search/logic/searchBloc";
 import {Constants} from "@/core/constants/constants";
 import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
+import {ModalsBloc} from "@/presentation/features/modals/bloc/modalsBloc";
+import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
 
 
 export class ProfileScreen extends StatelessWidget {
@@ -74,13 +76,17 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        const authGuard = new AuthGuard('/profile', false, true);
-        authGuard.guard(context)
+        console.log("PROFILLEEE MOUNTEEDDDD")
+        // const authGuard = new AuthGuard('/profile', false, true);
+        // authGuard.guard(context)
         const friendBloc = context.read(FriendBloc);
-
-
         const authBloc = context.read(AuthBloc);
+
+
+
         // if (authBloc.state.user) {
+        console.log(`STATEEEE:::: ${authBloc.state.user?.userId}`)
+
 
         // }
 
@@ -88,8 +94,7 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 
         const userId = id ?? authBloc.state.user?.userId;
         if (userId) {
-            context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {
-            })
+            context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {})
             // friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
         }
         // const authBloc = context.read(AuthBloc);
@@ -149,6 +154,7 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
     // }
 
     build(context: BuildContext): Widget {
+        const modalState = context.watch(ModalsBloc).state
         const navigator = Navigator.of(context);
         // return new EmptyWidget()
         const authBloc = context.read(AuthBloc);
@@ -211,14 +217,17 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 		</div>`)),
 
                         new MountAwareComposite((context) => new Composite([
-                            new MountAwareComposite((context) => new AddTournament('add-tournament-modal')),
+                            // state.
+                            ...(modalState.isTournamentModalOpen ?
+                                [new MountAwareComposite((context) => new AddTournament('add-tournament-modal'))] : []),
                             new MountAwareComposite((context) => new UpcomingTournaments('upcoming-tournaments')),
                             new MountAwareComposite((context) => new MatchHistory('match-history-details')),
                             // new MountAwareComposite((context) => new FriendsView('friends-modal')),
-                            new MountAwareComposite((context) => new EditProfile('edit-profile-modal')),
+                            ...(modalState.isEditProfileModalOpen ?
+                                [new MountAwareComposite((context) => new EditProfile('edit-profile-modal'))] : []),
                             new MountAwareComposite((context) => new UpcomingTournamentsModal('tournament-modal')),
                             new MountAwareComposite((context) => new MatchHistoryModal('matches-modal')),
-                            new MountAwareComposite((context) => new ProfileInfo('profile-information-details', otherId)),
+                            new MountAwareComposite((context) => new ProfileInfo(state, 'profile-information-details', otherId)),
                             new MountAwareComposite((context) => new NavigationMenu('profile-navigation')),
                             new MountAwareComposite((context) => new SearchUserModal('search-users-modal'))
                         ]))])

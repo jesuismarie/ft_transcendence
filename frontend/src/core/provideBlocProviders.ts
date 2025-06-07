@@ -6,6 +6,7 @@ import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import type {Widget} from "@/core/framework/core/base";
 import {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
 import {SearchBloc} from "@/presentation/features/search/logic/searchBloc";
+import {ModalsBloc} from "@/presentation/features/modals/bloc/modalsBloc";
 
 export function provideBlocProviders(child: Widget): Widget {
     return new MultiBlocProvider(
@@ -26,6 +27,9 @@ export function provideBlocProviders(child: Widget): Widget {
                         )
                     }
                 ),
+                new BlocProvider({
+                    create: () => new ModalsBloc()
+                })
                 // new BlocProvider(
                 //     {
                 //         create: () => new FriendBloc(Resolver.friendRepository()),
