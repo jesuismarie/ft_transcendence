@@ -5,6 +5,7 @@ import matchRoutes from "./routes/match/routes";
 import tournamentRoutes from "./routes/tournament/routes";
 import internalRoutes from "./routes/internal/routes";
 import monitoringRoutes from "./routes/monitoring/routes";
+import errorEnvelope from "./plugins/errorEnvelope";
 
 const app = Fastify({ logger: true });
 
@@ -13,8 +14,10 @@ app.register(cors, {
     credentials: true
 });
 
-// Регистрируем базу данных как плагин
+// Регистрируем плагины
 app.register(initDb);
+app.register(errorEnvelope);
+
 
 
 // Регистрируем маршруты

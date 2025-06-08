@@ -34,23 +34,23 @@ export default async function saveMatchResultRoute(app: FastifyInstance) {
       score.score_1 < 0 ||
       score.score_2 < 0
     ) {
-      return reply.status(400).send({ message: "Invalid input parameters" });
+      return reply.sendError({ statusCode: 400, message: "Invalid input parameters" });
     }
     if (winner < 0) {
-      return reply.status(400).send({ message: "Invalid input parameters: winner" });
+      return reply.sendError({ statusCode: 400, message: "Invalid input parameters: winner" });
     }
 
     const match = matchRepo.getById(match_id);
     if (!match) {
-      return reply.status(404).send({ message: "Match not found" });
+      return reply.sendError({ statusCode: 404, message: "Match not found" });
     }
 
     if (match.status !== "in_progress") {
-      return reply.status(400).send({ message: "Match is not in progress" });
+      return reply.sendError({ statusCode: 400, message: "Match is not in progress" });
     }
 
     if (winner !== match.player_1 && winner !== match.player_2) {
-      return reply.status(400).send({ message: "Invalid winner" });
+      return reply.sendError({ statusCode: 400, message: "Invalid winner" });
     }
 
     const loser = winner === match.player_1 ? match.player_2 : match.player_1;
@@ -78,7 +78,7 @@ export default async function saveMatchResultRoute(app: FastifyInstance) {
         .send({ message: "Match result saved successfully" });
     } catch (err) {
       app.log.error(err);
-      return reply.status(500).send({ message: "Failed to save match result" });
+      return reply.sendError({ statusCode: 500, message: "Failed to save match result" });
     }
   });
 }

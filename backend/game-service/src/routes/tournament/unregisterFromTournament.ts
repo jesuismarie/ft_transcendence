@@ -24,19 +24,18 @@ export default async function unregisterFromTournamentRoute(
     const { user_id, tournament_id } = request.body as UnregisterRequestBody;
 
     if (!user_id || !tournament_id || tournament_id <= 0) {
-      return reply
-        .status(400)
-        .send({ message: "Invalid user_id or tournament_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid user_id or tournament_id" });
     }
 
     if (user_id < 0) {
-      return reply.status(400).send({message: "user_id must be greater than zero"})
+      return reply.sendError({ statusCode: 400, message: "user_id must be greater than zero" })
     }
 
     try {
       const tournament = tournamentRepo.getById(tournament_id);
       if (tournament?.created_by === user_id) {
-        return reply.status(400).send({
+        return reply.sendError({
+          statusCode: 400,
           message:
             "Tournament creator cannot unregister from their own tournament",
         });
@@ -70,7 +69,8 @@ export default async function unregisterFromTournamentRoute(
         .send({ message: "User unregistered from tournament" });
     } catch (err) {
       app.log.error(err);
-      return reply.status(500).send({
+      return reply.sendError({
+        statusCode: 500,
         message: (err as Error).message || "Unregistration failed",
       });
     }

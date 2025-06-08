@@ -43,7 +43,7 @@ export default async function getTournamentMatchHistoryRoute(
     } = request.body as GetMatchHistoryByTournamentRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
-      return reply.status(400).send({ message: "Invalid tournament_id" });
+      return reply.sendError({statusCode: 400, message: "Invalid tournament_id" });
     }
 
     if (!Array.isArray(statuses)) {
@@ -56,9 +56,7 @@ export default async function getTournamentMatchHistoryRoute(
       (status) => !VALID_STATUSES.includes(status as MatchStatus)
     );
     if (invalidStatuses.length > 0) {
-      return reply
-        .status(400)
-        .send({ message: `Invalid statuses: ${invalidStatuses.join(", ")}` });
+      return reply.sendError({statusCode: 400, message: `Invalid statuses: ${invalidStatuses.join(", ")}` });
     }
 
     try {
@@ -90,7 +88,7 @@ export default async function getTournamentMatchHistoryRoute(
       return reply.send(response);
     } catch (err) {
       app.log.error(err);
-      return reply.status(500).send({ message: "Failed to retrieve matches" });
+      return reply.sendError({statusCode: 500, message: "Failed to retrieve matches" });
     }
   });
 }

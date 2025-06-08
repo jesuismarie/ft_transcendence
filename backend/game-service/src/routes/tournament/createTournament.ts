@@ -23,17 +23,19 @@ export default async function createTournamentRoute(app: FastifyInstance) {
       request.body as CreateTournamentRequestBody;
 
     if (!name || name.trim().length === 0) {
-      return reply.status(400).send({ message: "Tournament name is required" });
+      return reply.sendError({ statusCode: 400, message: "Tournament name is required" });
     }
 
     if (created_by < 0) {
-      return reply.status(400).send({
+      return reply.sendError({
+        statusCode: 400,
         message: "creator id must be greater than 0",
       })
     }
 
     if (![2, 4, 8, 16].includes(max_players_count)) {
-      return reply.status(400).send({
+      return reply.sendError({
+        statusCode: 400,
         message: "max_players_count must be one of the following: 2, 4, 8, 16",
       });
     }
@@ -42,7 +44,8 @@ export default async function createTournamentRoute(app: FastifyInstance) {
     const isCreatorInActiveTournament =
       tournamentPlayerRepo.isPlayerInAnyActiveTournament(created_by);
     if (isCreatorInActiveTournament) {
-      return reply.status(400).send({
+      return reply.sendError({
+        statusCode: 400,
         message:
           "Creator is already registered in another active tournament and cannot create a new one.",
       });
@@ -52,7 +55,8 @@ export default async function createTournamentRoute(app: FastifyInstance) {
     const existingTournament =
       tournamentRepo.checkIsActiveTournamentByUsername(created_by);
     if (existingTournament) {
-      return reply.status(400).send({
+      return reply.sendError({
+        statusCode: 400,
         message:
           "A tournament created by this user already exists in 'created' or 'in_progress' status.",
       });
@@ -76,7 +80,7 @@ export default async function createTournamentRoute(app: FastifyInstance) {
       });
     } catch (err) {
       app.log.error(err);
-      return reply.status(500).send({ message: "Error creating tournament" });
+      return reply.sendError({ statusCode: 500, message: "Error creating tournament" });
     }
   });
 }

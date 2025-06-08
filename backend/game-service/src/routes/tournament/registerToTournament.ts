@@ -22,18 +22,17 @@ export default async function registerToTournamentRoute(app: FastifyInstance) {
     const { user_id, tournament_id } = request.body as RegisterRequestBody;
 
     if (!user_id || !tournament_id || tournament_id <= 0) {
-      return reply
-        .status(400)
-        .send({ message: "Invalid user_id or tournament_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid user_id or tournament_id" });
     }
 
     if (user_id < 0) {
-      return reply.status(400).send({message: "user_id must be greater than zero"})
+      return reply.sendError({ statusCode: 400, message: "user_id must be greater than zero" })
     }
 
     const isAlreadyInActiveTournament = tournamentPlayerRepo.isPlayerInAnyActiveTournament(user_id);
     if (isAlreadyInActiveTournament) {
-      return reply.status(400).send({
+      return reply.sendError({
+        statusCode: 400,
         message: "User is already registered in another active tournament",
       });
     }
@@ -45,9 +44,7 @@ export default async function registerToTournamentRoute(app: FastifyInstance) {
         .send({ message: "User registered to tournament" });
     } catch (err: any) {
       app.log.error(err);
-      return reply
-        .status(400)
-        .send({ message: err.message || "Registration failed" });
+      return reply.sendError({ statusCode: 400, message: err.message || "Registration failed" });
     }
   });
 }

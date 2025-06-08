@@ -18,20 +18,19 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
       request.body as LeaveTournamentRequestBody;
 
     if (!user_id || !tournament_id || tournament_id <= 0) {
-      return reply
-        .status(400)
-        .send({ message: "Invalid user_id or tournament_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid user_id or tournament_id" });
     }
 
     try {
       const tournament = tournamentRepo.getById(tournament_id);
       if (!tournament) {
-        return reply.status(404).send({ message: "Tournament not found" });
+        return reply.sendError({ statusCode: 404, message: "Tournament not found" });
       }
 
       // Check if the user is the tournament creator
       if (tournament.created_by === user_id) {
-        return reply.status(400).send({
+        return reply.sendError({
+          statusCode: 400,
           message: "Tournament creator cannot leave their own tournament",
         });
       }
@@ -76,7 +75,8 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
         .send({ message: "User left the tournament and matches updated" });
     } catch (err) {
       app.log.error(err);
-      return reply.status(400).send({
+      return reply.sendError({
+        statusCode: 400,
         message: (err as Error).message || "Failed to leave tournament",
       });
     }

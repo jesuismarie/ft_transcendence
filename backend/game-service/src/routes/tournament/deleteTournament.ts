@@ -25,11 +25,11 @@ export default async function deleteTournamentRoute(app: FastifyInstance) {
       request.body as DeleteTournamentRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
-      return reply.status(400).send({ message: "Invalid tournament_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid tournament_id" });
     }
 
     if (!created_by || created_by < 0) {
-      return reply.status(400).send({ message: "Missing created_by field" });
+      return reply.sendError({ statusCode: 400, message: "Missing created_by field" });
     }
 
     try {
@@ -68,7 +68,7 @@ export default async function deleteTournamentRoute(app: FastifyInstance) {
       app.log.error(err);
       const errorMessage =
         (err as Error).message || "Failed to delete tournament";
-      return reply.status(400).send({ message: errorMessage });
+      return reply.sendError({ statusCode: 400, message: errorMessage });
     }
   });
 }

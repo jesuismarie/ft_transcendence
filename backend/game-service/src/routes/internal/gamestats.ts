@@ -26,14 +26,14 @@ export default async function gamestatsRoute(app: FastifyInstance) {
       const { user } = request.params;
 
       if (!user || user < 0) {
-        return reply.status(400).send({ message: "Invalid user_id" });
+        return reply.sendError({ statusCode: 400, message: "Invalid user_id" });
       }
 
       try {
         const stats = tournamentPlayerRepo.getUserStats(user);
 
         if (!stats) {
-          return reply.status(404).send({ message: "User not found" });
+          return reply.sendError({ statusCode: 404, message: "User not found" });
         }
 
         const response: GamestatsResponse = {
@@ -45,7 +45,7 @@ export default async function gamestatsRoute(app: FastifyInstance) {
         return reply.status(200).send(response);
       } catch (err) {
         app.log.error(err);
-        return reply.status(500).send({ message: "Failed to fetch stats" });
+        return reply.sendError({ statusCode: 500, message: "Failed to fetch stats" });
       }
     }
   );

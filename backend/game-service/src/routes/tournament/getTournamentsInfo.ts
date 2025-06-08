@@ -62,9 +62,7 @@ export default async function getTournamentsInfoRoute(app: FastifyInstance) {
       return reply.status(200).send(response);
     } catch (err) {
       app.log.error(err);
-      return reply
-        .status(500)
-        .send({ message: "Failed to fetch tournaments info" });
+      return reply.sendError({ statusCode: 500, message: "Failed to fetch tournaments info" });
     }
   });
 }

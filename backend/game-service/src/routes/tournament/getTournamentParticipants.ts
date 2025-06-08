@@ -29,13 +29,13 @@ export default async function getTournamentParticipantsRoute(
     const { id } = request.query as GetTournamentParticipantsQuery;
 
     if (!id || id <= 0) {
-      return reply.status(400).send({ message: "Invalid tournament ID" });
+      return reply.sendError({ statusCode: 400, message: "Invalid tournament ID" });
     }
 
     try {
       const tournament = tournamentRepo.getById(id);
       if (!tournament) {
-        return reply.status(404).send({ message: "Tournament not found" });
+        return reply.sendError({ statusCode: 404, message: "Tournament not found" });
       }
 
       const participants = tournamentPlayerRepo.getPlayersByTournament(id);
@@ -49,9 +49,7 @@ export default async function getTournamentParticipantsRoute(
       return reply.status(200).send(response);
     } catch (err) {
       app.log.error(err);
-      return reply
-        .status(500)
-        .send({ message: "Failed to fetch participants" });
+      return reply.sendError({ statusCode: 500, message: "Failed to fetch participants" });
     }
   });
 }

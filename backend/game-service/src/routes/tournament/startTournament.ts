@@ -33,30 +33,31 @@ export default async function startTournamentRoute(app: FastifyInstance) {
       request.body as StartTournamentRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
-      return reply.status(400).send({ message: "Invalid tournament_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid tournament_id" });
     }
 
     if (!created_by || created_by < 0) {
-      return reply.status(400).send({ message: "Invalid created_by" });
+      return reply.sendError({ statusCode: 400, message: "Invalid created_by" });
     }
 
     const tournament = tournamentRepo.getById(tournament_id);
     if (!tournament) {
-      return reply.status(404).send({ message: "Tournament not found" });
+      return reply.sendError({ statusCode: 404, message: "Tournament not found" });
     }
 
     if (tournament.created_by !== created_by) {
-      return reply.status(403).send({
+      return reply.sendError({
+        statusCode: 403,
         message: "Only the tournament creator can start the tournament",
       });
     }
 
     if (tournament.status !== "created") {
-      return reply.status(400).send({ message: "Tournament already started" });
+      return reply.sendError({ statusCode: 400, message: "Tournament already started" });
     }
 
     if (tournament.current_players_count !== tournament.max_players_count) {
-      return reply.status(400).send({ message: "Tournament is not full yet" });
+      return reply.sendError({ statusCode: 400, message: "Tournament is not full yet" });
     }
 
     const players = tournamentPlayerRepo.getPlayersByTournament(
@@ -134,7 +135,7 @@ export default async function startTournamentRoute(app: FastifyInstance) {
       return reply.status(200).send(response);
     } catch (err) {
       app.log.error(err);
-      return reply.status(500).send({ message: "Failed to start tournament" });
+      return reply.sendError({ statusCode: 500, message: "Failed to start tournament" });
     }
   });
 }

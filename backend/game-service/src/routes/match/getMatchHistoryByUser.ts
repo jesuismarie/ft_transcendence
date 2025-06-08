@@ -42,11 +42,11 @@ async (request, reply) => {
     } = request.query as GetMatchHistoryRequest;
 
     if (!user_id || limit < 0 || offset < 0) {
-      return reply.status(400).send({ message: "Invalid input parameters" });
+      return reply.sendError({ statusCode: 400, message: "Invalid input parameters" });
     }
 
     if (user_id <= 0) {
-      return reply.status(400).send({ message: "Invalid user_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid user_id" });
     }
 
     try {
@@ -83,9 +83,7 @@ async (request, reply) => {
       return reply.send(response);
     } catch (err) {
       app.log.error(err);
-      return reply
-        .status(500)
-        .send({ message: "Failed to fetch match history" });
+      return reply.sendError({statusCode: 500, message: "Failed to fetch match history"})
     }
   });
 }

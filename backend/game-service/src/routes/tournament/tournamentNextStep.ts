@@ -44,12 +44,12 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
     const { id: tournament_id } = request.body as TournamentNextStepRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
-      return reply.status(400).send({ message: "Invalid tournament_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid tournament_id" });
     }
 
     const tournament = tournamentRepo.getById(tournament_id);
     if (!tournament) {
-      return reply.status(404).send({ message: "Tournament not found" });
+      return reply.sendError({ statusCode: 404, message: "Tournament not found" });
     }
 
     if (tournament.status === "ended") {
@@ -58,9 +58,7 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
       });
     }
     if (tournament.status !== "in_progress") {
-      return reply
-        .status(400)
-        .send({ message: "Tournament is not in progress" });
+      return reply.sendError({ statusCode: 400, message: "Tournament is not in progress" });
     }
 
     let allMatches = matchRepo.getTournamentMatches({
@@ -81,7 +79,7 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
       (match) => match.status === "in_progress"
     );
     if (inProgressMatch) {
-      return reply.status(400).send({ message: "Match already in progress" });
+      return reply.sendError({ statusCode: 400, message: "Match already in progress" });
     }
 
     const nextMatch = allMatches.find((match) => {
@@ -125,9 +123,7 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
     );
 
     if (currentLevelMatches.some((match) => match.status !== "ended")) {
-      return reply
-        .status(400)
-        .send({ message: "Not all matches in the current level are finished" });
+      return reply.sendError({ statusCode: 400, message: "Not all matches in the current level are finished" });
     }
 
     const winners = currentLevelMatches
