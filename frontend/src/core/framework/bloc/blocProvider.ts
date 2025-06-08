@@ -90,8 +90,8 @@ export class BlocProviderElement<B extends BlocBase<any>> extends InheritedProvi
         if (widget.bloc) {
             this._bloc = widget.bloc;
             this._ownsBloc = false;
-        } else if (widget.create) {
-            this._bloc = widget.create();
+        } else if (widget.value) {
+            this._bloc = widget.value;
             this._ownsBloc = true;
         } else {
             throw new Error("BlocProviderElement could not create or find a bloc instance.");
@@ -105,6 +105,23 @@ export class BlocProviderElement<B extends BlocBase<any>> extends InheritedProvi
     getValue(): B {
         return this.bloc;
     }
+
+    subscribe(callback: () => void): () => boolean {
+        // const subscription = ;
+        // this.bloc.subscribe(callback);
+        // const blocUnsubscribe = this.bloc.subscribe(callback);
+
+        // Inherited widget logic (useful if other context consumers are watching)
+        const inheritedUnsubscribe = super.subscribe(callback);
+
+        // Return a combined unsubscribe
+        return () => {
+            // blocUnsubscribe.unsubscribe();
+            inheritedUnsubscribe(); // this calls the inherited cleanup
+            return true;
+        };
+    }
+
 
     unmount() {
         super.unmount();

@@ -21,6 +21,7 @@ export class MultiBlocProvider extends Widget {
     }
 
     createElement(): WidgetElement {
+        console.log("MULTIPROVIDERRRRR")
         // Wrap child with all providers in reverse order
         let wrapped = this.child;
         for (let i = this.providers.length - 1; i >= 0; i--) {

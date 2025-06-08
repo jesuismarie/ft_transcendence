@@ -3,7 +3,7 @@ import {type IWidgetElement, Widget} from "@/core/framework/core/base";
 import {WidgetBinding} from "@/core/framework/core/widgetBinding";
 import {EventBindingManager} from "@/core/framework/core/listenersRegisty";
 import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
-import {WidgetElement} from "@/core/framework/renderer/ElementWidget";
+import {ErrorWidget, WidgetElement} from "@/core/framework/renderer/ElementWidget";
 
 export abstract class StatefulWidget extends Widget {
     state?: State<StatefulWidget>;
@@ -68,27 +68,8 @@ export class StatefulElement extends WidgetElement {
         this.didMount = false
     }
 
-    render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
-        if (!this.stateInitialized) {
-            this.stateInitialized = true;
-            this.state.initState(this.currentContext)
-        }
-        const template = document.createElement("my-widget");
-        const builtWidget = this.state.build(this.currentContext);
-        this.child = builtWidget.createElement() as WidgetElement;
-        this.child.parent = this;
-
-        // Determine where to mount: element by id or fallback to parentDom
-        const mountPoint = this.parentId ? document.getElementById(this.parentId) : template;
-
-        if (!mountPoint) {
-            throw new Error(`Mount point with id "${this.parentId}" not found.`);
-        }
-
-        const parent = this.parentId ? mountPoint : parentDom;
-        this.child.mount(template, new BuildContext(this.child));
-
-        parent.appendChild(template);
+    mount(parentDom: HTMLElement, context: BuildContext) {
+        super.mount(parentDom, context);
         WidgetBinding.getInstance().postFrameCallback(() => {
             this.state.onMount(true);
             this.state.afterMounted(this.currentContext);
@@ -97,8 +78,52 @@ export class StatefulElement extends WidgetElement {
                 this.state.didMounted(context);
             }
         })
+    }
 
-        return template;
+    render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
+        if (!this.stateInitialized) {
+            this.stateInitialized = true;
+            this.state.initState(this.currentContext)
+        }
+        const template = document.createElement("my-widget");
+        const mountPoint = this.parentId ? document.getElementById(this.parentId) : template;
+
+        if (!mountPoint) {
+            throw new Error(`Mount point with id "${this.parentId}" not found.`);
+        }
+        try {
+            const builtWidget = this.state.build(this.currentContext);
+            this.child = builtWidget.createElement() as WidgetElement;
+            this.child.parent = this;
+
+            // Determine where to mount: element by id or fallback to parentDom
+
+
+            const parent = this.parentId ? mountPoint : parentDom;
+            this.child.mount(template, new BuildContext(this.child));
+
+            parent.appendChild(template);
+
+
+            return template;
+        }
+        catch (error) {
+            console.error("Error in StatelessElement.render:", error);
+
+            // Create ErrorWidget with error + stack
+            const errorMessage = error instanceof Error
+                ? `${error.message}\n${error.stack}`
+                : String(error);
+
+            const errorWidget = new ErrorWidget(errorMessage);
+            this.child = errorWidget.createElement() as WidgetElement;
+            this.child.parent = this;
+            const parent = this.parentId ? mountPoint : parentDom;
+            this.child.mount(template, new BuildContext(this.child));
+            parent.appendChild(template);
+
+            return template;
+        }
     }
 
 

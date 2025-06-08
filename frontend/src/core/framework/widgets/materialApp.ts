@@ -34,6 +34,7 @@ export class MaterialApp extends StatelessWidget {
     build(context: BuildContext): Widget {
         // Add default "/" route for home
         // context.logWidgetTree(context);
+        console.log("MATERIAL BUILTTTT")
         const fullRoutes: { [key: string]: RouteBuilder } = {
             "/": (_) => this.home,
             ...this.routes,

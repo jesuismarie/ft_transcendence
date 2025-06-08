@@ -124,11 +124,30 @@ export class InheritedProviderElement<T> extends WidgetElement {
         if (!this.widget.child) {
             return parentDom
         }
-        console.log("HHHHHHH")
-        this.child = this.widget.child.createElement() as WidgetElement;
-        this.child.parent = this;
-        this.child.mount(parentDom, new BuildContext(this.child));
-        return this.child.dom!;
+        try {
+            console.log("HHHHHHH")
+            this.child = this.widget.child.createElement() as WidgetElement;
+            this.child.parent = this;
+            this.child.mount(parentDom, new BuildContext(this.child));
+            return this.child.dom!;
+        }
+        catch (error) {
+            console.error("Error in StatelessElement.render:", error);
+            const template = document.createElement("my-widget");
+            // Create ErrorWidget with error + stack
+            const errorMessage = error instanceof Error
+                ? `${error.message}\n${error.stack}`
+                : String(error);
+
+            const errorWidget = new ErrorWidget(errorMessage);
+            this.child = errorWidget.createElement() as WidgetElement;
+            this.child.parent = this;
+            const parent = parentDom;
+            this.child.mount(template, new BuildContext(this.child));
+            parent.appendChild(template);
+
+            return template;
+        }
         // const childElement = this.widget.child.createElement() as WidgetElement;
         // return childElement.render(parentDom, context);
 
@@ -167,5 +186,47 @@ export class InheritedProviderElement<T> extends WidgetElement {
 
     build(): Widget {
         return this.widget.child!;
+    }
+}
+
+
+// ErrorWidget.ts
+export class ErrorWidget extends Widget {
+    error: Error | string;
+
+    constructor(error: Error | string, key?: string) {
+        super(key);
+        this.error = error;
+    }
+
+    createElement(): IWidgetElement {
+        return new ErrorWidgetElement(this);
+    }
+}
+
+class ErrorWidgetElement extends WidgetElement {
+    widget: ErrorWidget;
+
+    constructor(widget: ErrorWidget) {
+        super(widget);
+        this.widget = widget;
+    }
+
+    render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
+        const dom = document.createElement("div");
+        dom.style.backgroundColor = "#ffeeee";
+        dom.style.color = "#cc0000";
+        dom.style.padding = "12px";
+        dom.style.border = "1px solid #cc0000";
+        dom.style.fontFamily = "monospace";
+        dom.style.whiteSpace = "pre-wrap";
+        dom.style.userSelect = "text";
+
+        const message = typeof this.widget.error === "string"
+            ? this.widget.error
+            : this.widget.error.message || "Unknown error";
+
+        dom.textContent = `ErrorWidget: ${message}`;
+        return dom;
     }
 }

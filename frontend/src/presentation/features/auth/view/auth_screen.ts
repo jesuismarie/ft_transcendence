@@ -23,7 +23,13 @@ export class  AuthScreenState extends State<AuthScreen> {
         console.log("AUTHH MOUNTEDDDDD");
         // const authGuard = new AuthGuard('/', false, true);
         // authGuard.guard(context)
-        const authBloc = context.read(AuthBloc);
+        const authBloc = context.watch(AuthBloc);
+        // const authBloc = context.watch(AuthBloc);
+
+
+
+        // if (authBloc.state.user) {
+        console.log(`AUTH STATEEE:::: ${JSON.stringify(authBloc.state)}`)
         const navigator = Navigator.of(context);
         const btn = document.getElementById('to-sign-in');
         const signupBtn = document.getElementById('to-sign-up');
@@ -56,7 +62,16 @@ export class  AuthScreenState extends State<AuthScreen> {
 
 
     build(context: BuildContext): Widget {
-        return new HtmlWidget(`
+        // context.read(AuthBloc).validate()
+
+        console.log("AUTHH BULITTTTT");
+        return new BlocListener<AuthBloc, AuthState>({
+            blocType: AuthBloc,
+            listener: (context, state) => {
+
+                console.log(`AUTH STATEEEEEEEEEE---- :::: ${JSON.stringify(state)}`);
+            },
+            child: new HtmlWidget(`
         <div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center">
       <h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[2.5rem] sm:text-[4rem] md:text-[5rem] lg:text-[8rem] font-bold select-none text-primary animate-neonGlow"> WELCOME TO PONG! </h1>
       <div class="max-sm:flex-col login-div w-[70%] flex justify-evenly items-center gap-4 mt-10">
@@ -78,6 +93,7 @@ export class  AuthScreenState extends State<AuthScreen> {
           <button id="twofa-verify" class="bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Verify</button>
         </div>
       </div>
-    </div>`);
+    </div>`)
+        });
     }
 }

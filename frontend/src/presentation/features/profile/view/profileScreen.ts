@@ -33,6 +33,7 @@ import {Constants} from "@/core/constants/constants";
 import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 import {ModalsBloc} from "@/presentation/features/modals/bloc/modalsBloc";
 import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
+import {WidgetBinding} from "@/core/framework/core/widgetBinding";
 
 
 export class ProfileScreen extends StatelessWidget {
@@ -79,13 +80,16 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
         console.log("PROFILLEEE MOUNTEEDDDD")
         // const authGuard = new AuthGuard('/profile', false, true);
         // authGuard.guard(context)
+        WidgetBinding.getInstance().postFrameCallback(() => {
+
+        })
         const friendBloc = context.read(FriendBloc);
-        const authBloc = context.read(AuthBloc);
+        const authBloc = context.watch(AuthBloc);
 
 
 
         // if (authBloc.state.user) {
-        console.log(`STATEEEE:::: ${authBloc.state.user?.userId}`)
+        console.log(`STATEEEE:::: ${JSON.stringify(authBloc.state)}`)
 
 
         // }

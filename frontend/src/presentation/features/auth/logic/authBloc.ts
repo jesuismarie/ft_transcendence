@@ -23,6 +23,7 @@ export class AuthBloc extends Cubit<AuthState> {
     constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository,
                 @inject("PreferenceService") private readonly preferenceService: PreferenceService
     ) {
+        console.log("AUTH INITTTTT")
         super(new AuthState({}))
         this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
         // this.persistenceService.init();
@@ -98,10 +99,11 @@ export class AuthBloc extends Cubit<AuthState> {
                 // user = null;
             },
             onSuccess: (user) => {
-                console.log(`USERRR:::: ${user.userId}`)
                 this.preferenceService.setToken(user.accessToken);
                 this.preferenceService.setRefreshToken(user.refreshToken);
-                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
+                const newState = this.state.copyWith({status: AuthStatus.Success, user: user});
+                console.log(`STATEEE CHANGEEEDD :::: ${JSON.stringify(newState)}`)
+                this.emit(newState);
             }
         });
     }
@@ -139,7 +141,7 @@ export class AuthBloc extends Cubit<AuthState> {
     // }
 
     validate() {
-
+        throw Error("HHHHH")
     }
 
     async logout(): Promise<void> {

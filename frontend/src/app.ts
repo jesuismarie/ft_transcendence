@@ -44,6 +44,7 @@ export class App extends StatelessWidget {
         //     // AuthGuard.navigationGuard(context, routes)
         // });
         return provideBlocProviders(new BuilderWidget((context) => {
+            console.log("AUTH STARTTTTT")
             const authBloc = context.read(AuthBloc);
 
             const preferenceService = Resolver.preferenceService();

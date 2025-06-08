@@ -19,6 +19,7 @@ import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite"
 import {FriendState} from "@/presentation/features/friend/logic/friendState";
 import {SubmitButton} from "@/presentation/common/widget/submitButton";
 import {ModalsBloc, ModalType} from "@/presentation/features/modals/bloc/modalsBloc";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 
 
 export class ProfileInfo extends StatefulWidget {
@@ -36,11 +37,12 @@ export class ProfileInfoContent extends State<ProfileInfo> {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("ProfileAUDDDDD")
+        console.log("ProfileAUDDDDD------")
         const profileBloc = context.read(ProfileBloc)
+        const authBloc = context.watch(AuthBloc)
         const modalBloc = context.read(ModalsBloc)
 
-        console.log(`PROFILEEEE STATEEEE::: ${JSON.stringify(profileBloc.state)}`)
+        console.log(`PROFILEEEE STATEEEE--------::: ${JSON.stringify(authBloc.state)}`)
         // const friendBloc =
         const editBtn = document.getElementById('edit-profile-btn');
         const uploadBtn = document.getElementById('avatar-upload-btn')
