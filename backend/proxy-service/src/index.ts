@@ -1,5 +1,4 @@
 import Fastify from "fastify";
-import gameServiceRoutes from "./routes/game-service/routes";
 import monitorningRoutes from "./routes/monitoring/routes";
 import errorEnvelope from "./plugins/errorEnvelope";
 import multipart from "@fastify/multipart";
@@ -20,7 +19,10 @@ app.register(errorEnvelope);
 authMiddleware(app);
 
 // Регистрируем маршруты
-app.register(gameServiceRoutes);
+app.register(httpProxy,{
+  upstream: services.gameService,
+  prefix: "/game-service",
+});
 app.register(httpProxy, {
   upstream: services.userService,
   prefix: "/user-service",
