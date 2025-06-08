@@ -16,7 +16,7 @@ Game Service предоставляет API для управления турн
 {
   "name": "string",
   "max_players_count": 4,
-  "created_by": "string"
+  "created_by": "number"
 }
 ```
 
@@ -73,7 +73,7 @@ Game Service предоставляет API для управления турн
 ```json
 {
   "tournament_id": 1,
-  "created_by": "string"
+  "created_by": 1
 }
 ```
 
@@ -174,11 +174,12 @@ Game Service предоставляет API для управления турн
     {
       "id": 1,
       "name": "Tournament 1",
-      "created_by": "user1",
+      "created_by": 1,
       "max_players_count": 4,
       "current_players_count": 2,
       "status": "created",
-      "participants": ["player1", "player2"]
+      "participants": [1, 2],
+      "winner": null
     }
   ]
 }
@@ -202,7 +203,7 @@ Game Service предоставляет API для управления турн
 
 ```json
 {
-  "username": "string",
+  "user_id": 1,
   "tournament_id": 1
 }
 ```
@@ -218,7 +219,7 @@ Game Service предоставляет API для управления турн
 - **400 Bad Request**
 
 ```json
-{ "message": "Invalid username or tournament_id" }
+{ "message": "Invalid user_id or tournament_id" }
 ```
 
 ```json
@@ -244,7 +245,7 @@ Game Service предоставляет API для управления турн
 ```json
 {
   "tournament_id": 1,
-  "created_by": "string"
+  "created_by": 1
 }
 ```
 
@@ -255,9 +256,9 @@ Game Service предоставляет API для управления турн
 ```json
 {
   "match_id": 1,
-  "player_1": "player1",
-  "player_2": "player2",
-  "participants": ["player1", "player2"],
+  "player_1": 1,
+  "player_2": 2,
+  "participants": [1, 2],
   "status": "in_progress"
 }
 ```
@@ -360,7 +361,7 @@ Game Service предоставляет API для управления турн
 
 ```json
 {
-  "username": "string",
+  "user_id": 1,
   "tournament_id": 1
 }
 ```
@@ -376,7 +377,7 @@ Game Service предоставляет API для управления турн
 - **400 Bad Request**
 
 ```json
-{ "message": "Invalid username or tournament_id" }
+{ "message": "Invalid user_id or tournament_id" }
 ```
 
 ```json
@@ -404,7 +405,7 @@ Game Service предоставляет API для управления турн
 ### Query Parameters
 
 ```json
-{ "username": "string", "limit": 10, "offset": 0 }
+{ "user_id": 1, "limit": 10, "offset": 0 }
 ```
 
 ### Response
@@ -417,7 +418,7 @@ Game Service предоставляет API для управления турн
   "matches": [
     {
       "id": 1,
-      "opponent": "player2",
+      "opponent": 2,
       "status": "ended",
       "is_won": true,
       "score": { "user": 3, "opponent": 2 },
@@ -452,7 +453,7 @@ Game Service предоставляет API для управления турн
 ```json
 {
   "match_id": 1,
-  "winner": "player1",
+  "winner": 1,
   "score": { "score_1": 3, "score_2": 2 }
 }
 ```

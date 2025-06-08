@@ -4,7 +4,7 @@ export const createTournamentSchema = {
   properties: {
     name: { type: "string" },
     max_players_count: { type: "number" },
-    created_by: { type: "string" },
+    created_by: { type: "number" },
   },
 };
 
@@ -13,7 +13,7 @@ export const deleteTournamentSchema = {
   required: ["tournament_id", "created_by"],
   properties: {
     tournament_id: { type: "number" },
-    created_by: { type: "string" },
+    created_by: { type: "number" },
   },
 };
 
@@ -35,9 +35,9 @@ export const getTournamentsInfoSchema = {
 
 export const registerToTournamentSchema = {
   type: "object",
-  required: ["username", "tournament_id"],
+  required: ["user_id", "tournament_id"],
   properties: {
-    username: { type: "string" },
+    user_id: { type: "number" },
     tournament_id: { type: "number" },
   },
   additionalProperties: false,
@@ -48,15 +48,15 @@ export const startTournamentSchema = {
   required: ["tournament_id", "created_by"],
   properties: {
     tournament_id: { type: "number" },
-    created_by: { type: "string" },
+    created_by: { type: "number" },
   },
 };
 
 export const getMatchHistoryByUserSchema = {
   type: "object",
-  required: ["username"],
+  required: ["user_id"],
   properties: {
-    username: { type: "string" },
+    user_id: { type: "number" },
     limit: { type: "number", default: 50 },
     offset: { type: "number", default: 0 },
   },
@@ -67,7 +67,7 @@ export const saveMatchResultSchema = {
   required: ["match_id", "winner", "score"],
   properties: {
     match_id: { type: "number" },
-    winner: { type: "string" },
+    winner: { type: "number" },
     score: {
       type: "object",
       required: ["score_1", "score_2"],
@@ -89,10 +89,18 @@ export const tournamentNextStepSchema = {
 
 export const unregisterFromTournamentSchema = {
   type: "object",
-  required: ["username", "tournament_id"],
+  required: ["user_id", "tournament_id"],
   properties: {
-    username: { type: "string" },
+    user_id: { type: "number" },
     tournament_id: { type: "number" },
   },
   additionalProperties: false,
+};
+
+export const gamestatsSchema = {
+  type: "object",
+  required: ["user"],
+  properties: {
+    user: { type: "integer" },
+  },
 };

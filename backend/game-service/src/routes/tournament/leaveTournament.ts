@@ -4,7 +4,7 @@ import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
 import { MatchRepo } from "../../repositories/match";
 
 interface LeaveTournamentRequestBody {
-  username: string;
+  user_id: number;
   tournament_id: number;
 }
 
@@ -14,24 +14,23 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
   const matchRepo = new MatchRepo(app);
 
   app.post("/leave-tournament", async (request, reply) => {
-    const { username, tournament_id } =
+    const { user_id, tournament_id } =
       request.body as LeaveTournamentRequestBody;
 
-    if (!username || !tournament_id || tournament_id <= 0) {
-      return reply
-        .status(400)
-        .send({ message: "Invalid username or tournament_id" });
+    if (!user_id || !tournament_id || tournament_id <= 0) {
+      return reply.sendError({ statusCode: 400, message: "Invalid user_id or tournament_id" });
     }
 
     try {
       const tournament = tournamentRepo.getById(tournament_id);
       if (!tournament) {
-        return reply.status(404).send({ message: "Tournament not found" });
+        return reply.sendError({ statusCode: 404, message: "Tournament not found" });
       }
 
       // Check if the user is the tournament creator
-      if (tournament.created_by === username) {
-        return reply.status(400).send({
+      if (tournament.created_by === user_id) {
+        return reply.sendError({
+          statusCode: 400,
           message: "Tournament creator cannot leave their own tournament",
         });
       }
@@ -43,7 +42,7 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
         }
 
         const isInTournament = tournamentPlayerRepo.isPlayerInTournament(
-          username,
+          user_id,
           tournament_id,
           txn
         );
@@ -52,18 +51,18 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
         }
 
         // Удаляем игрока
-        tournamentPlayerRepo.unregister(username, tournament_id, txn);
+        tournamentPlayerRepo.unregister(user_id, tournament_id, txn);
 
         // Получаем незавершённые матчи
         const matches = matchRepo.getIncompleteTournamentMatchesWithPlayer(
-          username,
+          user_id,
           tournament_id,
           txn
         );
 
         for (const match of matches) {
           const opponentId =
-            match.player_1 === username ? match.player_2 : match.player_1;
+          match.player_1 === user_id ? match.player_2 : match.player_1;
           matchRepo.setMatchWinner(match.id, opponentId, txn);
           tournamentPlayerRepo.incrementWins(opponentId, tournament_id, txn);
         }
@@ -76,7 +75,8 @@ export default async function leaveTournamentRoute(app: FastifyInstance) {
         .send({ message: "User left the tournament and matches updated" });
     } catch (err) {
       app.log.error(err);
-      return reply.status(400).send({
+      return reply.sendError({
+        statusCode: 400,
         message: (err as Error).message || "Failed to leave tournament",
       });
     }
