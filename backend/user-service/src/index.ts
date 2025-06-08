@@ -23,10 +23,18 @@ import routes from './routes/routes';
 
 const app = Fastify({ logger: true });
 
-app.register(cors, {
-    origin: true, // or (origin, cb) => cb(null, true)
-    credentials: true
-});
+// app.register(cors, {
+//     origin: true, // or (origin, cb) => cb(null, true)
+//     credentials: true,
+// 	methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
+// 	allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+// });
+
+// app.register(cors, {
+// 	origin: '*',
+// //   origin: true, // or (origin, cb) => cb(null, true)
+// //   credentials: true,
+// });
 
 // make sure public directory exists
 const publicDir = path.join(process.cwd(), 'public');

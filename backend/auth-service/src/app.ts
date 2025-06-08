@@ -25,10 +25,10 @@ import monitoringRoutes from "./routes/monitoring/routes";
 const buildServer = () => {
   const app: FastifyInstance = Fastify({ logger: true });
 
-  app.register(cors, {
-    origin: true, // or (origin, cb) => cb(null, true)
-    credentials: true
-  });
+  // app.register(cors, {
+  //   origin: true, // or (origin, cb) => cb(null, true)
+  //   credentials: true
+  // });
   // Register plugins
   app.register(envPlugin);
   app.register(errorEnvelope);

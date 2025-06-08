@@ -10,7 +10,7 @@ import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/
 import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {State, StatefulWidget} from "@/core/framework/widgets/statefulWidget";
-import {isEqual} from "lodash";
+import {isBoolean, isEqual} from "lodash";
 import {Navigator} from "@/core/framework/widgets/navigator";
 import {AppRoutes} from "@/core/constants/appRoutes";
 import {Composite} from "@/core/framework/widgets/composite";
@@ -20,6 +20,8 @@ import {FriendState} from "@/presentation/features/friend/logic/friendState";
 import {SubmitButton} from "@/presentation/common/widget/submitButton";
 import {ModalsBloc, ModalType} from "@/presentation/features/modals/bloc/modalsBloc";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {AuthState} from "@/presentation/features/auth/logic/auth_state";
+import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 
 
 export class ProfileInfo extends StatefulWidget {
@@ -38,8 +40,17 @@ export class ProfileInfoContent extends State<ProfileInfo> {
     didMounted(context: BuildContext) {
         super.didMounted(context);
         console.log("ProfileAUDDDDD------")
+
+        this.setup(context);
+
+
+    }
+
+
+    setup(context: BuildContext) {
+        console.log(`CCCCC:::: ${context == undefined}`)
         const profileBloc = context.read(ProfileBloc)
-        const authBloc = context.watch(AuthBloc)
+        const authBloc = context.read(AuthBloc)
         const modalBloc = context.read(ModalsBloc)
 
         console.log(`PROFILEEEE STATEEEE--------::: ${JSON.stringify(authBloc.state)}`)
@@ -60,11 +71,13 @@ export class ProfileInfoContent extends State<ProfileInfo> {
             showModal(ModalConstants.editProfileModalName)
         })
         console.log(`AVATARRRRR :::: ${avatarInput}`)
+        // avatarInput?.click();
         uploadBtn?.addEventListener("click", (e) => {
-            e.preventDefault()
-            console.log("CLIECCCCC")
+            // e.preventDefault()
+            // alert("CLIECCCCC")
             avatarInput?.click();
         });
+
 
         openModalBtn?.addEventListener("click", () => {
             modalBloc.onOpenModal(ModalType.friends);
@@ -72,6 +85,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
         })
 
         avatarInput?.addEventListener("input", async () => {
+            console.log("CHANGEEEE")
             if (!avatarInput.files || avatarInput.files.length === 0)
                 return;
             await profileBloc.selectAvatar(avatarInput?.files[0]);
@@ -82,44 +96,67 @@ export class ProfileInfoContent extends State<ProfileInfo> {
 
 
     build(context: BuildContext): Widget {
-        console.log("BUILTTTTTTT")
+        console.log("BUILTTTTTTT PROFFF")
+
+        // this.setup(context);
         // const authBloc = context.read(AuthBloc);
-        const profileBloc = context.read(ProfileBloc);
+        const authBloc = BlocProvider.of<AuthBloc>(context, AuthBloc)
+        const profileBloc = BlocProvider.of<ProfileBloc>(context, ProfileBloc);
+        // const authBloc = context.read(AuthBloc);
+        console.log(`AAAAAAAAAA::::: ${authBloc.state.user?.userId}`)
         // const currentUserId = authBloc.state.user?.userId;
         // const username = profileBloc.state.profile?.username
         // const targetUserId = id || currentUserId;
-        return new BlocBuilder<FriendBloc, FriendState>({
-            blocType: FriendBloc,
-            buildWhen: (oldState, newState) => !isEqual(oldState.results, newState.results),
-            builder: (context, friendState) => new BlocListener<ProfileBloc, ProfileState>(
-                {
-                    blocType: ProfileBloc,
-                    listener: (context, profileState) => {
-                        if (!profileState.isValid || profileState.status == ProfileStatus.Error) {
-                            showError('avatar', profileState.errorMessage?.toString() ?? 'Unknown error');
-                            profileBloc.resetStatus().then();
-                        }
-                        if (profileState.status == ProfileStatus.Uploaded) {
-                            clearErrors();
-                            profileBloc.resetStatus().then();
-                        }
-                    },
-                    child: new Composite([new HtmlWidget(`
+        let isCurrentUser: boolean = true;
+        if (this.widget.userId && authBloc.state.user?.userId) {
+            isCurrentUser = authBloc.state.user?.userId === this.widget.profileState.profile?.id;
+        }
+
+        console.log(`AVATARRRRRRRRR ${this.widget.profileState.selectedAvatarUrl}`);
+
+
+
+        return new BlocListener<ProfileBloc, ProfileState>({
+            listener: (context, state) => {
+                // if (state.selectedAvatarUrl) {
+                //     await profileBloc.uploadAvatar();
+                // }
+                // this.setup(context);
+            },
+            blocType: ProfileBloc,
+            child: new BlocBuilder<FriendBloc, FriendState>({
+                blocType: FriendBloc,
+                buildWhen: (oldState, newState) => !isEqual(oldState.results, newState.results),
+                builder: (context, friendState) => new BlocListener<ProfileBloc, ProfileState>(
+                    {
+                        blocType: ProfileBloc,
+                        listener: (context, profileState) => {
+                            // this.setup(context);
+                            if (!profileState.isValid || profileState.status == ProfileStatus.Error) {
+                                showError('avatar', profileState.errorMessage?.toString() ?? 'Unknown error');
+                                profileBloc.resetStatus().then();
+                            }
+                            if (profileState.status == ProfileStatus.Uploaded) {
+                                clearErrors();
+                                profileBloc.resetStatus().then();
+                            }
+                        },
+                        child: new Composite([new HtmlWidget(`
         <div class="rounded-md border border-hover">
             <div class="bg-hover h-24"></div>
             <div class="px-4 pb-6 relative">
                 <div class="flex justify-center -mt-12">
                     <div class="relative">
-                        <img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="${this.widget.profileState.selectedAvatarUrl ?? this.widget.profileState.profile?.avatar ?? "/images/background1.jpg"}" alt="User avatar">
-                       ${this.widget.userId == this.widget.profileState.profile?.id ?
-                                    `<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-white hover:shadow-neon focus:outline-none">
+                        <img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="${this.widget.profileState.profile?.avatar ?? "/images/background1.jpg"}" alt="User avatar">
+                       ${ isCurrentUser ?
+                            `<button id="avatar-upload-btn" class="absolute bottom-0 right-0 bg-hover rounded-full p-2 text-white hover:shadow-neon focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                         </button>
                         <input type="file" id="avatar-input" class="hidden" accept="image/*" />`
-                                    : ""}
+                            : ""}
                     </div>
                 </div>
                 <p class="error-msg text-red-500 text-sm" data-error-for="avatar"></p>
@@ -142,8 +179,8 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                     </div>
                 </div>
                 <button id="open-game-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
-                <button id="friend-request-btn" class="hidden mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
-                <button id="edit-profile-btn" class="${this.widget.userId != this.widget.profileState.profile?.id ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
+                <button id="friend-request-btn" class="${!(this.widget.userId || this.widget.userId === this.widget.profileState.profile?.id) ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
+                <button id="edit-profile-btn" class="${(this.widget.userId || this.widget.userId === this.widget.profileState.profile?.id) ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
             </div>
         </div>
         <div class="px-4 py-3 rounded-md border border-hover">
@@ -155,22 +192,18 @@ export class ProfileInfoContent extends State<ProfileInfo> {
             <div id="friend-list-btn-content"></div>
             <button id="friend-list-btn" class="${friendState.results.totalCount > 3 ? "" : "hidden"} px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">View All Friends</button>
         </div>`, this.widget.parentId),
-                                    new MountAwareComposite((context) => new BlocBuilder<FriendBloc, FriendState>(
-                                        {
-                                            blocType: FriendBloc,
-                                            buildWhen: (oldState, newState) => !oldState.equals(newState),
-                                            builder: (context, state) => new SubmitButton({
-                                                className: "px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover",
-                                                id: "friend-list-btn",
-                                                isHidden: (state.results?.totalCount ?? 0) < 3,
-                                                parentId: "friend-list-btn-content",
-                                                label: "All Friends",
-                                            })
-                                        }))
+                            new MountAwareComposite((context) => new SubmitButton({
+                                className: "px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover",
+                                id: "friend-list-btn",
+                                isHidden: (friendState.results?.totalCount ?? 0) < 3,
+                                parentId: "friend-list-btn-content",
+                                label: "All Friends",
+                            }))
 
-                                ])
+                        ])
 
-                })
+                    })
+            })
         })
     }
     ;

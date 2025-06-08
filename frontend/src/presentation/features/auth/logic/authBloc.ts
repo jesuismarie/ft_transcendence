@@ -18,14 +18,27 @@ import '@/core/extensions/stringExtension';
 @injectable()
 export class AuthBloc extends Cubit<AuthState> {
 
-    persistenceService: PersistenceService
+    // persistenceService: PersistenceService
 
     constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository,
                 @inject("PreferenceService") private readonly preferenceService: PreferenceService
     ) {
         console.log("AUTH INITTTTT")
-        super(new AuthState({}))
-        this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
+        const saved = localStorage.getItem("auth_state");
+        let initialState: AuthState;
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                initialState = AuthState.fromJson(parsed); // тебе нужно добавить fromJson()
+            } catch {
+                initialState = new AuthState({});
+            }
+        } else {
+            initialState = new AuthState({});
+        }
+
+        super(initialState);
+        // this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
         // this.persistenceService.init();
     }
 
@@ -44,8 +57,9 @@ export class AuthBloc extends Cubit<AuthState> {
             username,
             password
         });
+        console.log(res)
         res.when({
-            onError: (err: any) => {
+            onError:  (err: any) => {
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
                     errorMessage = err.message.removeBefore('body/').capitalizeFirst()
@@ -57,6 +71,7 @@ export class AuthBloc extends Cubit<AuthState> {
             onSuccess: (user) => {
                 this.preferenceService.setToken(user.accessToken);
                 this.preferenceService.setRefreshToken(user.refreshToken);
+                console.log(`register functionnnnnn ${user}`);
                 this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
             }
         });
@@ -70,10 +85,11 @@ export class AuthBloc extends Cubit<AuthState> {
         const res: Either<GeneralException, UserEntity> = await this.authRepository.login({email, password});
         res.when({
             onError: (err: any) => {
-                console.log('Error:', err)
+
+                // console.log('Error:', err)
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    // errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
                 this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
                 // user = null;
@@ -93,7 +109,7 @@ export class AuthBloc extends Cubit<AuthState> {
                 console.log('Error:', err)
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    // errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
                 this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
                 // user = null;
@@ -116,7 +132,7 @@ export class AuthBloc extends Cubit<AuthState> {
                 console.log('Error:', err)
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    // errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
                 this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
                 // user = null;
@@ -144,8 +160,13 @@ export class AuthBloc extends Cubit<AuthState> {
         throw Error("HHHHH")
     }
 
+    async fullResetState(): Promise<void> {
+        this.emit(new AuthState({}))
+    }
+
     async logout(): Promise<void> {
         this.preferenceService.unsetToken();
         this.preferenceService.unsetRefreshToken();
+        localStorage.clear()
     }
 }

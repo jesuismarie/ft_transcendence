@@ -43,4 +43,29 @@ export class AuthState implements Equatable<AuthState>{
     equals(value: AuthState): boolean {
         return isEqual(value, this);
     }
+
+    toJson(): any {
+        return {
+            user: this.user ? {
+                userId: this.user.userId,
+                accessToken: this.user.accessToken,
+                refreshToken: this.user.refreshToken,
+            } : null,
+            status: this.status,
+            errorMessage: this.errorMessage
+        };
+    }
+
+    static fromJson(json: any): AuthState {
+        return new AuthState({
+            user: json.user ? {
+                userId: json.user.userId,
+                accessToken: json.user.accessToken,
+                refreshToken: json.user.refreshToken,
+            } : undefined,
+            status: json.status,
+            errorMessage: json.errorMessage
+        });
+    }
+
 }

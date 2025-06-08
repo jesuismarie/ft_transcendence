@@ -52,6 +52,10 @@ export class EditProfileContent extends StatelessWidget {
     didMounted(context: BuildContext) {
         super.didMounted(context);
         console.log("MOUNTEDDDD");
+        this.setup(context);
+    }
+
+    setup(context: BuildContext) {
         const profileBloc = context.read(ProfileBloc)
         const otpBloc = context.read(OTPBloc)
         const usernameInput = document.getElementById("edit-username") as HTMLInputElement;
@@ -66,7 +70,7 @@ export class EditProfileContent extends StatelessWidget {
 
         closeBtn?.addEventListener('click', () => {
             hideModal(ModalConstants.editProfileModalName)
-            profileBloc.resetStatus().then(r => r);
+            // profileBloc.resetStatus().then(r => r);
             otpBloc.resetOtp()
         })
         enable2faBtn?.addEventListener('click', async () => {
@@ -81,7 +85,7 @@ export class EditProfileContent extends StatelessWidget {
                 username: this.userNameController.text,
                 email: this.emailController.text,
                 confirmPassword: this.confirmPasswordController.text,
-                password: this.passwordController.text,
+                password: this.oldPasswordController.text,
                 newPassword: this.passwordController.text,
             }).then(r => r)
         })
@@ -94,9 +98,6 @@ export class EditProfileContent extends StatelessWidget {
     }
 
 
-    afterMounted(context: BuildContext) {
-        super.afterMounted(context);
-    }
 
     build(context: BuildContext): Widget {
         return new Composite([new HtmlWidget(`

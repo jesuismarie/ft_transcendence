@@ -25,41 +25,7 @@ export function initGoogleAuth(context: BuildContext) {
 }
 
 export function initLoginForm(context: BuildContext) {
-    const navigator = Navigator.of(context);
-    const loginForm = document.getElementById('loginForm') as HTMLFormElement | null;
 
-    if (!loginForm)
-        return;
-
-    loginForm.addEventListener('submit', async (event: Event) => {
-        event.preventDefault();
-        clearErrors();
-
-        const formData = new FormData(loginForm);
-        const email = (formData.get('login_email') as string)?.trim();
-        const password = (formData.get('login_password') as string)?.trim();
-
-        let hasError = false;
-        clearErrors();
-
-        if (!email) {
-            showError('login_email', 'Email is required.');
-            hasError = true;
-        } else if (!Validator.isValidEmail(email)) {
-            showError('login_email', 'Invalid email format.');
-            hasError = true;
-        }
-
-        if (!password) {
-            showError('login_password', 'Password is required.');
-            hasError = true;
-        }
-
-        if (hasError)
-            return;
-
-        const authBloc = context.read(AuthBloc)
-        await authBloc.login({email, password});
         // if (authBloc.state.status === AuthStatus.Success) {
         //     // if (authLogic.state.user) {
         //     //     // localStorage.setItem("currentUser", JSON.stringify(authLogic.state.user));
@@ -76,5 +42,5 @@ export function initLoginForm(context: BuildContext) {
         //     await authBloc.resetState();
         //     return;
         // }
-    });
+    // });
 }

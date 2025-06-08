@@ -7,29 +7,85 @@ import type {Widget} from "@/core/framework/core/base";
 import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
-import {showError} from "@/utils/error_messages";
+import {clearErrors, showError} from "@/utils/error_messages";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
+import {Validator} from "@/utils/validation";
 
 export class LoginScreen extends StatelessWidget {
     didMounted(context: BuildContext) {
         super.didMounted(context);
+        this.setup(context)
         // const authGuard = new AuthGuard('/login', false, true);
         // authGuard.guard(context)
-        const nav = Navigator.of(context);
+
+    }
+
+    setup(context: BuildContext) {
+        const navigator = Navigator.of(context);
+
         const btn = document.getElementById('close-btn-login');
         btn?.addEventListener('click', () => {
             console.log("Clicccc")
-            nav.pop()
+            navigator.pop()
         })
-        loadSignInForm(context);
+        const googleLoginButton = document.getElementById('google-login-btn');
+        if (!googleLoginButton)
+            return;
+
+        googleLoginButton.addEventListener('click', async () => {
+            const authBloc = context.read(AuthBloc);
+            await authBloc.loginWithGoogle();
+
+            // window.location.href = `${ApiConstants.baseUrlDev}${ApiConstants.auth}`;
+            // listen /auth/redirect route params and
+            // send second request with code
+        });
+        const loginForm = document.getElementById('loginForm') as HTMLFormElement | null;
+
+        if (!loginForm)
+            return;
+
+        loginForm.addEventListener('submit', async (event: Event) => {
+            event.preventDefault();
+            clearErrors();
+
+            const formData = new FormData(loginForm);
+            const email = (formData.get('login_email') as string)?.trim();
+            const password = (formData.get('login_password') as string)?.trim();
+
+            let hasError = false;
+            clearErrors();
+
+            if (!email) {
+                showError('login_email', 'Email is required.');
+                hasError = true;
+            } else if (!Validator.isValidEmail(email)) {
+                showError('login_email', 'Invalid email format.');
+                hasError = true;
+            }
+
+            if (!password) {
+                showError('login_password', 'Password is required.');
+                hasError = true;
+            }
+
+            if (hasError)
+                return;
+
+            const authBloc = context.read(AuthBloc)
+            await authBloc.login({email, password});
+        });
+        // loadSignInForm(context);
     }
+
 
     build(context: BuildContext): Widget {
         return new BlocListener<AuthBloc, AuthState>({
             blocType: AuthBloc,
             listener: (context, state) => {
+                this.setup(context)
                 if (state.status == AuthStatus.Success) {
                     context.read(AuthBloc).resetState().then();
                     // context.read(ProfileBloc).getUserProfile(state.user?.userId?.toString() ?? '').then(r => r);

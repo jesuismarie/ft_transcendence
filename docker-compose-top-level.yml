@@ -93,21 +93,21 @@ services:
         - pong-service-logs-data:/var/log/app
       restart: always
 
-    frontend:
-        container_name: frontend
-        build:
-          context: .
-          dockerfile: frontend/Dockerfile
-        ports:
-          - "80:80"
-          - "443:443"
-        networks:
-          - bridge-network
-        volumes:
-          - frontend-nginx-logs:/var/log/nginx
-        depends_on:
-          - proxy-service
-        restart: always
+#    frontend:
+#        container_name: frontend
+#        build:
+#          context: .
+#          dockerfile: frontend/Dockerfile
+#        ports:
+#          - "80:80"
+#          - "443:443"
+#        networks:
+#          - bridge-network
+#        volumes:
+#          - frontend-nginx-logs:/var/log/nginx
+#        depends_on:
+#          - proxy-service
+#        restart: always
 
 volumes:
   auth-service-db-data:

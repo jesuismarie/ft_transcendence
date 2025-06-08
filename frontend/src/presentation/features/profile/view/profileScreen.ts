@@ -34,6 +34,9 @@ import {TournamentBloc} from "@/presentation/features/tournaments/logic/tourname
 import {ModalsBloc} from "@/presentation/features/modals/bloc/modalsBloc";
 import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
 import {WidgetBinding} from "@/core/framework/core/widgetBinding";
+import {BlocListener} from "@/core/framework/bloc/blocListener";
+import type {AuthState} from "@/presentation/features/auth/logic/auth_state";
+import type {ModalsState} from "@/presentation/features/modals/bloc/modalsState";
 
 
 export class ProfileScreen extends StatelessWidget {
@@ -42,6 +45,8 @@ export class ProfileScreen extends StatelessWidget {
     }
 
     build(context: BuildContext): Widget {
+        console.log(`PROFILEEEE TTTTTTTT--------::: ${(this.userId)}`)
+
         return new MultiBlocProvider({
             providers: [
                 new BlocProvider({
@@ -55,7 +60,7 @@ export class ProfileScreen extends StatelessWidget {
                         create: () => new FriendBloc(Resolver.friendRepository()),
                     },
                 )],
-            child: new ProfileScreenContent()
+            child: new ProfileScreenContent(this.userId)
         })
     }
 
@@ -78,29 +83,15 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
     didMounted(context: BuildContext) {
         super.didMounted(context);
         console.log("PROFILLEEE MOUNTEEDDDD")
+
+        this.setup(context);
         // const authGuard = new AuthGuard('/profile', false, true);
         // authGuard.guard(context)
-        WidgetBinding.getInstance().postFrameCallback(() => {
+        // WidgetBinding.getInstance().postFrameCallback(() => {
+        //
+        // })
+        // const friendBloc = context.read(FriendBloc);
 
-        })
-        const friendBloc = context.read(FriendBloc);
-        const authBloc = context.watch(AuthBloc);
-
-
-
-        // if (authBloc.state.user) {
-        console.log(`STATEEEE:::: ${JSON.stringify(authBloc.state)}`)
-
-
-        // }
-
-        const id = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
-
-        const userId = id ?? authBloc.state.user?.userId;
-        if (userId) {
-            context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {})
-            // friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
-        }
         // const authBloc = context.read(AuthBloc);
         // const profileBloc = context.read(ProfileBloc);
         // if (!authBloc.state.user?.userId) {
@@ -115,62 +106,48 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
         // }
     }
 
-    // afterMounted(context: BuildContext) {
-    //     super.afterMounted(context);
+    setup(context: BuildContext) {
 
-    // WidgetBinding.getInstance().postFrameCallback(())
-    //
-    // const navigator = Navigator.of(context);
-    // console.log("PROFILE MOUNTEEDDDD")
-    // const authGuard = new AuthGuard(`/profile/${this.widget.username}`, false);
-    // authGuard.guard(context)
-    //
-    //
-    // console.log("PROFILE MOUNTEEDDDD 111111")
-    // console.warn(`AUTHHHH::: ${authBloc.state.user?.userId}`)
-    //
-    //
-    // const searchBtn = document.getElementById('search-users-modal');
-    //
-    // searchBtn?.addEventListener('click', (e) =>{
-    //     console.log("SSSSSS")
-    // })
-    // const userId = authBloc.state.user?.userId
-    // // if (userId) {
-    // //     initPersonalData(context, userId).then(r => r);
-    // // }
-    // const googleLogoutButton = document.getElementById('logout-btn');
-    // if (!googleLogoutButton)
-    //     return;
-    //
-    // googleLogoutButton.addEventListener('click', async () => {
-    //     await authBloc.logout();
-    //     // loadHomePage();
-    // });
+        const authBloc = context.read(AuthBloc);
 
 
-    // const btn = document.getElementById('to-sign-in');
-    // // context.logWidgetTree(context);
-    // btn?.addEventListener('click', e => {
-    //     e.preventDefault();
-    //     navigator.pushNamed('/login')
-    // })
-    // }
+        // if (authBloc.state.user) {
+
+
+        // }
+
+        const id = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
+
+        const userId = id ?? authBloc.state.user?.userId;
+        if (userId) {
+            context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {
+            })
+            // friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
+        }
+    }
 
     build(context: BuildContext): Widget {
-        const modalState = context.watch(ModalsBloc).state
+        const modalState = context.read(ModalsBloc).state
         const navigator = Navigator.of(context);
         // return new EmptyWidget()
         const authBloc = context.read(AuthBloc);
-        return new BlocBuilder<ProfileBloc, ProfileState>(
-            {
-                buildWhen: (oldState, newState) => !oldState.equals(newState),
-                blocType: ProfileBloc,
-                builder: (context, state) => {
-                    const currentId = state.profile?.id;
-                    const otherId = authBloc.state.user?.userId;
-                    return new Composite([
-                        new MountAwareComposite((context) => new HtmlWidget(`
+        console.log(`log user id ${this.widget.userId}`);
+
+        return new BlocListener<ModalsBloc, ModalsState>({
+            listener: (context: BuildContext) => {
+                this.setup(context);
+            },
+            blocType: ModalsBloc,
+            child: new BlocBuilder<ProfileBloc, ProfileState>(
+                {
+                    buildWhen: (oldState, newState) => !oldState.equals(newState),
+                    blocType: ProfileBloc,
+                    builder: (context, state) => {
+                        console.log(`IIIIIIIII::::: ${state.isValid}`);
+                        const currentId = state.profile?.id;
+                        const otherId = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
+                        return new Composite([
+                            new MountAwareComposite((context) => new HtmlWidget(`
         <div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center">
 			<h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[3rem] sm:text-[4rem] md:text-[5rem] font-bold select-none text-primary animate-neonGlow">
 				Pong Profile!
@@ -211,31 +188,32 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 		<!-- View Match History -->
 		<div id="matches-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 		</div>
-
 		<!-- View Upcoming Tournament -->
 		<div id="tournament-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 		</div>
-
+<!--<input type="file" id="avatar-input" class="" accept="image/*" />-->
 		<!-- Add Tournament -->
 		<div id="add-tournament-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 		</div>`)),
 
-                        new MountAwareComposite((context) => new Composite([
-                            // state.
-                            ...(modalState.isTournamentModalOpen ?
-                                [new MountAwareComposite((context) => new AddTournament('add-tournament-modal'))] : []),
-                            new MountAwareComposite((context) => new UpcomingTournaments('upcoming-tournaments')),
-                            new MountAwareComposite((context) => new MatchHistory('match-history-details')),
-                            // new MountAwareComposite((context) => new FriendsView('friends-modal')),
-                            ...(modalState.isEditProfileModalOpen ?
-                                [new MountAwareComposite((context) => new EditProfile('edit-profile-modal'))] : []),
-                            new MountAwareComposite((context) => new UpcomingTournamentsModal('tournament-modal')),
-                            new MountAwareComposite((context) => new MatchHistoryModal('matches-modal')),
-                            new MountAwareComposite((context) => new ProfileInfo(state, 'profile-information-details', otherId)),
-                            new MountAwareComposite((context) => new NavigationMenu('profile-navigation')),
-                            new MountAwareComposite((context) => new SearchUserModal('search-users-modal'))
-                        ]))])
-                }
-            });
+                            new MountAwareComposite((context) => new Composite([
+                                    //     // state.
+                                    //     // ...(modalState.isTournamentModalOpen ?
+                                    new MountAwareComposite((context) => new AddTournament('add-tournament-modal')),
+                                    new MountAwareComposite((context) => new UpcomingTournaments('upcoming-tournaments')),
+                                    new MountAwareComposite((context) => new MatchHistory('match-history-details')),
+                                    // new MountAwareComposite((context) => new FriendsView('friends-modal')),
+                                    new MountAwareComposite((context) => new EditProfile('edit-profile-modal')),
+                                    new MountAwareComposite((context) => new UpcomingTournamentsModal('tournament-modal')),
+                                    new MountAwareComposite((context) => new MatchHistoryModal('matches-modal')),
+                                    new MountAwareComposite((context) =>  new ProfileInfo(state, 'profile-information-details', otherId)),
+                                    new MountAwareComposite((context) => new NavigationMenu('profile-navigation')),
+                                    new MountAwareComposite((context) => new SearchUserModal('search-users-modal'))
+                                ])
+                            )
+                        ])
+                    }
+                })
+        });
     }
 }

@@ -2,9 +2,9 @@ export abstract class ApiConstants {
     // static baseUrl: string = import.meta.env.VITE_API_URL;
     static baseUrlDev: string = "http://localhost:5003";
     static websocketUrl = "ws://localhost:5002/users/ws";
-    static authBaseUrl = "/auth-service"
-    static userBaseUrl = "/user-service"
-    static gameBaseUrl = "/game-service"
+    static authBaseUrl = `/auth-service`
+    static userBaseUrl = `/user-service`
+    static gameBaseUrl = `/game-service`
     static auth: string = `${ApiConstants.authBaseUrl}/auth/oauth/google`;
     static register: string = `${ApiConstants.authBaseUrl}/auth/register`;
     static friends: string = `${ApiConstants.userBaseUrl}/friends`;

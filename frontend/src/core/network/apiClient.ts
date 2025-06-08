@@ -34,7 +34,33 @@ export class ApiClient {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
+
             }
+        })
+    }
+
+
+    public putForm(url: string, data: FormData) {
+        const token: string = this.preferenceService.getToken() ?? ''
+        return fetch(`${ApiConstants.baseUrlDev}${url}`, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
+            },
+            body: data,
+        })
+    }
+
+    public put(url: string, data: string) {
+        const token: string = this.preferenceService.getToken() ?? ''
+        return fetch(url, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: data,
         })
     }
 

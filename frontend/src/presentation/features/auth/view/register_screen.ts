@@ -18,10 +18,19 @@ export class RegisterScreen extends StatelessWidget {
         super.didMounted(context);
         // const authGuard = new AuthGuard('/register', false, true);
         // authGuard.guard(context)
-        const nav = Navigator.of(context);
+        this.setup(context);
+
+        // loadSignUpForm(context)
+        // initGoogleRegister();
+        // initRegistrationForm();
+    }
+
+    setup(context: BuildContext) {
+        const navigator = Navigator.of(context);
+
         const btn = document.getElementById('close-signup-btn');
         btn?.addEventListener('click', () => {
-            nav.pop()
+            navigator.pop()
         })
 
         const registrationForm = document.getElementById('registrationForm') as HTMLFormElement | null;
@@ -29,8 +38,7 @@ export class RegisterScreen extends StatelessWidget {
         if (!registrationForm)
             return;
 
-        const navigator = Navigator.of(context);
-        registrationForm?.addEventListener('submit',  (event: Event) => {
+        registrationForm?.addEventListener('submit',  async (event: Event) => {
             event.preventDefault();
 
             const formData = new FormData(registrationForm);
@@ -84,7 +92,8 @@ export class RegisterScreen extends StatelessWidget {
                 return;
 
             const authLogic = context.read(AuthBloc)
-            authLogic.register({username, password, email}).then();
+            console.log("HHHHHH")
+            await authLogic.register({username, password, email});
             // if (authLogic.state.status === AuthStatus.Success) {
             //     console.log('Registration successful:');
             //     await authLogic.resetState();
@@ -97,24 +106,19 @@ export class RegisterScreen extends StatelessWidget {
             //     return;
             // }
         });
-
-        // loadSignUpForm(context)
-        // initGoogleRegister();
-        // initRegistrationForm();
     }
 
     build(context: BuildContext): Widget {
         return new BlocListener<AuthBloc, AuthState>({
             blocType: AuthBloc,
             listener: (context, state) => {
+                this.setup(context);
                 if (state.status == AuthStatus.Success) {
                     context.read(AuthBloc).resetState().then();
                     // context.read(ProfileBloc).getUserProfile(state.user?.userId?.toString() ?? '').then(r => r);
                     Navigator.of(context).pushNamed('/profile')
                 }
                 if (state.status == AuthStatus.Error) {
-                    console.log("AAAAA")
-                    console.error('Register failed:', state.errorMessage);
                     // showError('reg_username', state.errorMessage ?? "UNKNOWN ERROR");
                     context.read(AuthBloc).resetState().then();
                 }

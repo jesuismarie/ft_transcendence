@@ -2,8 +2,8 @@ import {State, StatefulElement, StatefulWidget} from "@/core/framework/widgets/s
 import { BuildContext } from "@/core/framework/core/buildContext";
 import  {type Widget} from "@/core/framework/core/base";
 import {GlobalKey, type Key, UniqueKey} from "@/core/framework/core/key";
-import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import type {WidgetElement} from "@/core/framework/renderer/ElementWidget";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 
 export type RouteBuilder = (context: BuildContext, params?: Record<string, string>) => Widget;
 
@@ -72,6 +72,7 @@ export class NavigatorState extends State<Navigator> {
                 const routePart = routeParts[i];
 
                 if (pathPart.startsWith(":")) {
+
                     params[pathPart.slice(1)] = routePart;
                 } else if (pathPart !== routePart) {
                     matched = false;

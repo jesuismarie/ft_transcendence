@@ -7,6 +7,8 @@ import type {Widget} from "@/core/framework/core/base";
 import {State, StatefulWidget} from "@/core/framework/widgets/statefulWidget";
 import {WidgetBinding} from "@/core/framework/core/widgetBinding";
 import {Navigator} from "@/core/framework/widgets/navigator";
+import {ProfileState} from "@/presentation/features/profile/bloc/profileState";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 
 export class NavigationMenu extends StatefulWidget {
     constructor(public parentId?: string) {
@@ -31,7 +33,9 @@ export class NavigationMenuState extends State<NavigationMenu> {
             })
             logoutBtn?.addEventListener('click', async () => {
                 const authBloc = context.read(AuthBloc)
-                authBloc.logout();
+                await authBloc.fullResetState();
+                await authBloc.logout();
+                await context.read(ProfileBloc).resetState();
                 Navigator.of(context).pushNamed('/')
             })
         })

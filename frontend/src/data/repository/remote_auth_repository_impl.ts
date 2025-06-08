@@ -8,8 +8,7 @@ import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
 import {PreferenceKeys} from "@/core/services/preferenceKeys";
-import * as console from "node:console";
-import {data} from "autoprefixer";
+ import {data} from "autoprefixer";
 
 
 @injectable()
@@ -29,7 +28,7 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
                     userId: res.data.userId,
                     accessToken: res.data.accessToken,
                     refreshToken: res.data.refreshToken,
-                }
+                };
                 console.log(`AAAAAAA:::::: ${res.data.accessAoken}`);
                 return new Right(user);
             }
