@@ -18,45 +18,21 @@ export class AuthScreen extends  StatefulWidget {
 
 export class  AuthScreenState extends State<AuthScreen> {
 
+
+    refresh: boolean = false;
     didMounted(context: BuildContext) {
         super.didMounted(context);
         console.log("AUTHH MOUNTEDDDDD");
         // const authGuard = new AuthGuard('/', false, true);
         // authGuard.guard(context)
-        const authBloc = context.watch(AuthBloc);
+        const authBloc = context.read(AuthBloc);
         // const authBloc = context.watch(AuthBloc);
 
 
 
         // if (authBloc.state.user) {
-        console.log(`AUTH STATEEE:::: ${JSON.stringify(authBloc.state)}`)
-        const navigator = Navigator.of(context);
-        const btn = document.getElementById('to-sign-in');
-        const signupBtn = document.getElementById('to-sign-up');
-        const tempProf = document.getElementById('temp-prof');
-        // context.logWidgetTree(context);
-        console.log(`BTNNNN:::: ${btn}`)
-        btn?.addEventListener('click', e => {
-            e.preventDefault();
-            console.log("NAVVVVV");
-            navigator.pushNamed('/login')
-        })
-        signupBtn?.addEventListener('click', e => {
-            e.preventDefault();
-            navigator.pushNamed('/register')
-            // loadSignUpForm(context);
-        })
-        tempProf?.addEventListener('click', () => {
-            this.setState(() => {})
-            // navigator.pushNamed('/profile')
-        })
-        const googleLogoutButton = document.getElementById('logout-btn');
+        // console.log(`AUTH STATEEE:::: ${JSON.stringify(authBloc.state)}`)
 
-        googleLogoutButton?.addEventListener('click', async () => {
-            await authBloc.logout();
-            navigator.pushNamed('/');
-            // loadHomePage();
-        });
     }
 
 
@@ -68,7 +44,39 @@ export class  AuthScreenState extends State<AuthScreen> {
         return new BlocListener<AuthBloc, AuthState>({
             blocType: AuthBloc,
             listener: (context, state) => {
+                // this.setState(() => {
+                //     this.refresh = !this.refresh
+                // })
+                const authBloc = context.read(AuthBloc);
+                const navigator = Navigator.of(context);
+                const btn = document.getElementById('to-sign-in');
+                const signupBtn = document.getElementById('to-sign-up');
+                const tempProf = document.getElementById('temp-prof');
 
+                console.log(`AUTH STATEEE:::: ${JSON.stringify(authBloc.state)}`)
+                // context.logWidgetTree(context);
+                console.log(`BTNNNN:::: ${btn}`)
+                btn?.addEventListener('click', e => {
+                    e.preventDefault();
+                    console.log("NAVVVVV");
+                    navigator.pushNamed('/login')
+                })
+                signupBtn?.addEventListener('click', e => {
+                    e.preventDefault();
+                    navigator.pushNamed('/register')
+                    // loadSignUpForm(context);
+                })
+                tempProf?.addEventListener('click', () => {
+                    this.setState(() => {})
+                    // navigator.pushNamed('/profile')
+                })
+                const googleLogoutButton = document.getElementById('logout-btn');
+
+                googleLogoutButton?.addEventListener('click', async () => {
+                    await authBloc.logout();
+                    navigator.pushNamed('/');
+                    // loadHomePage();
+                });
                 console.log(`AUTH STATEEEEEEEEEE---- :::: ${JSON.stringify(state)}`);
             },
             child: new HtmlWidget(`

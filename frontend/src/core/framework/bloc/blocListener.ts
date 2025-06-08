@@ -43,8 +43,6 @@ class _BlocListenerState<B extends BlocBase<S>, S extends Equatable<S>> extends 
 
     initState(context: BuildContext): void {
         super.initState(context);
-
-
     }
 
     dispose(): void {
