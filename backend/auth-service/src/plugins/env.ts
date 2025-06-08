@@ -16,11 +16,12 @@ export interface EnvConfig {
 	GAME_SERVICE_URL: string;
 	PONG_SERVICE_URL: string;
 	PROXY_SERVICE_URL: string;
+	SPA_OAUTH_URL: string;
 }
 
 const schema = {
 	type: 'object',
-	required: ['JWT_SECRET', 'DATABASE_URL'],
+	required: ['JWT_SECRET', 'DATABASE_URL', 'SPA_OAUTH_URL'],
 	properties: {
 		JWT_SECRET: { type: 'string', minLength: 32 },
 		DATABASE_URL: { type: 'string' },
