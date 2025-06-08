@@ -29,7 +29,7 @@ AuthService is a standalone **Fastify** microservice that provides:
 | ORM                | **Prisma Client + Prisma Migrate**            | Declarative schema, ergonomic API                 |
 | DB                 | `auth.db` (SQLite)                            | Lightweight, container‑friendly                   |
 | Internal comms     | REST/HTTP on Docker network                   | Aligns with global constraints                    |
-| Internal auth      | Shared `X‑Cluster‑Token` header               | Simple and service‑agnostic                       |
+| Internal auth      | Shared `X‑Cluster‑Token` header               | Simple and service‑agnostic. Currently unsued.    |
 | Rate‑limit & CSP   | **@fastify/rate-limit** + **@fastify/helmet** | Adequate for project scope                        |
 
 ---
@@ -41,23 +41,23 @@ AuthService is a standalone **Fastify** microservice that provides:
 1. [Health Check](#health-check)
 2. [Authentication](#authentication)
 
-  * [Register](#register)
-  * [Login](#login)
-  * [Login with 2FA](#login-with-2fa)
-  * [Complete 2FA Login](#complete-2fa-login)
-  * [Refresh Tokens](#refresh-tokens)
-  * [Logout](#logout)
+* [Register](#register)
+* [Login](#login)
+* [Login with 2FA](#login-with-2fa)
+* [Complete 2FA Login](#complete-2fa-login)
+* [Refresh Tokens](#refresh-tokens)
+* [Logout](#logout)
 3. [Two-Factor Authentication](#two-factor-authentication)
 
-  * [Enable 2FA](#enable-2fa)
-  * [Verify 2FA OTP](#verify-2fa-otp)
+* [Enable 2FA](#enable-2fa)
+* [Verify 2FA OTP](#verify-2fa-otp)
 4. [OAuth](#oauth)
 
-  * [Google OAuth2 Callback](#google-oauth2-callback)
+* [Google OAuth2 Callback](#google-oauth2-callback)
 5. [Internal Endpoints](#internal-endpoints)
 
-  * [Verify JWT Token](#verify-jwt-token-internal)
-  * [Revoke Refresh Token](#revoke-refresh-token-internal)
+* [Verify JWT Token](#verify-jwt-token-internal)
+* [Revoke Refresh Token](#revoke-refresh-token-internal)
 
 ---
 
@@ -131,6 +131,11 @@ AuthService is a standalone **Fastify** microservice that provides:
 
 ### OAuth
 
+#### Google OAuth2
+| Method | Path                     | Description            | Internal | Request Headers | Response (200)                                                 | Response (500)                                                                         |
+| ------ | ------------------------ | ---------------------- | -------- | ---------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| GET    | /auth/oauth/google       | Start Google OAuth2    | No       | –                | 302 Redirect to Google OAuth consent page                      | `{ "status": "error", "code": "OAUTH_FAILED", "message": "Google OAuthTypes failed" }` |
+
 #### Google OAuth2 Callback
 
 | Method | Path                        | Description            | Internal | Request | Response (200)                                                 | Response (500)                                                                         |
@@ -163,9 +168,9 @@ For error responses, the following envelope is used unless otherwise specified:
 
 ```json
 {
-  "status": "error",
-  "code": "ERROR_CODE",   // Optional, machine-readable code (e.g. "EMAIL_EXISTS")
-  "message": "Description of error"
+	"status": "error",
+	"code": "ERROR_CODE",   // Optional, machine-readable code (e.g. "EMAIL_EXISTS")
+	"message": "Description of error"
 }
 ```
 
@@ -272,98 +277,102 @@ All requests must include header `X‑Cluster‑Token: <CLUSTER_TOKEN>`.
 
 ```mermaid
 sequenceDiagram
-  autonumber
-  participant SPA
-  participant AS  as AuthService
-  participant US  as UserService
+    autonumber
+    participant SPA
+    participant AS  as AuthService
+    participant US  as UserService
 
-  SPA->>AS: POST /auth/register (username, email, pw)
-  AS->>US:  POST /internal/users/validate-unique
-  US-->>AS: 409 conflict (field)
-  AS-->>SPA: ApiError (USERNAME_EXISTS / EMAIL_EXISTS)
-  Note over AS: or continue if ok
-  AS->>US: POST /internal/users/create
-  US-->>AS: 201 { userId }
-  AS->>AS: issueTokenPair()
-  AS-->>SPA: 200 { accessToken, refreshToken, userId }
+    SPA->>AS: POST /auth/register (username, email, pw)
+    AS->>US:  POST /internal/users/validate-unique
+    US-->>AS: 409 conflict (field)
+    AS-->>SPA: ApiError (USERNAME_EXISTS / EMAIL_EXISTS)
+    Note over AS: or continue if ok
+    AS->>US: POST /internal/users/create
+    US-->>AS: 201 { userId }
+    AS->>AS: issueTokenPair()
+    AS-->>SPA: 200 { accessToken, refreshToken, userId }
 ```
 ### Login Flow
 ```mermaid
 sequenceDiagram
-  autonumber
-  participant FE as SPA
-  participant AS as AuthService
-  participant US as UserService
-  participant DB as Auth DB
+    autonumber
+    participant FE as SPA
+    participant AS as AuthService
+    participant US as UserService
+    participant DB as Auth DB
 
-  FE->>AS: POST /auth/login {email,password}
-  AS->>US: POST /internal/users/verify-password
-  US-->>AS: 200 { userId, has2fa:true }
-  AS->>DB: INSERT LoginTicket (uuid, userId, 5-min ttl)
-  AS-->>FE: 200 { requires2fa:true, loginTicket }
+    FE->>AS: POST /auth/login {email,password}
+    AS->>US: POST /internal/users/verify-password
+    US-->>AS: 200 { userId, has2fa:true }
+    AS->>DB: INSERT LoginTicket (uuid, userId, 5-min ttl)
+    AS-->>FE: 200 { requires2fa:true, loginTicket }
 
-  FE->>AS: POST /auth/login/2fa {loginTicket, otp}
-  AS->>DB: SELECT LoginTicket (check ttl & unused)
-  AS-->>FE: APIError (TICKET_INVALID, 'Login ticket expired or invalid')
-  AS->>DB: UPDATE LoginTicket.used = true
-  AS->>DB: INSERT RefreshToken (hashed)
-  AS-->>FE: 200 { accessToken, refreshToken, userId }
+    FE->>AS: POST /auth/login/2fa {loginTicket, otp}
+    AS->>DB: SELECT LoginTicket (check ttl & unused)
+    AS-->>FE: APIError (TICKET_INVALID, 'Login ticket expired or invalid')
+    AS->>DB: UPDATE LoginTicket.used = true
+    AS->>DB: INSERT RefreshToken (hashed)
+    AS-->>FE: 200 { accessToken, refreshToken, userId }
 ```
 ### Logout Flow
 ```mermaid
 sequenceDiagram
-  autonumber
-  participant FE as SPA
-  participant AS as AuthService
-  participant DB as Auth DB
+    autonumber
+    participant FE as SPA
+    participant AS as AuthService
+    participant DB as Auth DB
 
-  FE->>AS: POST /auth/logout { refreshToken }
-  AS->>DB: UPDATE RefreshToken SET revoked=true WHERE tokenHash = HMAC(refreshToken)
-  DB-->>AS: 1 row changed
-  AS-->>FE: 200 { revoked:true }
+    FE->>AS: POST /auth/logout { refreshToken }
+    AS->>DB: UPDATE RefreshToken SET revoked=true WHERE tokenHash = HMAC(refreshToken)
+    DB-->>AS: 1 row changed
+    AS-->>FE: 200 { revoked:true }
 ```
 ### Enable 2FA Flow
 ```mermaid
 sequenceDiagram
-  autonumber
-  participant FE as SPA
-  participant AS as AuthService
-  participant DB as Auth DB
+    autonumber
+    participant FE as SPA
+    participant AS as AuthService
+    participant DB as Auth DB
 
-  activate FE
-  FE->>AS: POST /auth/2fa/enable  (JWT auth header)
-  AS->>AS: speakeasy.generateSecret()
-  AS->>DB: INSERT TotpSecret { userId, secret, verified:false }
-  AS-->>FE: 200 { otpauthUrl, qrSvg }
+    activate FE
+    FE->>AS: POST /auth/2fa/enable  (JWT auth header)
+    AS->>AS: speakeasy.generateSecret()
+    AS->>DB: INSERT TotpSecret { userId, secret, verified:false }
+    AS-->>FE: 200 { otpauthUrl, qrSvg }
 
-  FE->>AS: POST /auth/2fa/verify { otp } (JWT)
-  AS->>DB: SELECT TotpSecret
-  AS->>AS: speakeasy.totp.verify()
-  AS->>DB: UPDATE TotpSecret SET verified=true
-  AS-->>FE: 200 { verified:true }
+    FE->>AS: POST /auth/2fa/verify { otp } (JWT)
+    AS->>DB: SELECT TotpSecret
+    AS->>AS: speakeasy.totp.verify()
+    AS->>DB: UPDATE TotpSecret SET verified=true
+    AS-->>FE: 200 { verified:true }
 ```
 ### Google OAuth Flow
 ```mermaid
 sequenceDiagram
-  autonumber
-  participant FE as SPA
-  participant AS as AuthService
-  participant Google as Google OAuth
-  participant US as UserService
-  participant DB as Auth DB
+    participant SPA 	as	SPA Browser
+    participant Auth	as	Auth-Service
+    participant Google	as	Google OAuth
+    participant DB		as	Database
 
-  FE->>AS: GET /auth/oauth/google
-  AS-->>FE: 302 Redirect → Google
-  FE->>Google: OAuth consent
-  Google-->>FE: 302 → /auth/oauth/google/callback?code=...
-  FE->>AS: GET /auth/oauth/google/callback?code=...
-  AS->>Google: POST token exchange
-  Google-->>AS: 200 { id_token, email, sub }
-  AS->>US: POST /internal/users/find-or-create { email, googleSub }
-  US-->>AS: 200 { userId }
-  AS->>DB: INSERT (or ensure) OAuthAccount row
-  AS->>DB: INSERT RefreshToken (hashed)
-  AS-->>FE: 200 { accessToken, refreshToken, userId }
+    Note over SPA: User clicks **“Sign in with Google”**
+    SPA ->> SPA: window.location.href = /auth/oauth/google
+
+    SPA ->> Google: GET https://accounts.google.com/o/oauth2/v2/auth …
+    Google -->> SPA: Consent screen
+    SPA ->> Google: User approves scopes
+    Google -->> Auth: GET /auth/oauth/google/callback?code&state
+
+    Auth ->> DB: INSERT LoginTicket {id, userId, ttl ≈ 90 s, status=fresh}
+    DB -->> Auth: ticketId
+    Auth -->> SPA: 302 → SPA_ROOT/oauth/complete?ticket=ticketId
+
+    SPA ->> SPA: Extract `ticket`
+    SPA ->> Auth: POST /auth/oauth/claim {ticket}
+    Auth ->> DB: get & set status=used (one-time)
+    DB -->> Auth: userId (if valid & fresh)
+    Auth ->> Auth: issue {access JWT, refresh JWT}
+    Auth -->> SPA: JSON {access, refresh}
 ```
 ---
 

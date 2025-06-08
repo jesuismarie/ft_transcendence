@@ -44,3 +44,4 @@ backend/proxy-service/package-lock.json
 backend/user-service/node_modules
 backend/user-service/dist
 backend/user-service/package-lock.json
+backend/user-service/public

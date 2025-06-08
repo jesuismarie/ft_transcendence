@@ -14,7 +14,6 @@ export function hashRefresh(token: string, salt: string) {
  */
 export async function issueTokenPair(app: FastifyInstance, userId: number): Promise<AuthTypes.TokenPair> {
 	const accessToken = app.jwt.sign({ sub: userId });
-	// const rawRefresh  = crypto.randomBytes(32).toString('hex');
 	const refreshToken = uuidv4();
 	const tokenHash   = hashRefresh(refreshToken, app.config.REFRESH_TOKEN_SALT);
 	
