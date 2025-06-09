@@ -65,3 +65,5 @@ export async function registerPresenceRoute(fastify: FastifyInstance, userRepo: 
 		}
 	);
 }
+
+export default registerPresenceRoute;
