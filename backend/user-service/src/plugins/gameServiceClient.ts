@@ -57,7 +57,7 @@ const buildClient = ({ baseUrl, timeout }: GameServiceClientConfig): GameService
 	
 	const getGamestats = async (request: GamestatsRequest): Promise<GamestatsView> => {
 		const { user } = request.Params;
-		const path = `internal/gamestats/${user}`;
+		const path = `/internal/gamestats/${user}`;
 		const res = await call<GamestatsResponse>('GET', path, undefined, [200]);
 		return {userID: res.user, wins: res.wins, losses: res.losses};
 	}
@@ -76,7 +76,7 @@ declare module 'fastify' {
 }
 
 const gameServiceClientPlugin: FastifyPluginAsync = async (app : FastifyInstance) => {
-	const baseUrl = process.env.GAME_SERVICE_URL ?? 'http://game-service:5004';
+	const baseUrl = process.env.GAME_SERVICE_URL ?? 'http://game-service:5001';
 	
 	app.decorate('gameService', buildClient({ baseUrl, timeout: 3000}));
 };
