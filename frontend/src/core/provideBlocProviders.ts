@@ -33,7 +33,14 @@ export function provideBlocProviders(child: Widget): Widget {
                 ),
                 new BlocProvider({
                     create: () => new ModalsBloc()
-                })
+                }),
+             new BlocProvider(
+                {
+                    create: () => new FriendBloc(
+                        Resolver.friendRepository()
+                    ),
+                }
+            )
                 // new BlocProvider(
                 //     {
                 //         create: () => new FriendBloc(Resolver.friendRepository()),

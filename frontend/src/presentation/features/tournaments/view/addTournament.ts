@@ -53,6 +53,11 @@ class AddTournamentContentState extends State<AddTournamentContent> {
     didMounted(context: BuildContext) {
         super.didMounted(context);
         // addTournament(context);
+
+        this.setup(context);
+    }
+
+    setup(context: BuildContext) {
         const profileBloc = context.read(ProfileBloc)
         const tournamentBloc = context.read(TournamentBloc);
 
@@ -65,8 +70,12 @@ class AddTournamentContentState extends State<AddTournamentContent> {
             hideModal(ModalConstants.addTournamentModalName)
             tournamentBloc.resetAfterSubmit()
         })
-        this.nameInputController.bindInput(nameInput!);
-        this.capacityInputController.bindSelect(capacityInput!)
+        if (nameInput) {
+            this.nameInputController.bindInput(nameInput!);
+        }
+        if (capacityInput) {
+            this.capacityInputController.bindSelect(capacityInput!)
+        }
 
         saveBtn?.addEventListener("click", () => {
             clearErrors();
@@ -76,13 +85,13 @@ class AddTournamentContentState extends State<AddTournamentContent> {
             tournamentBloc.createTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '').then(r => r)
             tournamentBloc.resetAfterSubmit()
         });
-
     }
 
     build(context: BuildContext): Widget {
         return new BlocListener<TournamentBloc, TournamentState>(
             {
                 listener: (context: BuildContext, state) => {
+                    this.setup(context);
                     if (!state.isValid) {
                         showError("add_tournament", "Please enter a tournament name.");
                     }

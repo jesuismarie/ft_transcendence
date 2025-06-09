@@ -14,6 +14,10 @@ export abstract class Widget {
 
     afterMounted(context: BuildContext): void {
     }
+
+    isMounted(): boolean {
+        return false;
+    }
 }
 
 export interface IBuildContext {

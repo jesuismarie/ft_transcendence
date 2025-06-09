@@ -15,22 +15,16 @@ import type {FriendState} from "@/presentation/features/friend/logic/friendState
 import {Composite} from "@/core/framework/widgets/composite";
 import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
 import {FriendList} from "@/presentation/features/friend/view/friendList";
+import {DependComposite} from "@/core/framework/widgets/dependComposite";
+
+// export class FriendsView extends StatelessWidget {
+//     build(context: BuildContext): Widget {
+//
+//     }
+//
+// }
 
 export class FriendsView extends StatelessWidget {
-    build(context: BuildContext): Widget {
-        return new BlocProvider(
-            {
-                create: () => new FriendBloc(
-                    Resolver.friendRepository()
-                ),
-                child: new FriendsViewContent()
-            }
-        )
-    }
-
-}
-
-export class FriendsViewContent extends StatelessWidget {
 
     constructor(public parentId?: string) {
         super();
@@ -40,11 +34,6 @@ export class FriendsViewContent extends StatelessWidget {
         super.didMounted(context);
         const friendBloc = context.read(FriendBloc);
         const authBloc = context.read(AuthBloc);
-
-        const userId = authBloc.state.user?.userId
-        if (userId) {
-            friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
-        }
 
         const previewContainer = document.getElementById("friends-preview") as HTMLElement;
         const listContainer = document.getElementById("friend-modal-list") as HTMLElement;
@@ -63,7 +52,7 @@ export class FriendsViewContent extends StatelessWidget {
         prevPageBtn?.addEventListener("click", (e) => {
             const offset = friendBloc.state.offset;
             const userId = authBloc.state.user?.userId
-            if (userId && offset >= Constants.friends_limit) {
+            if (!friendBloc.isClosed && userId && offset >= Constants.friends_limit) {
                 friendBloc.onSearch(userId, Constants.friends_limit - offset, Constants.friends_limit).then(r => r);
             }
         })
@@ -71,7 +60,7 @@ export class FriendsViewContent extends StatelessWidget {
             const offset = friendBloc.state.offset;
             const userId = authBloc.state.user?.userId
             const totalCount = friendBloc.state.results?.totalCount ?? 0;
-            if (userId && offset + Constants.friends_limit < totalCount) {
+            if (!friendBloc.isClosed && userId && offset + Constants.friends_limit < totalCount) {
                 friendBloc.onSearch(userId, Constants.friends_limit + offset, Constants.friends_limit).then(r => r);
             }
         })
@@ -83,7 +72,7 @@ export class FriendsViewContent extends StatelessWidget {
             blocType: FriendBloc,
             buildWhen: (oldState, newState) => !oldState.equals(newState),
             builder: (context, state) =>
-                new Composite([new MountAwareComposite((context) => new HtmlWidget(`
+                new DependComposite({dependWidgets: [new MountAwareComposite((context) => new HtmlWidget(`
         <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 				<div class="px-4 pt-5 pb-4 sm:p-6">
 					<h3 class="text-lg border-b border-hover pb-2">
@@ -101,10 +90,9 @@ export class FriendsViewContent extends StatelessWidget {
 					<button id="close-friends-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
 				</div>
 			</div>
-        `, this.parentId)),
-                    new MountAwareComposite((context) => new FriendList('friend-modal-list'))
-
-                ])
+        `, this.parentId))],
+                   children: [new MountAwareComposite((context) => new FriendList(), 'friend-modal-list')]
+                })
         });
     }
 

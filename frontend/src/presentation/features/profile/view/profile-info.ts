@@ -16,7 +16,7 @@ import {AppRoutes} from "@/core/constants/appRoutes";
 import {Composite} from "@/core/framework/widgets/composite";
 import {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
 import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
-import {FriendState} from "@/presentation/features/friend/logic/friendState";
+import {FriendState, FriendStatus} from "@/presentation/features/friend/logic/friendState";
 import {SubmitButton} from "@/presentation/common/widget/submitButton";
 import {ModalsBloc, ModalType} from "@/presentation/features/modals/bloc/modalsBloc";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
@@ -25,7 +25,7 @@ import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 
 
 export class ProfileInfo extends StatefulWidget {
-    constructor(public profileState: ProfileState, public parentId?: string, public userId?: number) {
+    constructor(public profileState: ProfileState, public userId?: number, public parentId?: string, ) {
         super();
     }
 
@@ -42,13 +42,10 @@ export class ProfileInfoContent extends State<ProfileInfo> {
         console.log("ProfileAUDDDDD------")
 
         this.setup(context);
-
-
     }
 
 
     setup(context: BuildContext) {
-        console.log(`CCCCC:::: ${context == undefined}`)
         const profileBloc = context.read(ProfileBloc)
         const authBloc = context.read(AuthBloc)
         const modalBloc = context.read(ModalsBloc)
@@ -56,6 +53,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
         console.log(`PROFILEEEE STATEEEE--------::: ${JSON.stringify(authBloc.state)}`)
         // const friendBloc =
         const editBtn = document.getElementById('edit-profile-btn');
+        const friendRequestBtn = document.getElementById('friend-request-btn');
         const uploadBtn = document.getElementById('avatar-upload-btn')
         const avatarInput = document.getElementById('avatar-input') as HTMLInputElement | null;
         const openModalBtn = document.getElementById("friend-list-btn") as HTMLButtonElement;
@@ -77,8 +75,14 @@ export class ProfileInfoContent extends State<ProfileInfo> {
             // alert("CLIECCCCC")
             avatarInput?.click();
         });
-
-
+        const friendBloc = context.read(FriendBloc)
+        friendRequestBtn?.addEventListener('click', async () => {
+            const userId = context.read(AuthBloc).state.user?.userId;
+            // localStorage.removeItem('friendId');
+            if (userId && this.widget.profileState.profile && !friendBloc.isClosed && !localStorage.getItem(`friendId${this.widget.profileState.profile!.id}`)) {
+                await friendBloc.addFriend(userId, this.widget.profileState.profile!.id);
+            }
+        })
         openModalBtn?.addEventListener("click", () => {
             modalBloc.onOpenModal(ModalType.friends);
             showModal(ModalConstants.friendsModalName)
@@ -115,7 +119,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
         console.log(`AVATARRRRRRRRR ${this.widget.profileState.selectedAvatarUrl}`);
 
 
-
+        const showAddFriendButton = !(this.widget.userId || this.widget.userId === this.widget.profileState.profile?.id)
         return new BlocListener<ProfileBloc, ProfileState>({
             listener: (context, state) => {
                 // if (state.selectedAvatarUrl) {
@@ -179,7 +183,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                     </div>
                 </div>
                 <button id="open-game-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
-                <button id="friend-request-btn" class="${!(this.widget.userId || this.widget.userId === this.widget.profileState.profile?.id) ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
+                <button id="friend-request-btn" class="${showAddFriendButton ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Add Friend</button>
                 <button id="edit-profile-btn" class="${(this.widget.userId || this.widget.userId === this.widget.profileState.profile?.id) ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
             </div>
         </div>

@@ -6,8 +6,8 @@ import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
 import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 import type {TournamentState} from "@/presentation/features/tournaments/logic/tournamentState";
-import type {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
-import type {FriendState} from "@/presentation/features/friend/logic/friendState";
+import  {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
+import {FriendState} from "@/presentation/features/friend/logic/friendState";
 import {FriendListItem} from "@/presentation/features/friend/view/friendListItem";
 
 export class FriendList extends StatelessWidget {
@@ -22,7 +22,8 @@ export class FriendList extends StatelessWidget {
 
     build(context: BuildContext): Widget {
         return new BlocBuilder<FriendBloc, FriendState>({
-
+            blocType: FriendBloc,
+            buildWhen: (oldState, newState) => !oldState.equals(newState),
             builder: (context, state) => {
                 const friends = state.offset == 0 ? state.results.friends.slice(0, 3) : [];
                 return new Composite(friends.map((e) => new FriendListItem(e.id.toString(), e.username, e.avatarPath)), this.parentId)

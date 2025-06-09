@@ -37,6 +37,9 @@ import {WidgetBinding} from "@/core/framework/core/widgetBinding";
 import {BlocListener} from "@/core/framework/bloc/blocListener";
 import type {AuthState} from "@/presentation/features/auth/logic/auth_state";
 import type {ModalsState} from "@/presentation/features/modals/bloc/modalsState";
+import {DependWidget} from "@/core/framework/widgets/dependWidget";
+import {DependComposite} from "@/core/framework/widgets/dependComposite";
+import {TextController} from "@/core/framework/controllers/textController";
 
 
 export class ProfileScreen extends StatelessWidget {
@@ -79,31 +82,34 @@ export class ProfileScreenContent extends StatefulWidget {
 
 export class ProfileScreenContentState extends State<ProfileScreenContent> {
 
+    searchController: TextController = new TextController();
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
         console.log("PROFILLEEE MOUNTEEDDDD")
 
-        this.setup(context);
-        // const authGuard = new AuthGuard('/profile', false, true);
-        // authGuard.guard(context)
-        // WidgetBinding.getInstance().postFrameCallback(() => {
-        //
-        // })
-        // const friendBloc = context.read(FriendBloc);
+        const authBloc = context.read(AuthBloc);
+        const id = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
 
-        // const authBloc = context.read(AuthBloc);
-        // const profileBloc = context.read(ProfileBloc);
-        // if (!authBloc.state.user?.userId) {
-        //     Navigator.of(context).pushNamed('/login')
-        // }
-        // console.log(`AAAAAZXXXXXXXXXXXXXXX ${authBloc.state.user?.userId}`);
-        // if (!authBloc.state.user?.userId) {
-        //     Navigator.of(context).pushNamed('/login');
-        // }
-        // if (profileBloc.state.status != ProfileStatus.Loading) {
-        //     context.read(ProfileBloc).getUserProfile(authBloc.state.user!.userId.toString()).then(r => r)
-        // }
+        const userId = id ?? authBloc.state.user?.userId;
+        if (userId) {
+            context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {
+            })
+        }
+        const friendBloc = context.read(FriendBloc);
+        if (userId && !friendBloc.isClosed) {
+            friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
+        }
+        const searchBloc = context.read(SearchBloc);
+        if (!this.searchController.isClosed()) {
+            this.searchController.addListener((e) => {
+                console.log('DFGHJFGHJDFGHJ')
+
+                if (e.length > 3 && !searchBloc.isClosed) {
+                    searchBloc.searchUser(e, searchBloc.state.offset, Constants.search_limit).then(r => r)
+                }
+            })
+        }
     }
 
     setup(context: BuildContext) {
@@ -135,19 +141,20 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 
         return new BlocListener<ModalsBloc, ModalsState>({
             listener: (context: BuildContext) => {
-                this.setup(context);
+                // this.setup(context);
             },
             blocType: ModalsBloc,
             child: new BlocBuilder<ProfileBloc, ProfileState>(
                 {
-                    buildWhen: (oldState, newState) => !oldState.equals(newState),
+                    buildWhen: (oldState, newState) => !isEqual(oldState.profile, newState.profile),
                     blocType: ProfileBloc,
                     builder: (context, state) => {
                         console.log(`IIIIIIIII::::: ${state.isValid}`);
                         const currentId = state.profile?.id;
                         const otherId = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
-                        return new Composite([
-                            new MountAwareComposite((context) => new HtmlWidget(`
+                        return new DependComposite({
+                            dependWidgets: [
+                                new HtmlWidget(`
         <div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center">
 			<h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[3rem] sm:text-[4rem] md:text-[5rem] font-bold select-none text-primary animate-neonGlow">
 				Pong Profile!
@@ -194,26 +201,27 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 <!--<input type="file" id="avatar-input" class="" accept="image/*" />-->
 		<!-- Add Tournament -->
 		<div id="add-tournament-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
-		</div>`)),
+		</div>`)],
 
-                            new MountAwareComposite((context) => new Composite([
-                                    //     // state.
-                                    //     // ...(modalState.isTournamentModalOpen ?
-                                    new MountAwareComposite((context) => new AddTournament('add-tournament-modal')),
-                                    new MountAwareComposite((context) => new UpcomingTournaments('upcoming-tournaments')),
-                                    new MountAwareComposite((context) => new MatchHistory('match-history-details')),
-                                    // new MountAwareComposite((context) => new FriendsView('friends-modal')),
-                                    new MountAwareComposite((context) => new EditProfile('edit-profile-modal')),
-                                    new MountAwareComposite((context) => new UpcomingTournamentsModal('tournament-modal')),
-                                    new MountAwareComposite((context) => new MatchHistoryModal('matches-modal')),
-                                    new MountAwareComposite((context) =>  new ProfileInfo(state, 'profile-information-details', otherId)),
-                                    new MountAwareComposite((context) => new NavigationMenu('profile-navigation')),
-                                    new MountAwareComposite((context) => new SearchUserModal('search-users-modal'))
-                                ])
-                            )
-                        ])
+                            children: [
+                                    new AddTournament('add-tournament-modal'),
+                                    new UpcomingTournaments('upcoming-tournaments'),
+                                    new MatchHistory('match-history-details'),
+                                    new FriendsView('friends-modal'),
+                                    new EditProfile('edit-profile-modal'),
+                                    new UpcomingTournamentsModal('tournament-modal'),
+                                    new MatchHistoryModal('matches-modal'),
+                                    new ProfileInfo(state, otherId, 'profile-information-details',),
+                                    new NavigationMenu('profile-navigation'),
+
+                                    new SearchUserModal(this.searchController,'search-users-modal')
+                            ]
+
+
+                        })
+
                     }
                 })
-        });
+        })
     }
 }

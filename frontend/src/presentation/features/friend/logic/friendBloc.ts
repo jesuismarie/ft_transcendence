@@ -40,7 +40,27 @@ export class FriendBloc extends Cubit<FriendState> {
     getFriends() {
     }
 
-    addFriend() {
+    async addFriend(currentId: number, friendID: number) {
+        this.emit(this.state.copyWith({status: FriendStatus.Loading}))
+        localStorage.setItem(`friendId${friendID}`, `${friendID}`);
+        const seconds = 30 * 1000;
+        const res = await this.friendRepository.addFriend(currentId, friendID);
+        res.when({
+            onSuccess: (data) => {
+                this.emit(this.state.copyWith({status: FriendStatus.Success}))
+                setTimeout(() => {
+                    localStorage.removeItem(`friendId${friendID}`);
+                }, seconds)
+            }, onError: (error) => {
+                console.log('Error:', error)
+                localStorage.removeItem(`friendId${friendID}`);
+                let errorMessage: string | undefined;
+                if (error instanceof ApiException) {
+                    errorMessage = error.message.removeBefore('body/').capitalizeFirst()
+                }
+                this.emit(this.state.copyWith({status: FriendStatus.Error, errorMessage: errorMessage}));
+            }
+        })
     }
 
     deleteFriend() {

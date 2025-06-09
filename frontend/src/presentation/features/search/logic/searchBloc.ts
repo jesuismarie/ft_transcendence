@@ -18,6 +18,7 @@ export class SearchBloc extends BlocBase<SearchState>{
 
     async searchUser(query: string, offset: number, limit: number): Promise<void> {
         this.emit(this.state.copyWith({status: SearchStatus.Loading}));
+        console.log('REQUES WITH SEARCH')
         const res = await this.userRepository.searchUser(query, offset, limit);
         res.when({
             onSuccess: (data) => {

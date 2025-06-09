@@ -17,6 +17,7 @@ import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
 import type {OTPState} from "@/presentation/features/otp/logic/otpState";
 import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
 import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
+import {DependComposite} from "@/core/framework/widgets/dependComposite";
 
 
 export class EditProfile extends StatelessWidget {
@@ -89,18 +90,29 @@ export class EditProfileContent extends StatelessWidget {
                 newPassword: this.passwordController.text,
             }).then(r => r)
         })
-
-        this.userNameController.bindInput(usernameInput!);
-        this.emailController.bindInput(emailInput!);
-        this.oldPasswordController.bindInput(oldPasswordInput!);
-        this.passwordController.bindInput(passwordInput!);
-        this.confirmPasswordController.bindInput(confirmPasswordInput!);
+        if (usernameInput) {
+            this.userNameController.bindInput(usernameInput!);
+        }
+        if(emailInput) {
+            this.emailController.bindInput(emailInput!);
+        }
+        if (oldPasswordInput) {
+            this.oldPasswordController.bindInput(oldPasswordInput!);
+        }
+        if(emailInput) {
+            this.passwordController.bindInput(passwordInput!);
+        }
+        if (confirmPasswordInput) {
+            this.confirmPasswordController.bindInput(confirmPasswordInput!);
+        }
     }
 
 
 
     build(context: BuildContext): Widget {
-        return new Composite([new HtmlWidget(`
+        // return new HtmlWidget('');
+        return new DependComposite({
+            dependWidgets: [new HtmlWidget(`
         <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 			<div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
 				<h3 class="text-lg font-medium">
@@ -143,11 +155,11 @@ export class EditProfileContent extends StatelessWidget {
 				<button id="close-edit-modal" type="button" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
 			</div>
 		</div>
-        `, this.parentId),
-            new MountAwareComposite((context) =>
+        `, this.parentId)],
+            children: [new MountAwareComposite((context) =>
                 new BuilderWidget((context) => new OtpScreen('twofa-container'))
-            )
-        ]);
+            )]
+        });
     }
 
 

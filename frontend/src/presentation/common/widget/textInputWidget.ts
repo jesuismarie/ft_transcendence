@@ -32,7 +32,9 @@ export class TextInputWidgetState extends State<TextInputWidget> {
         super.didMounted(context);
         const elem = document.getElementById(`${this.widget.props.id}`) as HTMLInputElement;
 
-        this.widget.props.controller.bindInput(elem!);
+        if(elem) {
+            this.widget.props.controller.bindInput(elem!, true,'change');
+        }
         // elem?.addEventListener('input', (e) => {
         //     const target = e.target as HTMLInputElement;
         //     this.widget.props.onChange(target.value.trim())

@@ -22,10 +22,10 @@ export abstract class WidgetElement implements IWidgetElement {
 
 
 
-    mount(parentDom: HTMLElement, context: BuildContext) {
+    async mount(parentDom: HTMLElement, context: BuildContext) {
         // console.log(`RENDDDD::: ${parentDom.getAttribute('id')}`);
         this._isMounted = true;
-        this.dom = this.render(parentDom, context);
+        this.dom = await this.render(parentDom, context);
     }
 
     public findInheritedProvider<T>(type: new (...args: any[]) => T): InheritedProviderElement<T> | null {
@@ -90,7 +90,7 @@ export abstract class WidgetElement implements IWidgetElement {
         this._isMounted = false;
     }
 
-    abstract render(parentDom: HTMLElement, context: BuildContext): HTMLElement;
+    abstract render(parentDom: HTMLElement, context: BuildContext): Promise<HTMLElement>;
 }
 
 
@@ -119,7 +119,7 @@ export class InheritedProviderElement<T> extends WidgetElement {
         this.child?.unmount();
     }
 
-    render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
+    async render(parentDom: HTMLElement, context: BuildContext): Promise<HTMLElement> {
         // Build the child widget
         if (!this.widget.child) {
             return parentDom
@@ -128,7 +128,7 @@ export class InheritedProviderElement<T> extends WidgetElement {
             console.log("HHHHHHH")
             this.child = this.widget.child.createElement() as WidgetElement;
             this.child.parent = this;
-            this.child.mount(parentDom, new BuildContext(this.child));
+            await this.child.mount(parentDom, new BuildContext(this.child));
             return this.child.dom!;
         }
         catch (error) {
@@ -143,7 +143,7 @@ export class InheritedProviderElement<T> extends WidgetElement {
             this.child = errorWidget.createElement() as WidgetElement;
             this.child.parent = this;
             const parent = parentDom;
-            this.child.mount(template, new BuildContext(this.child));
+            await this.child.mount(template, new BuildContext(this.child));
             parent.appendChild(template);
 
             return template;
@@ -212,7 +212,7 @@ class ErrorWidgetElement extends WidgetElement {
         this.widget = widget;
     }
 
-    render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
+    async render(parentDom: HTMLElement, context: BuildContext): Promise<HTMLElement> {
         const dom = document.createElement("div");
         dom.style.backgroundColor = "#ffeeee";
         dom.style.color = "#cc0000";

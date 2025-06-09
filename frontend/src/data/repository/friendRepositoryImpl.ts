@@ -17,7 +17,7 @@ export class FriendRepositoryImpl implements FriendRepository {
 
     async getFriendList(id: number, offset: number, limit: number): Promise<Either<GeneralException, FriendEntity>> {
         try {
-            const res = await this.apiClient.axiosClient().get(`${ApiConstants.friends}/${id}&limit=${limit}&offset=${offset}&limit=${limit}`);
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.friends}/${id}?offset=${offset}&limit=${limit}`);
             if (res.status >= 200 && res.status < 400) {
                 const user: FriendEntity = {
                     totalCount: res.data.userId,
@@ -38,11 +38,12 @@ export class FriendRepositoryImpl implements FriendRepository {
 
     async addFriend(id: number, friendId: number): Promise<Either<GeneralException, FriendAddResponse>> {
         try {
+            console.log(`friendId ${id}`)
+
             const res = await this.apiClient.axiosClient().post(`${ApiConstants.friends}`, {
-                data: {
                     userId: id,
                     friendId: friendId
-                }
+
             });
             if (res.status >= 200 && res.status < 400) {
                 const response: FriendAddResponse = {

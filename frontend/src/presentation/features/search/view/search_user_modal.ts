@@ -14,12 +14,14 @@ import {TextController} from "@/core/framework/controllers/textController";
 import {Constants} from "@/core/constants/constants";
 import {TextInputWidget} from "@/presentation/common/widget/textInputWidget";
 import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
-import  {ModalsBloc} from "@/presentation/features/modals/bloc/modalsBloc";
-import  {ModalsState} from "@/presentation/features/modals/bloc/modalsState";
+import {ModalsBloc} from "@/presentation/features/modals/bloc/modalsBloc";
+import {ModalsState} from "@/presentation/features/modals/bloc/modalsState";
+import {DependWidget} from "@/core/framework/widgets/dependWidget";
+import {DependComposite} from "@/core/framework/widgets/dependComposite";
 
 
 export class SearchUserModal extends StatefulWidget {
-    constructor(public parentId?: string) {
+    constructor(public searchController: TextController, public parentId?: string, ) {
         super();
     }
 
@@ -32,22 +34,20 @@ export class SearchUserModal extends StatefulWidget {
 
 export class SearchUserModalState extends State<SearchUserModal> {
 
-    searchController: TextController = new TextController()
-
     didMounted(context: BuildContext) {
         super.didMounted(context);
+        console.log("SEARCHHH mOUNNDDDDD")
         this.setup(context);
+    }
+
+    dispose() {
+        super.dispose();
+        this.widget.searchController.close();
     }
 
 
     setup(context: BuildContext) {
         const searchBloc = context.read(SearchBloc)
-
-        this.searchController.addListener((e) => {
-            if (e.length > 3) {
-                searchBloc.searchUser(e, searchBloc.state.offset, Constants.search_limit).then(r => r)
-            }
-        })
 
         const searchBtn = document.getElementById('search-users-btn');
         const nextBtn = document.getElementById('next-search-page');
@@ -56,7 +56,7 @@ export class SearchUserModalState extends State<SearchUserModal> {
 
 
         searchBtn?.addEventListener('click', e => {
-            const query = this.searchController.text
+            const query = this.widget.searchController.text
             if (!searchBloc.isClosed) {
                 if (query) {
                     searchBloc.searchUser(query, searchBloc.state.offset, Constants.search_limit).then(r => r);
@@ -65,7 +65,7 @@ export class SearchUserModalState extends State<SearchUserModal> {
         })
 
         nextBtn?.addEventListener('click', async (e) => {
-            const query = this.searchController.text
+            const query = this.widget.searchController.text
             // const query = searchBloc.state.query.trim();
             if (query && searchBloc.state.offset + Constants.search_limit < (searchBloc.state.results?.totalCount ?? 0)) {
                 await searchBloc.searchUser(query, searchBloc.state.offset + Constants.search_limit, Constants.search_limit);
@@ -73,7 +73,7 @@ export class SearchUserModalState extends State<SearchUserModal> {
         })
 
         prevBtn?.addEventListener('click', async (e) => {
-            const query = this.searchController.text
+            const query = this.widget.searchController.text
             // const query = searchBloc.state.query.trim();
             if (query && searchBloc.state.offset >= Constants.search_limit) {
                 await searchBloc.searchUser(query, searchBloc.state.offset - Constants.search_limit, Constants.search_limit);
@@ -96,8 +96,9 @@ export class SearchUserModalState extends State<SearchUserModal> {
                     // this.setup(context);
                 },
                 blocType: SearchBloc,
-                child: new Composite([
-                    new HtmlWidget(`
+                child: new DependComposite({
+                    dependWidgets: [
+                        new HtmlWidget(`
     <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
       <div class="px-4 pt-5 pb-4 sm:p-6">
         <h3 class="text-lg border-b border-hover pb-2">Search</h3>
@@ -112,41 +113,42 @@ export class SearchUserModalState extends State<SearchUserModal> {
         <button id="close-search-modal" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
       </div>
     </div>
-  `, this.widget.parentId),
+  `, this.widget.parentId)],
+                    children: [
 
-                    new MountAwareComposite(() =>
-                        new TextInputWidget({
-                            type: "text",
-                            id: "search-people",
-                            className: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:border-hover sm:text-sm",
-                            name: "search-people",
-                            controller: this.searchController,
-                            parentId: "search-people-container"
-                        })
-                    ),
+                            new TextInputWidget({
+                                type: "text",
+                                id: "search-people",
+                                className: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:border-hover sm:text-sm",
+                                name: "search-people",
+                                controller: this.widget.searchController,
+                                parentId: "search-people-container"
+                            }),
 
-                    new BlocBuilder<SearchBloc, SearchState>({
-                        blocType: SearchBloc,
-                        buildWhen: (oldState, newState) => !oldState.equals(newState),
-                        builder: (context, state) => {
-                            // this.setup(context);
-                            const totalPages = Math.ceil((state.results?.totalCount ?? 0) / Constants.search_limit);
-                            const currentPage = Math.floor(state.offset / Constants.search_limit) + 1;
+                        new BlocBuilder<SearchBloc, SearchState>({
+                            blocType: SearchBloc,
+                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                            builder: (context, state) => {
+                                // this.setup(context);
+                                const totalPages = Math.ceil((state.results?.totalCount ?? 0) / Constants.search_limit);
+                                const currentPage = Math.floor(state.offset / Constants.search_limit) + 1;
 
-                            return new Composite([
-                                new SearchResults(state.results?.users ?? [], 'search-users-list', state.status === SearchStatus.Error),
-                                new HtmlWidget(`
+                                return new Composite([
+                                    new SearchResults(state.results?.users ?? [], 'search-users-list', state.status === SearchStatus.Error),
+                                    new HtmlWidget(`
             <div id="search-pagination" class="${state.results?.totalCount > Constants.search_limit ? '' : 'hidden'} flex justify-between items-center p-4 border-t border-gray-200">
               <button disabled="${state.offset === 0}" id="prev-search-page" class="text-sm px-3 py-1 border rounded disabled:opacity-50">Previous</button>
               <span class="text-sm">Page ${currentPage} of ${totalPages}</span>
               <button id="next-search-page" disabled="${state.offset + Constants.search_limit >= (state.results?.totalCount ?? 0)}" class="text-sm px-3 py-1 border rounded disabled:opacity-50">Next</button>
             </div>
-          `, )
-                            ], );
-                        },
-                        parentId: "search-pagination-container"
-                    })
-                ])
+          `,)
+                                ],);
+                            },
+                            parentId: "search-pagination-container"
+                        })
+
+                    ]
+                })
             })
         });
     }

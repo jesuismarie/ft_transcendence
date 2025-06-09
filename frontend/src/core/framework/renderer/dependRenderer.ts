@@ -6,28 +6,22 @@ import type {StatefulElement} from "@/core/framework/widgets/statefulWidget";
 import {waitForElement, WidgetBinding} from "@/core/framework/core/widgetBinding";
 import {UniqueKey} from "@/core/framework/core/key";
 import {ErrorWidget, type WidgetElement} from "@/core/framework/renderer/ElementWidget";
+import type {DependWidget} from "@/core/framework/widgets/dependWidget";
 
-export class MultiChildRenderer extends StatelessElement {
-    constructor(widget: MultiChildWidget, public parentId?: string, key: string = new UniqueKey().toString()) {
+
+
+
+export class DependRenderer extends StatelessElement {
+    constructor(widget: DependWidget, public parentId?: string, key: string = new UniqueKey().toString()) {
         super(widget);
     }
 
-    async mount(parentDom: HTMLElement, context: BuildContext) {
-        await super.mount(parentDom, context);
-        const widget = this.widget as MultiChildWidget;
-        WidgetBinding.getInstance().postFrameCallback(() => {
-            (this.widget as StatelessWidget).afterMounted(this.currentContext);
-            for (const child of widget.children) {
-                const element = child.createElement() as WidgetElement;
-                element.parent = this;
-                child.afterMounted(element.currentContext);
-            }
-        })
+   async mount(parentDom: HTMLElement, context: BuildContext) {
+       console.log('ghuyiwroguhwiurghwouguwiogr')
+        this.dom = await this.render(parentDom, context);
     }
 
     async render(parentDom: HTMLElement, context: BuildContext): Promise<HTMLElement> {
-
-        // const composite = document.createElement("my-composite");
         const template = document.createElement("my-widget");
         if (this.parentId) {
             await waitForElement(this.parentId)
@@ -41,23 +35,40 @@ export class MultiChildRenderer extends StatelessElement {
 
         try {
 
-            const widget = this.widget as MultiChildWidget;
+            const widget = this.widget as DependWidget;
             this.child = widget.createElement() as WidgetElement;
 
-            for (const child of widget.children) {
+            for (const child of widget.params.dependWidgets) {
                 const element = child.createElement() as WidgetElement;
-                const childContext = new BuildContext(element as StatefulElement);
+                const childContext = new BuildContext(element);
                 element.parent = this;
-               await element.mount(template, childContext);
+                await element.mount(template, childContext);
             }
-            const comp = parent?.querySelectorAll('my-widget');
-            if (comp && comp.length > 0) {
-                comp.forEach((e) => e.remove())
-            }
+            // const comp = parent?.querySelectorAll('my-widget');
+            //
+            // if (comp && comp.length > 0) {
+            //     comp.forEach((e) => e.remove())
+            // }
+            // parent?.appendChild(template)
             parent?.appendChild(template)
+            WidgetBinding.getInstance().postFrameCallback(async () => {
+                for (const child of widget.params.children) {
+                    const element = child.createElement() as WidgetElement;
+                    const childContext = new BuildContext(element);
+                    element.parent = this;
+                    await element.mount(template, childContext);
+                }
+
+                widget.afterMounted?.(this.currentContext);
+            });
+
+
+
+
 
             return template;
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Error in StatelessElement.render:", error);
 
             // Create ErrorWidget with error + stack
@@ -69,7 +80,7 @@ export class MultiChildRenderer extends StatelessElement {
             this.child = errorWidget.createElement() as WidgetElement;
             this.child.parent = this;
             const parent = this.parentId ? mountPoint : parentDom;
-            await this.child.mount(template, new BuildContext(this.child));
+           await this.child.mount(template, new BuildContext(this.child));
             parent.appendChild(template);
 
             return template;

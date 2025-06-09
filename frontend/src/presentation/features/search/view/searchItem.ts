@@ -27,9 +27,8 @@ export class SearchItem extends StatelessWidget {
         search?.addEventListener('click', async () => {
             const authBloc = context.read(AuthBloc);
             const userId = authBloc.state.user?.userId;
-            console.log(`USERRRRRR ${authBloc} ${this.user}`);
+            console.log(`this user id ${this.user.id}`);
             if (this.user.id == userId) {
-                alert('tut azaxodit');
                 Navigator.of(context).pushNamed('/profile')
             }
             else {
@@ -40,23 +39,11 @@ export class SearchItem extends StatelessWidget {
 
 
     build(context: BuildContext): Widget {
-        return new BlocListener<SearchBloc, SearchState>({
-            blocType: SearchBloc,
-            listener: (context: BuildContext, state) => {
-                this.setup(context);
-            },
-            child: new BlocListener<ModalsBloc, ModalsState>({
-                blocType: ModalsBloc,
-                listener: (context: BuildContext, state) => {
-                    this.setup(context);
-                },
-                child: new HtmlWidget(`
+        return new HtmlWidget(`
     <div id="search-item-${this.user.id}" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
         <img src="${this.user.avatarPath}" alt="${this.user.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
         <span>${this.user.username}</span>
     </div>`)
-            })
-        })
-    }
+        }
 
 }

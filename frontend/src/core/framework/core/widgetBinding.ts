@@ -33,6 +33,19 @@ export class WidgetBinding {
     }
 }
 
+export function waitForElement(id: string, maxRetries = 10, delay = 16): Promise<HTMLElement> {
+    return new Promise((resolve, reject) => {
+        let tries = 0;
+        const check = () => {
+            const el = document.getElementById(id);
+            if (el) return resolve(el);
+            if (++tries >= maxRetries) return reject(new Error(`Element with id "${id}" not found after ${maxRetries} frames`));
+            requestAnimationFrame(check);
+        };
+        check();
+    });
+}
+
 
 type PostFrameCallback = () => void;
 

@@ -1,6 +1,6 @@
 import {BuildContext} from "@/core/framework/core/buildContext";
 import {type IWidgetElement, Widget} from "@/core/framework/core/base";
-import {WidgetBinding} from "@/core/framework/core/widgetBinding";
+import {waitForElement, WidgetBinding} from "@/core/framework/core/widgetBinding";
 import {EventBindingManager} from "@/core/framework/core/listenersRegisty";
 import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import {ErrorWidget, WidgetElement} from "@/core/framework/renderer/ElementWidget";
@@ -8,11 +8,21 @@ import {ErrorWidget, WidgetElement} from "@/core/framework/renderer/ElementWidge
 export abstract class StatefulWidget extends Widget {
     state?: State<StatefulWidget>;
 
+    _isMounted: boolean = false;
+
     createElement(): IWidgetElement {
         return new StatefulElement(this);
     }
 
     abstract createState(): State<StatefulWidget>;
+
+    onMount(isMounted: boolean): void {
+        this._isMounted = isMounted;
+    }
+
+    isMounted(): boolean {
+        return this._isMounted;
+    }
 }
 
 export abstract class State<T extends StatefulWidget> {
@@ -65,27 +75,34 @@ export class StatefulElement extends WidgetElement {
         super.unmount();
         this.state.onMount(false);
         // this.stateInitialized = false
-        this.didMount = false
+        this.didMount = false;
+        (this.widget as StatefulWidget).onMount(false);
     }
 
-    mount(parentDom: HTMLElement, context: BuildContext) {
-        super.mount(parentDom, context);
+    async mount(parentDom: HTMLElement, context: BuildContext) {
+        await super.mount(parentDom, context);
         WidgetBinding.getInstance().postFrameCallback(() => {
             this.state.onMount(true);
             this.state.afterMounted(this.currentContext);
             if (!this.didMount) {
                 this.didMount = true;
+                (this.widget as StatefulWidget).onMount(true);
                 this.state.didMounted(context);
+                (this.widget as StatefulWidget).onMount(true);
             }
         })
     }
 
-    render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
+    async render(parentDom: HTMLElement, context: BuildContext): Promise<HTMLElement> {
         if (!this.stateInitialized) {
             this.stateInitialized = true;
             this.state.initState(this.currentContext)
         }
         const template = document.createElement("my-widget");
+        if (this.parentId) {
+            waitForElement(this.parentId).then(() => {
+            })
+        }
         const mountPoint = this.parentId ? document.getElementById(this.parentId) : template;
 
         if (!mountPoint) {
@@ -100,7 +117,7 @@ export class StatefulElement extends WidgetElement {
 
 
             const parent = this.parentId ? mountPoint : parentDom;
-            this.child.mount(template, new BuildContext(this.child));
+            await this.child.mount(template, new BuildContext(this.child));
 
             parent.appendChild(template);
 
@@ -119,7 +136,7 @@ export class StatefulElement extends WidgetElement {
             this.child = errorWidget.createElement() as WidgetElement;
             this.child.parent = this;
             const parent = this.parentId ? mountPoint : parentDom;
-            this.child.mount(template, new BuildContext(this.child));
+            await this.child.mount(template, new BuildContext(this.child));
             parent.appendChild(template);
 
             return template;
