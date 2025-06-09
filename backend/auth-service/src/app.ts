@@ -4,7 +4,6 @@
 import Fastify, { FastifyInstance } from "fastify";
 import cors from '@fastify/cors';
 import rateLimit from "@fastify/rate-limit";
-import cookie from "@fastify/cookie";
 
 // Plugins
 import envPlugin from "./plugins/env";
@@ -28,7 +27,6 @@ const buildServer = () => {
     origin: true, // or (origin, cb) => cb(null, true)
     credentials: true
   });
-  app.register(cookie);
   // Register plugins
   app.register(envPlugin);
   app.register(errorEnvelope);
