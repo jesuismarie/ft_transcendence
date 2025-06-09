@@ -2,7 +2,10 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { services } from "../config";
 import axios from "axios";
 
-const excludedRoutes = ["*/health", "/metrics", "/public", "/auth-service"]; // Handlers that do not require authentication
+const excludedRoutes = ["/user-service/health",
+                        "/metrics", "/public",
+                        "/auth-service"
+]; // Handlers that do not require authentication
 
 export default async function authMiddleware(app: FastifyInstance) {
   app.addHook(

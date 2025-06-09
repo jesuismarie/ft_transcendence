@@ -2,7 +2,6 @@
 
 // Core Imports
 import Fastify, { FastifyInstance } from "fastify";
-import helmet from "@fastify/helmet";
 import cors from '@fastify/cors';
 import rateLimit from "@fastify/rate-limit";
 
@@ -13,18 +12,17 @@ import prismaPlugin from "./plugins/prisma";
 import validationPlugin from "./plugins/validation";
 import errorEnvelope from "./plugins/errorEnvelope";
 import userserviceClient from "./plugins/userserviceClient";
+import oauthGoogle from "./plugins/oauth-google";
 
 // Import routes
 import healthRoute from "./routes/health";
 import registerRoutes from "./routes/register";
 import authRoutes from "./routes/auth/routes";
-import oauthGoogle from "./plugins/oauth-google";
 import monitoringRoutes from "./routes/monitoring/routes";
 
 // Build the Fastify server
 const buildServer = () => {
   const app: FastifyInstance = Fastify({ logger: true });
-
   app.register(cors, {
     origin: true, // or (origin, cb) => cb(null, true)
     credentials: true

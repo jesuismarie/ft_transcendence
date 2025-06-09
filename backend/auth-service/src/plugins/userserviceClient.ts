@@ -71,7 +71,7 @@ const buildClient = ({ baseUrl, clusterToken } : UserServiceClientConfig): UserS
 	};
 	const findOrCreateOAuth = async (body: FindOrCreateOAuthBody): Promise<number> => {
 		const {email, provider, providerUserId, username} = body;
-		const {statusCode, body: resBody} = await request(`${baseUrl}/users/${email}`, {
+		const {statusCode, body: resBody} = await request(`${baseUrl}/users/email/${email}`, {
 			method: 'GET',
 			headers,
 		});
@@ -91,11 +91,13 @@ const buildClient = ({ baseUrl, clusterToken } : UserServiceClientConfig): UserS
 				}
 				throw err; });
 		}
-		else if (statusCode === 201) {
+		else if (statusCode === 200) {
 			const user = await resBody.json() as UserTypes.UserView;
 			return user.id;
 		}
 		else {
+			// Unexpected status code, throw an error
+			console.log("Unexpected status code:", statusCode, "Response body:", await resBody.text());
 			throw apiError('USER_NOT_FOUND', 'User not found', statusCode);
 		}
 	};
