@@ -16,9 +16,17 @@ export default async function getUserByIdRoute(app: FastifyInstance, userRepo: U
 			const res = await app.gameService.getGamestats({ Params: { user: view.id.toString() } });
 			view.wins = res.wins;
 			view.losses = res.losses;
+		}
+		catch (err) {
+			console.error('Error fetching gamestats for user:', view.username, err);
+			view.wins = 0;
+			view.losses = 0;
+		}
+		try {
+			console.log(`Is user ${view.id} online?`, app.isUserOnline(view.id));
 			view.online = app.isUserOnline(view.id);
 		}
-		catch (err) {}
+		catch (err) { console.error(err) }
 		return view;
 	});
 }
