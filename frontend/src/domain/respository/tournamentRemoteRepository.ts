@@ -8,4 +8,5 @@ export interface TournamentRemoteRepository {
     getAllTournaments(offset: number, limit: number): Promise<Either<GeneralException, TournamentInfoEntity>>
     deleteTournament(id: number, createdBy: string): Promise<Either<GeneralException, void>>;
     startTournament(id: number): Promise<Either<GeneralException, void>>;
+    registerToTournament(id: number, userId: number): Promise<Either<GeneralException, void>>;
 }

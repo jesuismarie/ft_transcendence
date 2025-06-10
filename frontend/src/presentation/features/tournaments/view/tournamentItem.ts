@@ -70,19 +70,26 @@ export class TournamentItem extends StatelessWidget {
                     builder: (context, state) => new SubmitButton({
                         className: 'start-tournament-btn px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800',
                         id: 'start-tournament-btn',
+                        label: 'Start',
                         isHidden: state.profile && state.profile.id == this.tournamentItem.created_by,
-                        parentId: "start-tournament-btn-content"
-    })
+                    }),
+                    parentId: "start-tournament-btn-content"
+
                 }),
                 new BlocBuilder<ProfileBloc, ProfileState>({
                     blocType: ProfileBloc,
                     buildWhen: (oldState, newState) => !oldState.equals(newState),
-                    builder: (context, state) => new SubmitButton({
+                    builder: (context, state) =>{
+
+                        console.log(`UUUUUUUUUUUUUUU:::::: ${state.profile?.id} ${this.tournamentItem.created_by}`)
+                        return  new SubmitButton({
                         className: 'delete-tournament-btn px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800',
                         id: 'delete-tournament-btn',
+                        label: 'Delete',
                         isHidden: state.profile && state.profile.id == this.tournamentItem.created_by,
-                        parentId: "delete-tournament-btn-content"
-                    })
+                    })},
+                    parentId: "delete-tournament-btn-content"
+
                 }),
                 new BlocBuilder<ProfileBloc, ProfileState>({
                     blocType: ProfileBloc,
@@ -90,9 +97,16 @@ export class TournamentItem extends StatelessWidget {
                     builder: (context, state) => new SubmitButton({
                         className: 'px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800',
                         id: 'register-tournament-btn',
-                        isHidden: state.profile && state.profile.id == this.tournamentItem.created_by,
-                        parentId: "register-tournament-btn-content"
-                    })
+                        label: 'Register',
+                        onClick: () => {
+                            if (state.profile) {
+                                context.read(TournamentBloc).registerToTournament(this.tournamentItem.id, state.profile.id).then(r => r);
+                            }
+                        },
+                        isHidden: state.profile && state.profile.id != this.tournamentItem.created_by,
+                    }),
+                    parentId: "register-tournament-btn-content"
+
                 })
             ]
         });

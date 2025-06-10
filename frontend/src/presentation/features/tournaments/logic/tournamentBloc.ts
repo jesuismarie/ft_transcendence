@@ -19,6 +19,24 @@ export class TournamentBloc extends Cubit<TournamentState> {
         this.emit(this.state.copyWith({isValid: name.length != 0}))
     }
 
+    async registerToTournament(id: number, userId: number): Promise<void> {
+        this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+        const res = await this.tournamentRemoteRepository.registerToTournament(id, userId);
+        res.when({
+            onError: (e) => {
+                let errorMessage: string | undefined;
+                if (e instanceof ApiException) {
+                    errorMessage = e.message;
+                } else {
+                    errorMessage = e.toString();
+                }
+                this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
+            }, onSuccess: (data) => {
+                this.emit(this.state.copyWith({status: TournamentStatus.Success}))
+            }
+        });
+    }
+
     async createTournament(name: string, maxPlayers: number, createdBy: string): Promise<void> {
         if (this.state.isValid) {
             this.emit(this.state.copyWith({status: TournamentStatus.Loading}))

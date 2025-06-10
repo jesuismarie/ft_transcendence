@@ -42,7 +42,8 @@ export class MatchHistory extends StatelessWidget {
 		</h3>
 		<div id="matches-preview" class="divide-y divide-gray-200">
 		</div>
-		<div id="match-list-btn-container"></div>`, this.parentId)],
+		<div id="match-list-btn-container"></div>
+        <div id="match-list-btn-container-view"></div>`, this.parentId)],
         children: [
             new BlocBuilder<MatchBloc, MatchState>({
                 blocType: MatchBloc,
@@ -61,7 +62,8 @@ export class MatchHistory extends StatelessWidget {
                     onClick: () => {
                         showModal(ModalConstants.matchesModalName)
                     }
-                })
+                }),
+                parentId: 'match-list-btn-container-view'
             })
 
         ]

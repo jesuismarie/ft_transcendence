@@ -17,6 +17,27 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
     constructor(@inject('ApiClient') private readonly apiClient: ApiClient) {
     }
 
+    async registerToTournament(id: number, userId: number): Promise<Either<GeneralException, void>> {
+        try {
+            const res = await this.apiClient.axiosClient().post(ApiConstants.registerToTournament, {
+                user_id: userId,
+                tournament_id: id,
+            });
+            if (res.status >= 200 && res.status < 400) {
+                return new Right(undefined);
+            } else {
+                return new Left(new GeneralException())
+            }
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
     async createTournament(name: string, maxPlayerCount: number, createdBy: string): Promise<Either<GeneralException, TournamentEntity>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.createTournament, {
