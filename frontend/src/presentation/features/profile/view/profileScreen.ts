@@ -56,7 +56,6 @@ export class ProfileScreen extends StatelessWidget {
     }
 
     build(context: BuildContext): Widget {
-        console.log(`PROFILEEEE TTTTTTTT--------::: ${(this.userId)}`)
 
         return new MultiBlocProvider({
             providers: [
@@ -94,7 +93,6 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("PROFILLEEE MOUNTEEDDDD")
 
         if (!Bindings.isBounded) {
             const authBloc = context.read(AuthBloc);
@@ -112,7 +110,6 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
             const searchBloc = context.read(SearchBloc);
             if (!this.searchController.isClosed()) {
                 this.searchController.addListener((e) => {
-                    console.log('DFGHJFGHJDFGHJ')
 
                     if (e.length > 3 && !searchBloc.isClosed) {
                         searchBloc.searchUser(e, searchBloc.state.offset, Constants.search_limit).then(r => r)
@@ -147,14 +144,11 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
     build(context: BuildContext): Widget {
         const modalState = context.read(ModalsBloc).state
         const navigator = Navigator.of(context);
-        // return new EmptyWidget()
         const authBloc = context.read(AuthBloc);
-        console.log(`log user id ${this.widget.userId}`);
 
         return new BlocListener<AuthBloc, AuthState>({
             blocType: AuthBloc,
             listener: (context, state) => {
-                console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
                 if (state.isRefresh && state.user?.userId) {
                     context.read(ProfileBloc).getUserProfile(state.user.userId.toString()).then(profile => {});
                 }
@@ -227,8 +221,6 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
                                         if (this.widget.userId && authState.user?.userId) {
                                             isHidden = authState.user.userId == (Number.parseInt(this.widget.userId!));
                                         }
-                                        console.log(`AAAAAAAAAAAAAAA::::: ${isHidden}`)
-                                        console.log(`UPCCCCCC::::::: ${state.profile?.id} ${(this.widget.userId ? Number.parseInt(this.widget.userId) : undefined)} ${isHidden}`)
                                         return new UpcomingTournamentWidget(isHidden, 'upcoming-tournaments-content-container')}})
                             })
                         ],

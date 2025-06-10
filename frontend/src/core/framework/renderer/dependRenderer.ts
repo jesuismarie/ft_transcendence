@@ -17,7 +17,6 @@ export class DependRenderer extends StatelessElement {
     }
 
    async mount(parentDom: HTMLElement, context: BuildContext) {
-       console.log('ghuyiwroguhwiurghwouguwiogr')
         this.dom = await this.render(parentDom, context);
     }
 

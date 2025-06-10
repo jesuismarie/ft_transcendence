@@ -9,14 +9,12 @@ import {SearchBloc} from "@/presentation/features/search/logic/searchBloc";
 import {ModalsBloc} from "@/presentation/features/modals/bloc/modalsBloc";
 
 export function provideBlocProviders(child: Widget): Widget {
-    console.log("PROVIDDDDDDDDD")
     return new MultiBlocProvider(
         {
             providers: [
                 new BlocProvider(
                     {
                         create: () => {
-                            console.log('AuthBloc created');
                            return  new AuthBloc(
                                 Resolver.authRepository(),
                                 Resolver.preferenceService()

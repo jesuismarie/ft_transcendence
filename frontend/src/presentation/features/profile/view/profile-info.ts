@@ -39,7 +39,6 @@ export class ProfileInfoContent extends State<ProfileInfo> {
         super.didMounted(context);
 
         this.setup(context);
-        console.log("PROFILE INFO MOUNTEEDDD")
     }
 
 
@@ -101,24 +100,19 @@ export class ProfileInfoContent extends State<ProfileInfo> {
 
 
     build(context: BuildContext): Widget {
-        console.log("BUILTTTTTTT PROFFF")
 
         const authBloc = BlocProvider.of<AuthBloc>(context, AuthBloc)
         const profileBloc = BlocProvider.of<ProfileBloc>(context, ProfileBloc);
-        console.log(`AAAAAAAAAA::::: ${authBloc.state.user?.userId}`)
 
-        console.log(`AVATARRRRRRRRR ${this.widget.profileState.selectedAvatarUrl}`);
 
 
         const showAddFriendButton = !(this.widget.userId || this.widget.userId === this.widget.profileState.profile?.id)
-        console.log(`PPPPPPP::::: ${this.widget.parentId}`);
         // return new HtmlWidget(`Hello World`, this.widget.parentId)
         return new BlocListener<ProfileBloc, ProfileState>(
             {
 
                 blocType: ProfileBloc,
                 listener: (context, profileState) => {
-                    console.log("VVVVVVVVV")
                     if (!profileState.isValid || profileState.status == ProfileStatus.Error) {
                         showError('avatar', profileState.errorMessage?.toString() ?? 'Unknown error');
                         profileBloc.resetStatus().then();
@@ -181,15 +175,12 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                             blocType: FriendBloc,
                             buildWhen: (oldState, newState) => oldState.isFriend != newState.isFriend,
                             builder: (_, friendState) => {
-                                console.log(`%%%%%%%%%%%%%%::::: ${state.user?.userId}`)
 
 
                                 let isHidden = !this.widget.userId;
                                 if (this.widget.userId && state.user?.userId) {
                                     isHidden = state.user.userId == (this.widget.userId)
                                 }
-                                // alert(isHidden)
-                                console.log(`FRINEEENDDDSTTTTT::: ${this.widget.userId} ${state.user?.userId}`)
 
                                 return new SubmitButton({
                                     onClick:  () => {
@@ -220,7 +211,6 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                 if (this.widget.userId && state.user?.userId) {
                                     isHidden = state.user.userId == (this.widget.userId)
                                 }
-                                console.log(`CURRRRR::::::: ${isHidden}`)
                                 return new AvatarContent(!isHidden)
                             },
                             parentId: 'avatar-content-container'
@@ -245,7 +235,6 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                 if (this.widget.userId && state.user?.userId) {
                                     isHidden = state.user.userId == (this.widget.userId)
                                 }
-                                console.log(`LLLLLLLLLLLLLLLLLLLLLLLL::::: ${state.user?.userId} ${this.widget.userId}`)
                                 return new SubmitButton({
                                     className: "mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]",
                                     isHidden: !isHidden,

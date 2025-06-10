@@ -53,7 +53,6 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
             }, onSuccess: (data) => {
-                console.log(`DATTTTAAA::::: ${JSON.stringify(data)}`)
                 this.emit(this.state.copyWith({status: TournamentStatus.Success, results: data}))
             }
         });

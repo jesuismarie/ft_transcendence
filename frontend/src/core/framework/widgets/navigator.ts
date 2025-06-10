@@ -133,7 +133,6 @@ export class NavigatorState extends State<Navigator> {
     }
 
     pop(): void {
-        console.log("AAAAA")
         window.history.back()
         if (this.stack.length > 1) {
             this.stack.pop();
@@ -156,7 +155,6 @@ export class NavigatorState extends State<Navigator> {
 
     build(context: BuildContext): Widget {
         context.logWidgetTree(context)
-        console.log("NAVIGATOR BUILTTTT")
 
         return this.stack[this.stack.length - 1];
     }

@@ -52,7 +52,6 @@ export class EditProfileContent extends StatelessWidget {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("MOUNTEDDDD");
         this.setup(context);
     }
 

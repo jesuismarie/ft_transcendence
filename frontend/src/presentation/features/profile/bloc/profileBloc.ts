@@ -18,7 +18,6 @@ export class ProfileBloc extends Cubit<ProfileState> {
     constructor(@inject('UserRepository') private userRemoteRepository: UserRemoteRepository) {
         const saved = localStorage.getItem("profile_state");
         let initialState: ProfileState;
-        console.log(`PROFILE BLOCCCC ${saved}`)
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
@@ -49,7 +48,6 @@ export class ProfileBloc extends Cubit<ProfileState> {
 
 
     async uploadAvatar(): Promise<void> {
-        console.log(`AAA::: ${this.state.profile?.id} ${this.state.selectedAvatar} ${this.state.isValid}`)
         if (this.state.profile?.id && this.state.selectedAvatar && this.state.isValid) {
             this.emit(this.state.copyWith({status: ProfileStatus.Loading}))
             const formData = new FormData();
@@ -120,7 +118,6 @@ export class ProfileBloc extends Cubit<ProfileState> {
             }))
         } else {
             const currentUser = this.state.profile;
-            console.log(`CURENUSERRR ${currentUser}`)
             if (currentUser && username !== currentUser.username || email !== currentUser.email && password != newPassword) {
                 this.emit(this.state.copyWith({status: ProfileStatus.Loading, errorMessage: undefined}));
                 const res = await this.userRemoteRepository.updateProfile(this.state.profile?.id, username, email);

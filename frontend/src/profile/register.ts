@@ -79,7 +79,6 @@ export function initRegistrationForm(context: BuildContext) {
 		const authLogic = context.read(AuthBloc)
 		await authLogic.register({username, password, email});
 		if (authLogic.state.status === AuthStatus.Success) {
-			console.log('Registration successful:');
 			await authLogic.resetState();
 
 			navigator.pushNamed( '/profile');

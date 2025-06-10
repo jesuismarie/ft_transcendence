@@ -24,7 +24,6 @@ export class AuthBloc extends Cubit<AuthState> {
     constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository,
                 @inject("PreferenceService") private readonly preferenceService: PreferenceService
     ) {
-        console.log("AUTH INITTTTT")
         const saved = localStorage.getItem("auth_state");
         let initialState: AuthState;
         if (saved) {
@@ -72,7 +71,6 @@ export class AuthBloc extends Cubit<AuthState> {
             onSuccess: (user) => {
                 this.preferenceService.setToken(user.accessToken);
                 this.preferenceService.setRefreshToken(user.refreshToken);
-                console.log(`register functionnnnnn ${user}`);
                 this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
             }
         });
@@ -87,13 +85,11 @@ export class AuthBloc extends Cubit<AuthState> {
         res.when({
             onError: (err: any) => {
 
-                // console.log('Error:', err)
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
                     errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
                 this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
-                // user = null;
             },
             onSuccess: (user) => {
                 this.preferenceService.setToken(user.accessToken);
@@ -109,19 +105,16 @@ export class AuthBloc extends Cubit<AuthState> {
         const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(accessToken);
         res.when({
             onError: (err: any) => {
-                console.log('Error:', err)
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
                     errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
                 this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage, isRefresh: false}));
-                // user = null;
             },
             onSuccess: (user) => {
                 this.preferenceService.setToken(user.accessToken);
                 this.preferenceService.setRefreshToken(user.refreshToken);
                 const newState = this.state.copyWith({status: AuthStatus.Success, user: user, isRefresh: false});
-                console.log(`STATEEE CHANGEEEDD :::: ${JSON.stringify(newState)}`)
                 this.emit(newState);
             }
         });

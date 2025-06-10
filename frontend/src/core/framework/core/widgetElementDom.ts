@@ -4,13 +4,9 @@ export class WidgetElementDom extends HTMLElement {
     }
 
     connectedCallback() {
-        // console.log(`<my-widget> connected to DOM`);
-        // Optionally set up initial content or attach children
     }
 
     disconnectedCallback() {
-        // console.log(`<my-widget> removed from DOM`);
-        // Cleanup logic if needed
     }
 
     setContent(content: HTMLElement | DocumentFragment) {

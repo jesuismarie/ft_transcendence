@@ -23,7 +23,6 @@ export abstract class WidgetElement implements IWidgetElement {
 
 
     async mount(parentDom: HTMLElement, context: BuildContext) {
-        // console.log(`RENDDDD::: ${parentDom.getAttribute('id')}`);
         this._isMounted = true;
         this.dom = await this.render(parentDom, context);
     }
@@ -125,7 +124,6 @@ export class InheritedProviderElement<T> extends WidgetElement {
             return parentDom
         }
         try {
-            console.log("HHHHHHH")
             this.child = this.widget.child.createElement() as WidgetElement;
             this.child.parent = this;
             await this.child.mount(parentDom, new BuildContext(this.child));

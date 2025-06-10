@@ -27,7 +27,6 @@ export class SearchItem extends StatelessWidget {
         search?.addEventListener('click', async () => {
             const authBloc = context.read(AuthBloc);
             const userId = authBloc.state.user?.userId;
-            console.log(`this user id ${this.user.id}`);
             if (this.user.id == userId) {
                 Navigator.of(context).pushNamed('/profile')
             }

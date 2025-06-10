@@ -38,8 +38,6 @@ export class FriendRepositoryImpl implements FriendRepository {
 
     async addFriend(id: number, friendId: number): Promise<Either<GeneralException, FriendAddResponse>> {
         try {
-            console.log(`friendId ${id}`)
-
             const res = await this.apiClient.axiosClient().post(`${ApiConstants.friends}`, {
                     userId: id,
                     friendId: friendId

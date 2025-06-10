@@ -15,14 +15,12 @@ export class AvatarContent extends StatelessWidget {
         const uploadBtn = document.getElementById('avatar-upload-btn')
         const avatarInput = document.getElementById('avatar-input') as HTMLInputElement | null;
 
-        console.log(`AVATARRRRR :::: ${avatarInput}`)
         uploadBtn?.addEventListener("click", (e) => {
             avatarInput?.click();
         });
 
         const profileBloc = context.read(ProfileBloc);
         avatarInput?.addEventListener("input", async () => {
-            console.log("CHANGEEEE")
             if (!avatarInput.files || avatarInput.files.length === 0)
                 return;
             await profileBloc.selectAvatar(avatarInput?.files[0]);

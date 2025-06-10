@@ -13,7 +13,6 @@ export class ApiClient {
     public axiosClient(): AxiosInstance {
         const token: string = this.preferenceService.getToken() ?? ''
 
-        console.log(`GGGGGGGGGGGGGGG:::: ${token}`);
         this._axiosClient = axios.create({
             baseURL: ApiConstants.baseUrlDev,
             headers: {

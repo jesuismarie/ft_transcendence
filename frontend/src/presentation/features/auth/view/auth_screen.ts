@@ -21,7 +21,6 @@ export class  AuthScreenState extends State<AuthScreen> {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("AUTHH MOUNTEDDDDD");
        this.setup(context);
 
 
@@ -34,21 +33,13 @@ export class  AuthScreenState extends State<AuthScreen> {
 
 
 
-        // if (authBloc.state.user) {
-        // console.log(`AUTH STATEEE:::: ${JSON.stringify(authBloc.state)}`)
-
-        // const authBloc = context.read(AuthBloc);
         const navigator = Navigator.of(context);
         const btn = document.getElementById('to-sign-in');
         const signupBtn = document.getElementById('to-sign-up');
         const tempProf = document.getElementById('temp-prof');
 
-        console.log(`AUTH STATEEE:::: ${JSON.stringify(authBloc.state)}`)
-        // context.logWidgetTree(context);
-        console.log(`BTNNNN:::: ${btn}`)
         btn?.addEventListener('click', e => {
             e.preventDefault();
-            console.log("NAVVVVV");
             navigator.pushNamed('/login')
         })
         signupBtn?.addEventListener('click', e => {
@@ -71,14 +62,11 @@ export class  AuthScreenState extends State<AuthScreen> {
 
 
     build(context: BuildContext): Widget {
-        // context.read(AuthBloc).validate()
 
-        console.log("AUTHH BULITTTTT");
         return new BlocListener<AuthBloc, AuthState>({
             blocType: AuthBloc,
             listener: (context, state) => {
                 this.setup(context);
-                console.log(`AUTH STATEEEEEEEEEE---- :::: ${JSON.stringify(state)}`);
 
             },
             child: new HtmlWidget(`

@@ -39,7 +39,6 @@ export class BuildContext implements IBuildContext{
     logWidgetTree(context: BuildContext) {
         let current: WidgetElement | undefined = context.element;
         while (current) {
-            console.log(current.widget.constructor.name);
             current = current.parent;
         }
     }

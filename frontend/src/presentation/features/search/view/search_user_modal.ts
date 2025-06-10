@@ -36,7 +36,6 @@ export class SearchUserModalState extends State<SearchUserModal> {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("SEARCHHH mOUNNDDDDD")
         this.setup(context);
     }
 

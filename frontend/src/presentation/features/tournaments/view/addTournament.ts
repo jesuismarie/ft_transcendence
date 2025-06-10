@@ -58,7 +58,6 @@ export class AddTournament extends StatelessWidget {
         saveBtn?.addEventListener("click", () => {
             if (!AddTournament.isSendRequest) {
                 clearErrors();
-                console.log(`NAMEEEEEE::: ${this.nameInputController.text}`)
                 const max_player_count = parseInt(this.capacityInputController.value)
                 tournamentBloc.validateTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '')
                 tournamentBloc.createTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '').then(r => r)

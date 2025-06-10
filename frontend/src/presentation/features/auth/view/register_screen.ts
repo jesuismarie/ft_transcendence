@@ -92,7 +92,6 @@ export class RegisterScreen extends StatelessWidget {
                 return;
 
             const authLogic = context.read(AuthBloc)
-            console.log("HHHHHH")
             await authLogic.register({username, password, email});
             // if (authLogic.state.status === AuthStatus.Success) {
             //     console.log('Registration successful:');

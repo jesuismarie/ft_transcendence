@@ -29,7 +29,6 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
                     accessToken: res.data.accessToken,
                     refreshToken: res.data.refreshToken,
                 };
-                console.log(`AAAAAAA:::::: ${res.data.accessAoken}`);
                 return new Right(user);
             }
             return new Left(new GeneralException());

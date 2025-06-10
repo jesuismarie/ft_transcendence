@@ -27,7 +27,6 @@ export class LoginScreen extends StatelessWidget {
 
         const btn = document.getElementById('close-btn-login');
         btn?.addEventListener('click', () => {
-            console.log("Clicccc")
             navigator.pop()
         })
         const googleLoginButton = document.getElementById('google-login-btn');

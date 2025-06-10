@@ -39,12 +39,7 @@ export class App extends StatelessWidget {
     }
 
     build(context: BuildContext): Widget {
-        console.log("HELLLLLLLLL")
-        // window.addEventListener('load', () => {
-        //     // AuthGuard.navigationGuard(context, routes)
-        // });
         return provideBlocProviders(new BuilderWidget((context) => {
-            console.log("AUTH STARTTTTT")
             const authBloc = context.read(AuthBloc);
 
             const preferenceService = Resolver.preferenceService();
@@ -55,7 +50,6 @@ export class App extends StatelessWidget {
                 return new MaterialApp(
                     {
                         routeListen: (context, url) => {
-                            console.log("HHHHHHHHHHHHH")
                             AuthGuard.navigationGuard(context!, routes);
                         },
                         navigatorKey: navigatorKey,

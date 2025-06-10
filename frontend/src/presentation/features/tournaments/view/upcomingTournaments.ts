@@ -20,7 +20,6 @@ export class UpcomingTournaments extends StatelessWidget {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("TOURNAMENTS INITTTTT");
         const openModalBtn = document.getElementById("add-tournament-preview-btn") as HTMLButtonElement | null;
         if (!Bindings.isTournamentBounded) {
 
@@ -54,11 +53,9 @@ export class UpcomingTournaments extends StatelessWidget {
                         blocType: TournamentBloc,
                         buildWhen: (oldState, newState) => !oldState.equals(newState),
                         builder: (context, state) => {
-                            // console.log(`TOURNAMENT RESSSSS:::: ${JSON.stringify(state.results)}`);
                             if (state.status == TournamentStatus.Loading) {
                                 return new HtmlWidget(`Loading`)
                             }
-                            console.log(`TOURNAMENT RESSSSS:::: ${JSON.stringify(state.results)}`);
                             return new TournamentList(state.results ?? {totalCount: 0, tournament: []})
                         },
 

@@ -63,7 +63,6 @@ export async function initPersonalData(context: BuildContext, id: number) {
         if (!username || !currentUserId || !targetUserId)
             throw new Error("Username is required to load user profile");
 
-        // console.log(`CURRRRR:::: ${JSON.parse(currentUser!).accessToken}`);
 
         const user = profileBloc.state.profile;
         // const res = await fetch(`${ApiConstants.users}/:${targetUserId}`, {
@@ -71,12 +70,10 @@ export async function initPersonalData(context: BuildContext, id: number) {
         //     headers: {Authorization: `Bearer ${JSON.parse(currentUser!).accessToken}`}
         //     // credentials: 'include'
         // });
-        // console.log("LLLLLL", res instanceof HTMLElement);
         // if (!res.ok)
         //     throw new Error("Failed to load user profile");
         // const user: UserView = await res.json();
 
-			// console.log("USSSSSSSS", user);
         // let targetUserId = 0;
         // let currentUserId = 0;
         // const user: UserView = {

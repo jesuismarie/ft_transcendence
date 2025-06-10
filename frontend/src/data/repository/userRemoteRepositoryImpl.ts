@@ -27,7 +27,6 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
                     avatar: res.data.avatar,
                 }
 
-                console.log(`ES INCH AVATAR AA ${JSON.stringify(user)}`);
                 return new Right(user);
             } else {
                 return new Left(new GeneralException())
@@ -75,7 +74,6 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
                 return new Left(new GeneralException());
             }
         } catch (e) {
-            console.log(`RRRRRRRR:::: ${JSON.stringify(e)}`);
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
                 return new Left(new ApiException(500, error.message, error));
