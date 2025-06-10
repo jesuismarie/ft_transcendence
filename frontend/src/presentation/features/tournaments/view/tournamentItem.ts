@@ -10,6 +10,7 @@ import type {FriendUser} from "@/domain/entity/friendUser";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {Bindings} from "@/presentation/features/bindings";
 
 export class TournamentItem extends StatelessWidget {
     constructor(private tournamentItem: TournamentInfoDetailsEntity) {
@@ -26,8 +27,11 @@ export class TournamentItem extends StatelessWidget {
         })
         const currentUser = context.read(ProfileBloc).state.profile;
         deleteBtn?.addEventListener('click', () => {
-            if (currentUser) {
-                tournamentBloc.deleteTournament(this.tournamentItem.id, currentUser.username).then(r => r);
+            if (!Bindings.isTournamentItemBounded) {
+                if (currentUser) {
+                    tournamentBloc.deleteTournament(this.tournamentItem.id, currentUser.username).then(r => r);
+                }
+                Bindings.isTournamentItemBounded = true;
             }
         })
     }

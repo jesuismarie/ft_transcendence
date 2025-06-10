@@ -72,7 +72,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
         }
     }
 
-    async getUserProfile(id: string, isOtherProfile: boolean): Promise<void> {
+    async getUserProfile(id: string): Promise<void> {
         this.emit(this.state.copyWith({status: ProfileStatus.Loading}))
         const res = await this.userRemoteRepository.getProfile(id);
         res.when({
@@ -107,9 +107,6 @@ export class ProfileBloc extends Cubit<ProfileState> {
     }
 
 
-    setStatus(status: ProfileStatus) {
-        this.emit(this.state.copyWith({status: status}))
-    }
 
     async onSaveProfile({username, email, password, newPassword, confirmPassword}: ProfileValueObject) {
         if (!this.validateForm({username, email, password, newPassword, confirmPassword})) {
@@ -158,7 +155,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
                         })
                     }
                 });
-                await this.getUserProfile(currentUser.id.toString(), false);
+                await this.getUserProfile(currentUser.id.toString());
             }
         }
     }

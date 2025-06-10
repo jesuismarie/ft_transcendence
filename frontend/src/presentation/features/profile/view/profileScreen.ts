@@ -40,11 +40,19 @@ import type {ModalsState} from "@/presentation/features/modals/bloc/modalsState"
 import {DependWidget} from "@/core/framework/widgets/dependWidget";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {TextController} from "@/core/framework/controllers/textController";
+import {UpcomingTournamentWidget} from "@/presentation/features/tournaments/view/upcomingTournamentWidget";
+import {Bindings} from "@/presentation/features/bindings";
+import {initWipeText} from "@/animation/animation";
 
 
 export class ProfileScreen extends StatelessWidget {
     constructor(public userId?: string) {
         super();
+    }
+
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
+        initWipeText();
     }
 
     build(context: BuildContext): Widget {
@@ -88,49 +96,53 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
         super.didMounted(context);
         console.log("PROFILLEEE MOUNTEEDDDD")
 
-        const authBloc = context.read(AuthBloc);
-        const id = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
+        if (!Bindings.isBounded) {
+            const authBloc = context.read(AuthBloc);
+            const id = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
 
-        const userId = id ?? authBloc.state.user?.userId;
-        if (userId) {
-            context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {
-            })
-        }
-        const friendBloc = context.read(FriendBloc);
-        if (userId && !friendBloc.isClosed) {
-            friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
-        }
-        const searchBloc = context.read(SearchBloc);
-        if (!this.searchController.isClosed()) {
-            this.searchController.addListener((e) => {
-                console.log('DFGHJFGHJDFGHJ')
+            const userId = id ?? authBloc.state.user?.userId;
+            if (userId) {
+                context.read(ProfileBloc).getUserProfile(userId.toString()).then(profile => {
+                })
+            }
+            const friendBloc = context.read(FriendBloc);
+            if (userId && !friendBloc.isClosed) {
+                friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
+            }
+            const searchBloc = context.read(SearchBloc);
+            if (!this.searchController.isClosed()) {
+                this.searchController.addListener((e) => {
+                    console.log('DFGHJFGHJDFGHJ')
 
-                if (e.length > 3 && !searchBloc.isClosed) {
-                    searchBloc.searchUser(e, searchBloc.state.offset, Constants.search_limit).then(r => r)
-                }
-            })
-        }
-    }
-
-    setup(context: BuildContext) {
-
-        const authBloc = context.read(AuthBloc);
-
-
-        // if (authBloc.state.user) {
-
-
-        // }
-
-        const id = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
-
-        const userId = id ?? authBloc.state.user?.userId;
-        if (userId) {
-            context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {
-            })
-            // friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
+                    if (e.length > 3 && !searchBloc.isClosed) {
+                        searchBloc.searchUser(e, searchBloc.state.offset, Constants.search_limit).then(r => r)
+                    }
+                })
+            }
+            Bindings.isBounded = true
+            Bindings.isTournamentBounded = false;
         }
     }
+
+    // setup(context: BuildContext) {
+    //
+    //     const authBloc = context.read(AuthBloc);
+    //
+    //
+    //     // if (authBloc.state.user) {
+    //
+    //
+    //     // }
+    //
+    //     const id = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
+    //
+    //     const userId = id ?? authBloc.state.user?.userId;
+    //     if (userId) {
+    //         context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {
+    //         })
+    //         // friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
+    //     }
+    // }
 
     build(context: BuildContext): Widget {
         const modalState = context.read(ModalsBloc).state
@@ -139,22 +151,17 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
         const authBloc = context.read(AuthBloc);
         console.log(`log user id ${this.widget.userId}`);
 
-        return new BlocListener<ModalsBloc, ModalsState>({
-            listener: (context: BuildContext) => {
-                // this.setup(context);
+        return new BlocListener<AuthBloc, AuthState>({
+            blocType: AuthBloc,
+            listener: (context, state) => {
+                console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+                if (state.isRefresh && state.user?.userId) {
+                    context.read(ProfileBloc).getUserProfile(state.user.userId.toString()).then(profile => {});
+                }
             },
-            blocType: ModalsBloc,
-            child: new BlocBuilder<ProfileBloc, ProfileState>(
-                {
-                    buildWhen: (oldState, newState) => !isEqual(oldState.profile, newState.profile),
-                    blocType: ProfileBloc,
-                    builder: (context, state) => {
-                        console.log(`IIIIIIIII::::: ${state.isValid}`);
-                        const currentId = state.profile?.id;
-                        const otherId = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
-                        return new DependComposite({
-                            dependWidgets: [
-                                new HtmlWidget(`
+            child: new DependComposite({
+                dependWidgets: [
+                    new HtmlWidget(`
         <div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center">
 			<h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[3rem] sm:text-[4rem] md:text-[5rem] font-bold select-none text-primary animate-neonGlow">
 				Pong Profile!
@@ -171,10 +178,8 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 						<!-- Match History -->
 						<div id="match-history-details" class="rounded-md px-5 py-4 border border-hover">
 						</div>
-
-						<!-- Upcoming Tournaments -->
-						<div id="upcoming-tournaments" class="${otherId != currentId ? "hidden" : ""} rounded-md px-5 py-4 border border-hover">
-						</div>
+                           <div id="upcoming-tournaments-content-container"></div>
+						
 					</div>
 				</div>
 			</div>
@@ -203,25 +208,65 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 		<div id="add-tournament-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
 		</div>`)],
 
-                            children: [
-                                    new AddTournament('add-tournament-modal'),
-                                    new UpcomingTournaments('upcoming-tournaments'),
-                                    new MatchHistory('match-history-details'),
-                                    new FriendsView('friends-modal'),
+                children: [
+                    // new HtmlWidget(`HELOORRRR`),
+                    new AddTournament('add-tournament-modal'),
+                    new DependComposite({
+                        dependWidgets: [
+                            new BlocBuilder<AuthBloc, AuthState>({
+                                buildWhen: (oldState, newState) => !oldState.equals(newState),
+                                blocType: AuthBloc, builder: (context, authState) => new BlocBuilder<ProfileBloc, ProfileState>({
+                                    blocType: ProfileBloc,
+                                    buildWhen: (oldState, newState) => !oldState.equals(newState),
+                                    builder:(context, state) => {
+                                        // let isHidden = !this.widget.userId;
+                                        // if (this.widget.userId && state.profile?.id) {
+                                        //     isHidden = state.profile!.id != (Number.parseInt(this.widget.userId!))
+                                        // }
+                                        let isHidden = !this.widget.userId;
+                                        if (this.widget.userId && authState.user?.userId) {
+                                            isHidden = authState.user.userId == (Number.parseInt(this.widget.userId!));
+                                        }
+                                        console.log(`AAAAAAAAAAAAAAA::::: ${isHidden}`)
+                                        console.log(`UPCCCCCC::::::: ${state.profile?.id} ${(this.widget.userId ? Number.parseInt(this.widget.userId) : undefined)} ${isHidden}`)
+                                        return new UpcomingTournamentWidget(isHidden, 'upcoming-tournaments-content-container')}})
+                            })
+                        ],
+                        children: [
+                            new DependComposite({
+                                dependWidgets: [
+                                    new BlocBuilder<ProfileBloc, ProfileState>(
+                                        {
+                                            buildWhen: (oldState, newState) => !isEqual(oldState.profile, newState.profile),
+                                            blocType: ProfileBloc,
+                                            builder: (context, state) =>
+                                                new ProfileInfo(state, this.widget.userId ? Number.parseInt(this.widget.userId) : undefined, 'profile-information-details'), }),
+                                ],
+                                children: [
                                     new EditProfile('edit-profile-modal'),
+                                    new FriendsView('friends-modal'),
+                                    new MatchHistory('match-history-details'),
                                     new UpcomingTournamentsModal('tournament-modal'),
                                     new MatchHistoryModal('matches-modal'),
-                                    new ProfileInfo(state, otherId, 'profile-information-details',),
                                     new NavigationMenu('profile-navigation'),
-
                                     new SearchUserModal(this.searchController,'search-users-modal')
-                            ]
 
 
-                        })
+                                ]
+                            }, ),
+                            // new UpcomingTournaments('upcoming-tournaments'),
+                        ]
+                    }),
 
-                    }
-                })
+
+
+
+                ],
+
+
+            })
         })
+
+
     }
 }

@@ -72,7 +72,8 @@ export class FriendsView extends StatelessWidget {
             blocType: FriendBloc,
             buildWhen: (oldState, newState) => !oldState.equals(newState),
             builder: (context, state) =>
-                new DependComposite({dependWidgets: [new MountAwareComposite((context) => new HtmlWidget(`
+                new DependComposite({
+                    dependWidgets: [new MountAwareComposite((context) => new HtmlWidget(`
         <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 				<div class="px-4 pt-5 pb-4 sm:p-6">
 					<h3 class="text-lg border-b border-hover pb-2">
@@ -91,7 +92,7 @@ export class FriendsView extends StatelessWidget {
 				</div>
 			</div>
         `, this.parentId))],
-                   children: [new MountAwareComposite((context) => new FriendList(), 'friend-modal-list')]
+                    children: [new FriendList('friend-modal-list')]
                 })
         });
     }

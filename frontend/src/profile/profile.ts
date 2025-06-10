@@ -88,9 +88,9 @@ export async function initPersonalData(context: BuildContext, id: number) {
         // 	avatar: "https://example.com/avatar.png"
         // };
         // searchUsers();
-        viewFriends(context, user.id);
-        viewMatches(user.id, user.username);
-        initData(user);
+        // viewFriends(context, user.id);
+        // viewMatches(user.id, user.username);
+        // initData(user);
 
         if (targetUserId === currentUserId) {
             // initAvatarUpload(context, targetUserId);
@@ -98,21 +98,21 @@ export async function initPersonalData(context: BuildContext, id: number) {
             // editProfile(user);
             // await setup2FA();
             // upcomingTournaments.classList.remove("hidden");
-            initTournaments(username);
-            addTournament(context);
+            // initTournaments(username);
+            // addTournament(context);
         } else {
             // editProfileBtn.classList.add("hidden");
             // upcomingTournaments.classList.add("hidden");
-            const isAlreadyFriend = await checkIfFriend(currentUserId, targetUserId);
-            if (!isAlreadyFriend) {
-                friendRequestBtn.classList.remove("hidden");
-                friendRequestBtn.addEventListener("click", () => {
-                    addFriend(currentUserId, targetUserId, friendRequestBtn);
-                });
-            } else {
-                friendRequestBtn.classList.add("hidden");
-            }
-            addTournamentPreviewBtn.classList.add("hidden");
+            // const isAlreadyFriend = await checkIfFriend(currentUserId, targetUserId);
+            // if (!isAlreadyFriend) {
+            //     friendRequestBtn.classList.remove("hidden");
+            //     friendRequestBtn.addEventListener("click", () => {
+            //         addFriend(currentUserId, targetUserId, friendRequestBtn);
+            //     });
+            // } else {
+            //     friendRequestBtn.classList.add("hidden");
+            // }
+            // addTournamentPreviewBtn.classList.add("hidden");
         }
     } catch (err) {
         console.error("Error loading personal data:", err);

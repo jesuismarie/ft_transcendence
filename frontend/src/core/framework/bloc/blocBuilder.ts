@@ -59,10 +59,10 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
     constructor(widget: BlocBuilder<B, S>, private parentId?: string) {
         super(widget);
         this.widget = widget;
+        this.currentContext = new BuildContext(this);
     }
 
     async mount(parentDom: HTMLElement, context: BuildContext): Promise<void> {
-        this.context = context;
 
         if (this.widget.bloc) {
             this.bloc = this.widget.bloc;
@@ -85,6 +85,7 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
                 this.rebuild();
             } else if (!this.currentState.equals(newState)) {
                 this.currentState = newState;
+                this.rebuild();
             }
         });
         this.dom = await this.render(parentDom, context);
@@ -98,18 +99,18 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
     rebuild() {
         if (!this.rebuildScheduled) {
             this.rebuildScheduled = true;
-            requestAnimationFrame(() => {
+            requestAnimationFrame(async () => {
                 this.rebuildScheduled = false;
-                this.performRebuild();
+               await this.performRebuild();
 
             });
         }
 
     }
 
-    private performRebuild() {
+    private async performRebuild() {
         this.unmount();
-        this.mount(this.dom!, new BuildContext(this)).then(()=>{});
+        await this.mount(this.dom!, new BuildContext(this));
     }
 
     unmount() {
@@ -122,7 +123,7 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
     async render(parentDom: HTMLElement, context: BuildContext): Promise<HTMLElement> {
         const template = document.createElement("my-widget");
         const builtWidget = this.widget.builder(this.currentContext, this.currentState);
-        this.child= builtWidget.createElement() as WidgetElement;
+        this.child = builtWidget.createElement() as WidgetElement;
         this.child.parent = this;
         if (this.parentId) {
             await waitForElement(this.parentId)
@@ -132,10 +133,10 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
         if (!mountPoint) {
             throw new Error(`Mount point with id "${this.parentId}" not found.`);
         }
-        await this.child.mount(template, this.currentContext);
+        // await this.child.mount(template, this.currentContext);
 
         const parent = this.parentId ? mountPoint : parentDom;
-        await this.child.mount(template, new BuildContext(this.child));
+        await this.child.mount(template,this.child.currentContext);
         const comp = parent?.querySelectorAll('my-widget');
         if (comp && comp.length > 0) {
             comp.forEach((e) => e.remove())

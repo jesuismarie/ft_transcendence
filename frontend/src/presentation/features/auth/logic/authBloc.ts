@@ -13,12 +13,13 @@ import {ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import type {PreferenceService} from "@/core/services/preference_service";
 import '@/core/extensions/stringExtension';
+import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
 
 
 @injectable()
 export class AuthBloc extends Cubit<AuthState> {
 
-    // persistenceService: PersistenceService
+    persistenceService: PersistenceService
 
     constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository,
                 @inject("PreferenceService") private readonly preferenceService: PreferenceService
@@ -38,8 +39,8 @@ export class AuthBloc extends Cubit<AuthState> {
         }
 
         super(initialState);
-        // this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
-        // this.persistenceService.init();
+        this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
+        this.persistenceService.init();
     }
 
 
@@ -89,7 +90,7 @@ export class AuthBloc extends Cubit<AuthState> {
                 // console.log('Error:', err)
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
-                    // errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
                 this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
                 // user = null;
@@ -103,21 +104,23 @@ export class AuthBloc extends Cubit<AuthState> {
     }
 
     async requestRefresh(accessToken: string): Promise<void> {
+        AddTournament.isSendRequest = false;
+        this.emit(this.state.copyWith({isRefresh: true}))
         const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(accessToken);
         res.when({
             onError: (err: any) => {
                 console.log('Error:', err)
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
-                    // errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
-                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage, isRefresh: false}));
                 // user = null;
             },
             onSuccess: (user) => {
                 this.preferenceService.setToken(user.accessToken);
                 this.preferenceService.setRefreshToken(user.refreshToken);
-                const newState = this.state.copyWith({status: AuthStatus.Success, user: user});
+                const newState = this.state.copyWith({status: AuthStatus.Success, user: user, isRefresh: false});
                 console.log(`STATEEE CHANGEEEDD :::: ${JSON.stringify(newState)}`)
                 this.emit(newState);
             }
@@ -132,7 +135,7 @@ export class AuthBloc extends Cubit<AuthState> {
                 console.log('Error:', err)
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
-                    // errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
                 this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
                 // user = null;

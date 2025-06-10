@@ -49,7 +49,7 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
             const res = await this.apiClient.axiosClient().delete(`${ApiConstants.deleteTournament}`, {
                 method: 'DELETE',
                 headers: {'Content-Type': 'application/json'},
-                data: JSON.stringify({id, createdBy}),
+                data: {tournament_id: id, created_by: createdBy},
             });
 
             if (res.status >= 200 && res.status < 400) {
@@ -73,7 +73,7 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
             if (res.status >= 200 && res.status < 400) {
                 const entity: TournamentInfoEntity = {
                     totalCount: res.data.totalCount,
-                    tournament: res.data.tournament,
+                    tournaments: res.data.tournaments,
                 }
                 return new Right(entity);
             } else {

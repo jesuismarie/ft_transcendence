@@ -16,10 +16,12 @@ export class TournamentList extends StatelessWidget {
     }
 
     build(context: BuildContext): Widget {
-        if (this.tournaments.totalCount == 0 || this.tournaments.tournament.length == 0) {
+        console.log(`TournamentList BUILTTTTTT ${JSON.stringify(this.tournaments)}`)
+        if (this.tournaments.totalCount == 0 || !this.tournaments.tournaments || this.tournaments.tournaments.length == 0) {
             return new HtmlWidget(`<p class="text-gray-500 p-4">No tournaments available.</p>`)
         }
-        return new Composite([...this.tournaments.tournament.map((e, index) => new TournamentItem(e))])
+        console.log("HERRRRRRRRRRRRRRRRRRRRRR");
+        return new Composite([...this.tournaments.tournaments.map((e, index) => new TournamentItem(e))])
     }
 
 }

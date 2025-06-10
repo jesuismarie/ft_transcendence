@@ -18,30 +18,35 @@ export class FriendState implements Equatable<FriendState> {
     readonly results: FriendEntity;
     readonly offset: number;
     readonly query?: string;
+    readonly isFriend: boolean;
     readonly errorMessage?: string;
 
     constructor(params: {
         status?: FriendStatus;
         results?: FriendEntity;
-        readonly offset?: number;
-        readonly query?: string;
+        isFriend?: boolean;
+        offset?: number;
+        query?: string;
         errorMessage?: string;
     }) {
         this.status = params.status ?? FriendStatus.Initial;
         this.results = params.results ?? {totalCount: 0, friends: []}
         this.offset = params.offset ?? 0;
         this.query = params.query;
+        this.isFriend = params.isFriend ?? false;
         this.errorMessage = params.errorMessage;
     }
 
     copyWith(params: Partial<{
         status: FriendStatus;
-        readonly offset?: number;
-        readonly query?: string;
+        offset?: number;
+        isFriend?: boolean;
+        query?: string;
         results?: FriendEntity;
         errorMessage?: string;
     }>): FriendState {
         return new FriendState({
+            isFriend: params.isFriend ?? this.isFriend,
             status: params.status ?? this.status,
             results: params.results ?? this.results,
             offset: params.offset ?? this.offset,

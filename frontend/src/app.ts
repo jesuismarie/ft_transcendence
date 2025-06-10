@@ -51,7 +51,6 @@ export class App extends StatelessWidget {
             const token = preferenceService.getRefreshToken();
             if (token && token.length > 0) {
                 authBloc.requestRefresh(token).then()
-
             }
                 return new MaterialApp(
                     {
@@ -76,3 +75,5 @@ export class App extends StatelessWidget {
         ));
     }
 }
+
+

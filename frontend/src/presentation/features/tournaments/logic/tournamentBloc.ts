@@ -7,6 +7,8 @@ import {showError} from "@/utils/error_messages";
 import {startTournament} from "@/profile/tournament_details";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import type {Either} from "@/core/models/either";
+import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
+import {Bindings} from "@/presentation/features/bindings";
 
 export class TournamentBloc extends Cubit<TournamentState> {
     constructor(@inject('TournamentRepository') private tournamentRemoteRepository: TournamentRemoteRepository) {
@@ -35,6 +37,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 }
             });
         }
+        AddTournament.isSendRequest = false;
     }
 
    async getAllTournaments(offset: number, limit: number) {
@@ -50,6 +53,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
             }, onSuccess: (data) => {
+                console.log(`DATTTTAAA::::: ${JSON.stringify(data)}`)
                 this.emit(this.state.copyWith({status: TournamentStatus.Success, results: data}))
             }
         });
@@ -89,10 +93,12 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
+        Bindings.isTournamentItemBounded = false;
     }
 
     resetAfterSubmit() {
         this.emit(this.state.copyWith({isValid: true, status: TournamentStatus.Initial, errorMessage: undefined}));
+        // AddTournament.isSendRequest = false;
     }
 
 }

@@ -15,27 +15,32 @@ import type { UserEntity } from "@/domain/entity/user_entity";
 
 export class AuthState implements Equatable<AuthState>{
     readonly status: AuthStatus;
+    readonly  isRefresh: boolean;
     readonly user?: UserEntity;
     readonly errorMessage?: string;
 
     constructor(params: {
         status?: AuthStatus;
         user?: UserEntity;
+        isRefresh?: boolean;
         errorMessage?: string;
     }) {
         this.status = params.status ?? AuthStatus.Initial;
         this.user = params.user;
+        this.isRefresh = params.isRefresh ?? false;
         this.errorMessage = params.errorMessage;
     }
 
     copyWith(params: Partial<{
         status: AuthStatus;
         user?: UserEntity;
+        isRefresh?: boolean;
         errorMessage?: string;
     }>): AuthState {
         return new AuthState({
             status: params.status ?? this.status,
             user: params.user ?? this.user,
+            isRefresh: params.isRefresh ?? this.isRefresh,
             errorMessage: params.errorMessage ?? this.errorMessage,
         });
     }

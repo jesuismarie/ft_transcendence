@@ -86,17 +86,7 @@ export class SearchUserModalState extends State<SearchUserModal> {
     }
 
     build(context: BuildContext): Widget {
-        return new BlocListener<ModalsBloc, ModalsState>({
-            blocType: ModalsBloc,
-            listener: (context: BuildContext, state) => {
-                // this.setup(context);
-            },
-            child: new BlocListener<SearchBloc, SearchState>({
-                listener: (context: BuildContext, state) => {
-                    // this.setup(context);
-                },
-                blocType: SearchBloc,
-                child: new DependComposite({
+        return new DependComposite({
                     dependWidgets: [
                         new HtmlWidget(`
     <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
@@ -148,8 +138,6 @@ export class SearchUserModalState extends State<SearchUserModal> {
                         })
 
                     ]
-                })
-            })
         });
     }
 

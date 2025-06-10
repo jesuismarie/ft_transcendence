@@ -30,7 +30,7 @@ export class TournamentState implements Equatable<TournamentState>{
         this.status = params.status ?? TournamentStatus.Initial;
         this.createdTournament = params.createdTournament;
         this.isValid = params.isValid ?? true;
-        this.results = params.results ?? {totalCount: 0, tournament: []};
+        this.results = params.results ?? {totalCount: 0, tournaments: []};
         this.errorMessage = params.errorMessage;
     }
 

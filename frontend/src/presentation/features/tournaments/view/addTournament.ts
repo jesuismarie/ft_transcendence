@@ -18,34 +18,13 @@ import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {SelectController} from "@/core/framework/controllers/selectController";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 
+
 export class AddTournament extends StatelessWidget {
-    constructor(public parentId?: string) {
-        super();
-    }
-
-    build(context: BuildContext): Widget {
-        return new BlocProvider({
-            create: () => new TournamentBloc(Resolver.tournamentRepository()),
-            child: new AddTournamentContent(this.parentId)
-        });
-    }
-
-}
-
-export class AddTournamentContent extends StatefulWidget {
-
-    createState(): State<AddTournamentContent> {
-        return new AddTournamentContentState();
-    }
 
     constructor(public parentId?: string) {
         super();
     }
 
-
-}
-
-class AddTournamentContentState extends State<AddTournamentContent> {
 
     nameInputController: TextController = new TextController()
     capacityInputController: SelectController = new SelectController()
@@ -53,10 +32,9 @@ class AddTournamentContentState extends State<AddTournamentContent> {
     didMounted(context: BuildContext) {
         super.didMounted(context);
         // addTournament(context);
-
         this.setup(context);
     }
-
+    static isSendRequest = false;
     setup(context: BuildContext) {
         const profileBloc = context.read(ProfileBloc)
         const tournamentBloc = context.read(TournamentBloc);
@@ -78,12 +56,15 @@ class AddTournamentContentState extends State<AddTournamentContent> {
         }
 
         saveBtn?.addEventListener("click", () => {
-            clearErrors();
-            console.log(`NAMEEEEEE::: ${this.nameInputController.text}`)
-            const max_player_count = parseInt(this.capacityInputController.value)
-            tournamentBloc.validateTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '')
-            tournamentBloc.createTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '').then(r => r)
-            tournamentBloc.resetAfterSubmit()
+            if (!AddTournament.isSendRequest) {
+                clearErrors();
+                console.log(`NAMEEEEEE::: ${this.nameInputController.text}`)
+                const max_player_count = parseInt(this.capacityInputController.value)
+                tournamentBloc.validateTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '')
+                tournamentBloc.createTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '').then(r => r)
+                AddTournament.isSendRequest = true
+                tournamentBloc.resetAfterSubmit()
+            }
         });
     }
 
@@ -127,7 +108,7 @@ class AddTournamentContentState extends State<AddTournamentContent> {
                 <button id="add-tournament-btn" type="button" class="bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Add</button>
                 <button id="close-add-tournament-modal" type="button" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
             </div>
-        </div>`, this.widget.parentId)
+        </div>`, this.parentId)
             });
     }
 

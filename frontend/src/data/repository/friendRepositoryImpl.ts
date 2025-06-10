@@ -85,10 +85,8 @@ export class FriendRepositoryImpl implements FriendRepository {
     async removeFriend(id: number, friendId: number): Promise<Either<GeneralException, void>> {
         try {
             const res = await this.apiClient.axiosClient().post(`${ApiConstants.friends}`, {
-                data: {
                     userId: id,
                     friendId: friendId
-                }
             });
             if (res.status >= 200 && res.status < 400) {
                 return new Right(undefined);

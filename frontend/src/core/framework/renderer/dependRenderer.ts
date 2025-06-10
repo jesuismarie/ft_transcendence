@@ -13,7 +13,7 @@ import type {DependWidget} from "@/core/framework/widgets/dependWidget";
 
 export class DependRenderer extends StatelessElement {
     constructor(widget: DependWidget, public parentId?: string, key: string = new UniqueKey().toString()) {
-        super(widget);
+        super(widget, parentId);
     }
 
    async mount(parentDom: HTMLElement, context: BuildContext) {
