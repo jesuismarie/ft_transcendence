@@ -1,6 +1,7 @@
-import type WebSocket from 'ws';
+import type { UserId } from './state';
 
-export type SocketStream = {
-	socket: WebSocket;
-	setEncoding: (encoding: BufferEncoding) => void;
-};
+// Message from SPA
+export interface StatusMessage {
+	userId: UserId;
+	status: 'online' | 'offline';
+}
