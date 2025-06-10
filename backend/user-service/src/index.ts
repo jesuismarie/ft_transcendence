@@ -3,6 +3,7 @@ import fastifyStatic from '@fastify/static';
 import multipart from '@fastify/multipart';
 import fastifyHelmet from "@fastify/helmet";
 import websocket from '@fastify/websocket';
+import fastifyRateLimit from '@fastify/rate-limit'
 import cors from '@fastify/cors'
 import dotenv from 'dotenv';
 import path from 'path';
@@ -47,10 +48,10 @@ app.register(fastifyStatic, {
 app.register(fastifyHelmet, {
 	contentSecurityPolicy: false
 });
-// app.register(fastifyRateLimit, {
-// 	max: 1000,
-// 	timeWindow: '1 hour'
-// });
+app.register(fastifyRateLimit, {
+	max: 10000,
+	timeWindow: '30 minutes'
+});
 app.register(multipart, { limits: {fileSize: 1_000_000} });
 app.register(websocket, {
 	options: {

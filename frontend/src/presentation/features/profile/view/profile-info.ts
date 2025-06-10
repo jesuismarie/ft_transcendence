@@ -161,7 +161,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                 </div>
                 <button id="open-game-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>
                 <div id="friend-request-btn-container"></div>
-                <button id="edit-profile-btn" class="${(this.widget.userId || this.widget.userId === this.widget.profileState.profile?.id) ? "hidden" : ""} mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Edit Profile</button>
+                <div id="edit-profile-btn-container"></div>
             </div>
         </div>
         <div class="px-4 py-3 rounded-md border border-hover">
@@ -237,6 +237,25 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                     label: "All Friends",
                                 })
                         }),
+                        new BlocBuilder<AuthBloc, AuthState>({
+                            blocType: AuthBloc,
+                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                            builder: (context, state) => {
+                                let isHidden = !this.widget.userId;
+                                if (this.widget.userId && state.user?.userId) {
+                                    isHidden = state.user.userId == (this.widget.userId)
+                                }
+                                console.log(`LLLLLLLLLLLLLLLLLLLLLLLL::::: ${state.user?.userId} ${this.widget.userId}`)
+                                return new SubmitButton({
+                                    className: "mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]",
+                                    isHidden: !isHidden,
+                                    id: "edit-profile-btn",
+                                    label: "Edit Profile",
+
+                                })
+                            },
+                            parentId: "edit-profile-btn-container"
+                        })
 
 
                     ],
