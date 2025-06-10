@@ -1,15 +1,21 @@
 // A minimalist http client for communicating with the game service
-import { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import { FastifyInstance } from 'fastify';
+import { FastifyPluginAsync } from "fastify";
 import fp from 'fastify-plugin';
-import { request } from 'undici';
-import { Dispatcher } from "undici";
+import {request} from 'undici';
 
 interface GamestatsRequest {
-	Params: { username: string };
+	Params: { user: string };
 }
 
 interface GamestatsResponse {
-	username: string;
+	user: string;
+	wins: number;
+	losses: number;
+}
+
+interface GamestatsView {
+	userID: string;
 	wins: number;
 	losses: number;
 }
@@ -20,7 +26,7 @@ export interface GameServiceClientConfig {
 }
 
 interface GameServiceClient {
-	getGamestats: (request: GamestatsRequest) => Promise<GamestatsResponse>;
+	getGamestats: (request: GamestatsRequest) => Promise<GamestatsView>;
 }
 
 const buildClient = ({ baseUrl, timeout }: GameServiceClientConfig): GameServiceClient => {
@@ -29,12 +35,13 @@ const buildClient = ({ baseUrl, timeout }: GameServiceClientConfig): GameService
 	} as const;
 	
 	/** helper — wraps undici.request with JSON encode/decode + error mapping */
-	async function call<T>(method: Dispatcher.HttpMethod | undefined, path: string, body: unknown, expected: number[]): Promise<T> {
-		const {statusCode, body: resBody} = await request(`${baseUrl}${path}`, {
+	async function call<T>(method : 'GET' | 'POST', path: string, body: unknown, expected: number[]): Promise<T> {
+		const {statusCode, body: resBody} = await request(`${baseUrl}${path}`,
+		{
 			method: method,
-			headers,
-			body: JSON.stringify(body),
-			bodyTimeout: 1
+			headers: headers,
+			body: body ? JSON.stringify(body) : undefined,
+			bodyTimeout: timeout
 		});
 		const json: any = await resBody.json();
 		
@@ -48,16 +55,15 @@ const buildClient = ({ baseUrl, timeout }: GameServiceClientConfig): GameService
 		return json as T;
 	}
 	
-	const getGamestats = async (request: GamestatsRequest): Promise<GamestatsResponse> => {
-		const { username } = request.Params;
-		const path = `internal/gamestats/${username}`;
+	const getGamestats = async (request: GamestatsRequest): Promise<GamestatsView> => {
+		const { user } = request.Params;
+		const path = `/internal/gamestats/${user}`;
 		const res = await call<GamestatsResponse>('GET', path, undefined, [200]);
-		return {username: res.username, wins: res.wins, losses: res.losses};
+		return {userID: res.user, wins: res.wins, losses: res.losses};
 	}
-
 	return {
 		getGamestats
-	}
+	};
 }
 // ────────────────────────────────────────────────────────────────────────────
 // Fastify plugin – decorates app with userService client instance
@@ -70,7 +76,7 @@ declare module 'fastify' {
 }
 
 const gameServiceClientPlugin: FastifyPluginAsync = async (app : FastifyInstance) => {
-	const baseUrl = process.env.GAME_SERVICE_URL ?? 'http://game-service:5004';
+	const baseUrl = process.env.GAME_SERVICE_URL ?? 'http://game-service:5001';
 	
 	app.decorate('gameService', buildClient({ baseUrl, timeout: 3000}));
 };

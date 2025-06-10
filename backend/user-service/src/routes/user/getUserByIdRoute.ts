@@ -13,7 +13,7 @@ export default async function getUserByIdRoute(app: FastifyInstance, userRepo: U
 		const view = userRepo.toView(user);
 		try {
 			console.log('Reached game service to get gamestats for user', view.username);
-			const res = await app.gameService.getGamestats({ Params: { username: view.username } });
+			const res = await app.gameService.getGamestats({ Params: { user: view.id.toString() } });
 			view.wins = res.wins;
 			view.losses = res.losses;
 			view.online = app.isUserOnline(view.id);

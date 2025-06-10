@@ -54,7 +54,6 @@ export default async function internalTokenRoutes(app: FastifyInstance) {
   }>(
     "/internal/tokens/revoke",
     {
-      preHandler: clusterAuth,
       schema: {
         body: { $ref: "auth.internalRevokeTokenRequest#" },
         response: {
@@ -74,7 +73,7 @@ export default async function internalTokenRoutes(app: FastifyInstance) {
 
       if (!deleted)
         throw apiError("TOKEN_NOT_FOUND", "Refresh token not found", 404);
-      return reply.send({ revoked: true });
+	  return ({revoked: true} as AuthTypes.LogoutResponse);
     }
   );
 }

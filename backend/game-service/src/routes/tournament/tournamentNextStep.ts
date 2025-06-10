@@ -2,14 +2,15 @@ import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament";
 import { MatchRepo } from "../../repositories/match";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import {tournamentNextStepSchema} from "../../schemas/schemas";
 
 interface NewMatch {
   id?: number; // Optional, as it will be auto-generated
   tournament_id: number;
   group_id: number;
   game_level: number;
-  player_1: string;
-  player_2: string;
+  player_1: number;
+  player_2: number;
   status: string;
 }
 
@@ -19,9 +20,9 @@ interface TournamentNextStepRequestBody {
 
 interface TournamentNextStepResponse {
   match_id?: number;
-  player_1?: string;
-  player_2?: string;
-  participants?: string[];
+  player_1?: number;
+  player_2?: number;
+  participants?: number[];
   status: string;
 }
 
@@ -33,17 +34,22 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
   app.post<{
     Body: { id: number };
     Reply: TournamentNextStepResponse | { message: string };
-  }>("/tournament-next-step", async (request, reply) => {
+  }>("/tournament-next-step",
+      {
+        schema: {
+          body: tournamentNextStepSchema,
+        },
+      },
+      async (request, reply) => {
     const { id: tournament_id } = request.body as TournamentNextStepRequestBody;
 
-    // 1. Validate tournament_id
     if (!tournament_id || tournament_id <= 0) {
-      return reply.status(400).send({ message: "Invalid tournament_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid tournament_id" });
     }
 
     const tournament = tournamentRepo.getById(tournament_id);
     if (!tournament) {
-      return reply.status(404).send({ message: "Tournament not found" });
+      return reply.sendError({ statusCode: 404, message: "Tournament not found" });
     }
 
     if (tournament.status === "ended") {
@@ -52,19 +58,15 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
       });
     }
     if (tournament.status !== "in_progress") {
-      return reply
-        .status(400)
-        .send({ message: "Tournament is not in progress" });
+      return reply.sendError({ statusCode: 400, message: "Tournament is not in progress" });
     }
 
-    // 2. Find the last ended match
     let allMatches = matchRepo.getTournamentMatches({
       tournament_id,
       limit: 100,
       offset: 0,
     }).matches;
 
-    // Сортируем все матчи по id в порядке возрастания
     allMatches = allMatches.sort((a, b) => a.id - b.id);
 
     const endedMatches = allMatches.filter((match) => match.status === "ended");
@@ -73,15 +75,13 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
         ? endedMatches.sort((a, b) => b.id - a.id)[0] // Сортировка строго по id
         : null;
 
-    // 3. Check if there is a match in progress
     const inProgressMatch = allMatches.find(
       (match) => match.status === "in_progress"
     );
     if (inProgressMatch) {
-      return reply.status(400).send({ message: "Match already in progress" });
+      return reply.sendError({ statusCode: 400, message: "Match already in progress" });
     }
 
-    // 4. Find the next created match after the last ended match
     const nextMatch = allMatches.find((match) => {
       const isCreated = match.status === "created";
       const isAfterLastEnded = !lastEndedMatch || match.id > lastEndedMatch.id;
@@ -115,7 +115,6 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
       });
     }
 
-    // 5. Check if all matches in the current level are completed
     const currentGameLevel = Math.min(
       ...allMatches.map((match) => match.game_level)
     );
@@ -124,15 +123,12 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
     );
 
     if (currentLevelMatches.some((match) => match.status !== "ended")) {
-      return reply
-        .status(400)
-        .send({ message: "Not all matches in the current level are finished" });
+      return reply.sendError({ statusCode: 400, message: "Not all matches in the current level are finished" });
     }
 
-    // 6. Create matches for the next level
     const winners = currentLevelMatches
-      .map((match) => match.winner_username)
-      .filter((username): username is string => Boolean(username));
+      .map((match) => match.winner)
+      .filter((number): number is number => Boolean(number));
     const nextLevel = currentGameLevel / 2;
     const newMatches: NewMatch[] = [];
 
@@ -156,11 +152,10 @@ export default async function tournamentNextStepRoute(app: FastifyInstance) {
       newMatches.forEach((match) => {
         const createdMatchId = matchRepo.createTournamentMatch(match, txn);
         if (!firstMatchId) {
-          firstMatchId = createdMatchId; // Сохраняем id первого созданного матча
+          firstMatchId = createdMatchId;
         }
       });
 
-      // Устанавливаем статус "in_progress" для первого матча нового уровня
       if (firstMatchId) {
         matchRepo.updateMatchStatus(firstMatchId, "in_progress", txn);
         const startedAt = new Date().toISOString();

@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
 import type { Tournament } from "../../types/index";
+import {getTournamentsInfoSchema} from "../../schemas/schemas";
 
 interface GetTournamentsInfoRequest {
   limit?: number;
@@ -16,18 +17,24 @@ interface GetTournamentsInfoResponse {
 interface TournamentInfo {
   id: number;
   name: string;
-  created_by: string;
+  created_by: number;
   max_players_count: number;
   current_players_count: number;
   status: string;
-  participants: string[];
+  participants: number[];
 }
 
 export default async function getTournamentsInfoRoute(app: FastifyInstance) {
   const tournamentRepo = new TournamentRepo(app);
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
-  app.get("/get-tournaments-info", async (request, reply) => {
+  app.get("/get-tournaments-info",
+      {
+        schema: {
+          querystring: getTournamentsInfoSchema,
+        },
+      },
+      async (request, reply) => {
     const { limit = 50, offset = 0 } =
       request.query as GetTournamentsInfoRequest;
 
@@ -55,9 +62,7 @@ export default async function getTournamentsInfoRoute(app: FastifyInstance) {
       return reply.status(200).send(response);
     } catch (err) {
       app.log.error(err);
-      return reply
-        .status(500)
-        .send({ message: "Failed to fetch tournaments info" });
+      return reply.sendError({ statusCode: 500, message: "Failed to fetch tournaments info" });
     }
   });
 }

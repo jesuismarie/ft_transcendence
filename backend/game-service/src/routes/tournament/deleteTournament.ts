@@ -2,10 +2,11 @@ import type { FastifyInstance } from "fastify";
 import { TournamentRepo } from "../../repositories/tournament";
 import { MatchRepo } from "../../repositories/match";
 import { TournamentPlayerRepo } from "../../repositories/tournamentPlayer";
+import {deleteTournamentSchema} from "../../schemas/schemas";
 
 interface DeleteTournamentRequestBody {
   tournament_id: number;
-  created_by: string;
+  created_by: number;
 }
 
 export default async function deleteTournamentRoute(app: FastifyInstance) {
@@ -13,16 +14,22 @@ export default async function deleteTournamentRoute(app: FastifyInstance) {
   const matchRepo = new MatchRepo(app);
   const tournamentPlayerRepo = new TournamentPlayerRepo(app);
 
-  app.delete("/delete-tournament", async (request, reply) => {
+  app.delete("/delete-tournament",
+      {
+        schema: {
+          body: deleteTournamentSchema,
+        },
+      },
+      async (request, reply) => {
     const { tournament_id, created_by } =
       request.body as DeleteTournamentRequestBody;
 
     if (!tournament_id || tournament_id <= 0) {
-      return reply.status(400).send({ message: "Invalid tournament_id" });
+      return reply.sendError({ statusCode: 400, message: "Invalid tournament_id" });
     }
 
-    if (!created_by) {
-      return reply.status(400).send({ message: "Missing created_by field" });
+    if (!created_by || created_by < 0) {
+      return reply.sendError({ statusCode: 400, message: "Missing created_by field" });
     }
 
     try {
@@ -61,7 +68,7 @@ export default async function deleteTournamentRoute(app: FastifyInstance) {
       app.log.error(err);
       const errorMessage =
         (err as Error).message || "Failed to delete tournament";
-      return reply.status(400).send({ message: errorMessage });
+      return reply.sendError({ statusCode: 400, message: errorMessage });
     }
   });
 }
