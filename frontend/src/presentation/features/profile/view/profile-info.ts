@@ -20,6 +20,7 @@ import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {AvatarContent} from "@/presentation/features/profile/view/avatar-content";
 import type {AuthState} from "@/presentation/features/auth/logic/auth_state";
+import {Bindings} from "@/presentation/features/bindings";
 
 
 export class ProfileInfo extends StatefulWidget {
@@ -182,22 +183,31 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                     isHidden = state.user.userId == (this.widget.userId)
                                 }
 
-                                return new SubmitButton({
-                                    onClick:  () => {
-                                            if (friendState.status != FriendStatus.Loading) {
-                                                const userId = context.read(AuthBloc).state.user?.userId;
-                                                const friendBloc = context.read(FriendBloc)
-                                                // localStorage.removeItem('friendId');
-                                                if (userId && this.widget.profileState.profile && !friendBloc.isClosed && !localStorage.getItem(`friendId${this.widget.profileState.profile!.id}`)) {
-                                                    friendBloc.addFriend(userId, this.widget.profileState.profile!.id).then(r => r);
-                                                }
-                                            }
-                                    },
-                                    className: `mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]`,
-                                    id: "friend-request-btn",
-                                    isHidden: isHidden,
-                                    label: "Add Friend",
-                                })
+                                return new BlocBuilder<ProfileBloc, ProfileState>(
+                                    {
+                                        blocType: ProfileBloc,
+                                        buildWhen: (oldState, newState) => !oldState.equals(newState),
+                                        builder: (_, profileState) => {
+                                            return new SubmitButton({
+                                                onClick:  () => {
+                                                    if (friendState.status != FriendStatus.Loading) {
+                                                        const userId = context.read(AuthBloc).state.user?.userId;
+                                                        const friendBloc = context.read(FriendBloc)
+                                                        // localStorage.removeItem('friendId');
+                                                        if (!Bindings.addFriendSimpleRequest && userId && profileState.profile && !friendBloc.isClosed && !localStorage.getItem(`friendId${this.widget.profileState.profile!.id}`)) {
+                                                            friendBloc.addFriend(userId, profileState.profile!.id).then(r => r);
+                                                            Bindings.addFriendSimpleRequest = true;
+                                                        }
+                                                    }
+                                                },
+                                                className: `mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]`,
+                                                id: "friend-request-btn",
+                                                isHidden: isHidden,
+                                                label: "Add Friend",
+                                            })
+                                        }
+                                    }
+                                )
                             },
                             parentId: "friend-request-btn-container",
 

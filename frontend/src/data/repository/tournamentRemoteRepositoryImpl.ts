@@ -38,7 +38,7 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
         }
     }
 
-    async createTournament(name: string, maxPlayerCount: number, createdBy: string): Promise<Either<GeneralException, TournamentEntity>> {
+    async createTournament(name: string, maxPlayerCount: number, createdBy: number): Promise<Either<GeneralException, TournamentEntity>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.createTournament, {
                 name: name,
@@ -65,7 +65,7 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
         }
     }
 
-    async deleteTournament(id: number, createdBy: string): Promise<Either<GeneralException, void>> {
+    async deleteTournament(id: number, createdBy: number): Promise<Either<GeneralException, void>> {
         try {
             const res = await this.apiClient.axiosClient().delete(`${ApiConstants.deleteTournament}`, {
                 method: 'DELETE',

@@ -4,4 +4,5 @@ export class Bindings {
     static isTournamentItemBounded = false;
     static isCreateTournamentRequest = false;
     static isMatchRequest = false;
+    static addFriendSimpleRequest = false;
 }
