@@ -15,6 +15,8 @@ import {TwoFARepositoryImpl} from "@/data/repository/twoFARepositoryImpl";
 import type {FriendAddResponse} from "@/domain/entity/friendAddResponse";
 import type {FriendRepository} from "@/domain/respository/friendRepository";
 import {FriendRepositoryImpl} from "@/data/repository/friendRepositoryImpl";
+import type {MatchRepository} from "@/domain/respository/matchRepository";
+import {MatchRepositoryImpl} from "@/data/repository/matchRepositoryImpl";
 
 export async function configureDependencies() {
     container.register('ApiClient', {useClass: ApiClient});
@@ -37,6 +39,10 @@ export async function configureDependencies() {
     container.register<FriendRepository>("FriendRepository", {
         useClass: FriendRepositoryImpl,
     });
+
+    container.register<MatchRepository>("MatchRepository", {
+        useClass: MatchRepositoryImpl,
+    })
 
 }
 

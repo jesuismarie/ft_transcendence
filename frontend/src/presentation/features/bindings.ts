@@ -3,4 +3,5 @@ export class Bindings {
     static isTournamentBounded = false;
     static isTournamentItemBounded = false;
     static isCreateTournamentRequest = false;
+    static isMatchRequest = false;
 }

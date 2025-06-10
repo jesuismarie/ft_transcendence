@@ -14,6 +14,7 @@ import type {UserRemoteRepository} from "@/domain/respository/userRemoteReposito
 import type {PreferenceService} from "@/core/services/preference_service";
 import '@/core/extensions/stringExtension';
 import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
+import {Bindings} from "@/presentation/features/bindings";
 
 
 @injectable()
@@ -101,6 +102,7 @@ export class AuthBloc extends Cubit<AuthState> {
 
     async requestRefresh(accessToken: string): Promise<void> {
         AddTournament.isSendRequest = false;
+        Bindings.isMatchRequest = false;
         this.emit(this.state.copyWith({isRefresh: true}))
         const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(accessToken);
         res.when({

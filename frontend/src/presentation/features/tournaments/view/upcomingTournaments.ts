@@ -1,6 +1,5 @@
 import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import {type BuildContext} from "@/core/framework/core/buildContext";
-// import type {Widget} from "@/core/framework/widget";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import type {Widget} from "@/core/framework/core/base";
 import {showModal} from "@/utils/modal_utils";
@@ -12,6 +11,7 @@ import {TournamentBloc} from "@/presentation/features/tournaments/logic/tourname
 import {TournamentState, TournamentStatus} from "@/presentation/features/tournaments/logic/tournamentState";
 import {Constants} from "@/core/constants/constants";
 import {Bindings} from "@/presentation/features/bindings";
+import {SubmitButton} from "@/presentation/common/widget/submitButton";
 
 export class UpcomingTournaments extends StatelessWidget {
     constructor(public parentId?: string) {
@@ -42,9 +42,7 @@ export class UpcomingTournaments extends StatelessWidget {
 		</h3>
 		<p class="error-msg text-red-500 text-sm" data-error-for="tournament2"></p>
 		<div id="tournament-preview" class="divide-y divide-gray-200"></div>
-		<button id="view-tournament" class="hidden mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">
-			Browse Tournaments
-		</button>
+		<div id="view-tournament-list-container"></div>
 		<button id="add-tournament-preview-btn" class="mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover">
 			Add Tournament / Play with Friend
 		</button>
@@ -61,7 +59,17 @@ export class UpcomingTournaments extends StatelessWidget {
 
                         parentId: 'tournament-preview'
                     },
-                )
+                ),
+                new BlocBuilder<TournamentBloc, TournamentState>({
+                    blocType: TournamentBloc,
+                    builder: (context, state) => new SubmitButton({
+                        className: 'mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover',
+                        id: 'view-tournament',
+                        isHidden: state.results.totalCount <= 5,
+                        label: 'Browse Tournaments'
+                    }),
+                    parentId: 'view-tournament-list-container'
+                })
             ]
         });
     }

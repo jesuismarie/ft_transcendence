@@ -43,6 +43,7 @@ import {TextController} from "@/core/framework/controllers/textController";
 import {UpcomingTournamentWidget} from "@/presentation/features/tournaments/view/upcomingTournamentWidget";
 import {Bindings} from "@/presentation/features/bindings";
 import {initWipeText} from "@/animation/animation";
+import {MatchBloc} from "@/presentation/features/match/bloc/match_bloc";
 
 
 export class ProfileScreen extends StatelessWidget {
@@ -69,7 +70,14 @@ export class ProfileScreen extends StatelessWidget {
                     {
                         create: () => new FriendBloc(Resolver.friendRepository()),
                     },
-                )],
+                ),
+
+                new BlocProvider(
+                    {
+                        create: () => new MatchBloc(Resolver.matchRepository()),
+                    },
+                )
+            ],
             child: new ProfileScreenContent(this.userId)
         })
     }
@@ -121,25 +129,6 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
         }
     }
 
-    // setup(context: BuildContext) {
-    //
-    //     const authBloc = context.read(AuthBloc);
-    //
-    //
-    //     // if (authBloc.state.user) {
-    //
-    //
-    //     // }
-    //
-    //     const id = this.widget.userId ? Number.parseInt(this.widget.userId) : undefined;
-    //
-    //     const userId = id ?? authBloc.state.user?.userId;
-    //     if (userId) {
-    //         context.read(ProfileBloc).getUserProfile(userId.toString(), false).then(profile => {
-    //         })
-    //         // friendBloc.onSearch(userId, 0, Constants.friends_limit).then(r => r);
-    //     }
-    // }
 
     build(context: BuildContext): Widget {
         const modalState = context.read(ModalsBloc).state
@@ -150,7 +139,8 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
             blocType: AuthBloc,
             listener: (context, state) => {
                 if (state.isRefresh && state.user?.userId) {
-                    context.read(ProfileBloc).getUserProfile(state.user.userId.toString()).then(profile => {});
+                    context.read(ProfileBloc).getUserProfile(state.user.userId.toString()).then(profile => {
+                    });
                 }
             },
             child: new DependComposite({
@@ -209,10 +199,11 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
                         dependWidgets: [
                             new BlocBuilder<AuthBloc, AuthState>({
                                 buildWhen: (oldState, newState) => !oldState.equals(newState),
-                                blocType: AuthBloc, builder: (context, authState) => new BlocBuilder<ProfileBloc, ProfileState>({
+                                blocType: AuthBloc,
+                                builder: (context, authState) => new BlocBuilder<ProfileBloc, ProfileState>({
                                     blocType: ProfileBloc,
                                     buildWhen: (oldState, newState) => !oldState.equals(newState),
-                                    builder:(context, state) => {
+                                    builder: (context, state) => {
                                         // let isHidden = !this.widget.userId;
                                         // if (this.widget.userId && state.profile?.id) {
                                         //     isHidden = state.profile!.id != (Number.parseInt(this.widget.userId!))
@@ -221,7 +212,9 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
                                         if (this.widget.userId && authState.user?.userId) {
                                             isHidden = authState.user.userId == (Number.parseInt(this.widget.userId!));
                                         }
-                                        return new UpcomingTournamentWidget(isHidden, 'upcoming-tournaments-content-container')}})
+                                        return new UpcomingTournamentWidget(isHidden, 'upcoming-tournaments-content-container')
+                                    }
+                                })
                             })
                         ],
                         children: [
@@ -232,30 +225,30 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
                                             buildWhen: (oldState, newState) => !isEqual(oldState.profile, newState.profile),
                                             blocType: ProfileBloc,
                                             builder: (context, state) =>
-                                                new ProfileInfo(state, this.widget.userId ? Number.parseInt(this.widget.userId) : undefined, 'profile-information-details'), }),
+                                                new ProfileInfo(state, this.widget.userId ? Number.parseInt(this.widget.userId) : undefined, 'profile-information-details'),
+                                        }),
                                 ],
                                 children: [
                                     new EditProfile('edit-profile-modal'),
                                     new FriendsView('friends-modal'),
-                                    new MatchHistory('match-history-details'),
+                                    new BlocBuilder<ProfileBloc, ProfileState>({
+                                        blocType: ProfileBloc,
+                                        buildWhen: (oldState, newState) => !oldState.equals(newState),
+                                        builder: (_, state) => new MatchHistory(this.widget.userId ? Number.parseInt(this.widget.userId) : undefined),
+                                        parentId: 'match-history-details'
+                                    }),
                                     new UpcomingTournamentsModal('tournament-modal'),
                                     new MatchHistoryModal('matches-modal'),
                                     new NavigationMenu('profile-navigation'),
-                                    new SearchUserModal(this.searchController,'search-users-modal')
+                                    new SearchUserModal(this.searchController, 'search-users-modal')
 
 
                                 ]
-                            }, ),
+                            },),
                             // new UpcomingTournaments('upcoming-tournaments'),
                         ]
                     }),
-
-
-
-
                 ],
-
-
             })
         })
 

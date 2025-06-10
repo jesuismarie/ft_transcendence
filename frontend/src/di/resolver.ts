@@ -6,6 +6,7 @@ import type {PreferenceService} from "@/core/services/preference_service";
 import type {TournamentRemoteRepository} from "@/domain/respository/tournamentRemoteRepository";
 import type {TwoFARepository} from "@/domain/respository/twoFARepository";
 import type {FriendRepository} from "@/domain/respository/friendRepository";
+import type {MatchRepository} from "@/domain/respository/matchRepository";
 
 export class Resolver {
     static authRepository(): RemoteAuthRepository {
@@ -25,5 +26,9 @@ export class Resolver {
 
     static friendRepository(): FriendRepository {
         return  container.resolve<FriendRepository>('FriendRepository');
+    }
+
+    static matchRepository(): MatchRepository {
+        return  container.resolve<MatchRepository>('MatchRepository');
     }
 }
