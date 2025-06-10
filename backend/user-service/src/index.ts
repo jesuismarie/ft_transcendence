@@ -41,7 +41,7 @@ app.register(fastifyHelmet, {
 	contentSecurityPolicy: false
 });
 app.register(fastifyRateLimit, {
-	max: 1000,
+	max: 10000,
 	timeWindow: '1 hour'
 });
 app.register(multipart, { limits: {fileSize: 1_000_000} });
