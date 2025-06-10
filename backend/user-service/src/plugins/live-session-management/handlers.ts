@@ -1,40 +1,46 @@
 import { allConnections, userConnections, onlineUsers, graceTimers, UserId } from './state';
-import type { SocketStream } from './types';
+import type { StatusMessage } from './types';
+import WebSocket from "ws";
 
-// Message from SPA
-export interface StatusMessage {
-	userId: UserId;
-	status: 'online' | 'offline';
-}
 
-export function handleConnection(conn: SocketStream) {
+export function handleConnection(socket : WebSocket) {
 	let currentUserId: UserId | null = null;
-	allConnections.add(conn);
+	allConnections.add(socket);
 	
-	conn.socket.on('message', (msg) => {
+	socket.on('message', (msg) => {
 		try {
 			const data = JSON.parse(msg.toString()) as StatusMessage;
-			if (!['online', 'offline'].includes(data.status)) return;
+			console.log(data);
+			if (!['online', 'offline'].includes(data.status)) {
+				socket.send("error");
+				return;
+			}
 			
-			currentUserId = data.userId;
-			let set = userConnections.get(data.userId);
-			if (!set) userConnections.set(data.userId, (set = new Set<SocketStream>()));
-			set.add(conn);
+			currentUserId = Number(data.userId);
+			console.log(`User ${data.userId} is now ${data.status}`);
+			let set = userConnections.get(currentUserId);
+			if (!set) userConnections.set(currentUserId, (set = new Set<WebSocket>()));
+			set.add(socket);
 			
+			console.log('Adding userId:', currentUserId, 'Type:', typeof currentUserId);
 			if (data.status === 'online') {
-				onlineUsers.add(data.userId);
+				onlineUsers.add(currentUserId);
 				clearGraceTimer(data.userId);
 			} else if (data.status === 'offline') {
 				maybeScheduleOffline(data.userId);
 			}
-		} catch {}
+			socket.send("ok");
+		} catch {
+			console.error('Error processing message:', msg.toString());
+			socket.send("error");
+		}
 	});
 	
-	conn.socket.on('close', () => {
-		allConnections.delete(conn);
+	socket.on('close', () => {
+		allConnections.delete(socket);
 		if (currentUserId !== null) {
 			const set = userConnections.get(currentUserId);
-			set?.delete(conn);
+			set?.delete(socket);
 			if (!set || set.size === 0) {
 				userConnections.delete(currentUserId);
 				maybeScheduleOffline(currentUserId);

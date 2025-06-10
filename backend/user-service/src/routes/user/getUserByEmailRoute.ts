@@ -19,9 +19,12 @@ export default async function getUserByUsernameRoute(app: FastifyInstance, userR
 				const res = await app.gameService.getGamestats({ Params: { user: view.id.toString() } });
 				view.wins = res.wins;
 				view.losses = res.losses;
+			}
+			catch (err) { console.error(err); }
+			try {
 				view.online = app.isUserOnline(view.id);
 			}
-			catch (err) {}
+			catch (err) { console.error(err); }
 			return view;
 		}
 	);
