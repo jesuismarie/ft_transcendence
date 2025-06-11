@@ -2,26 +2,26 @@ import { FastifyInstance } from 'fastify';
 import { UserRepo } from "../../repositories/userRepo";
 
 interface PresenceRequest {
-	usernames: string[];
+	users: number[];
 }
 
 type PresenceStatus = 'online' | 'offline' | 'unknown';
 
 interface PresenceResponse {
-	[username: string]: PresenceStatus;
+	[users: number]: PresenceStatus;
 }
 
 const presenceRequestSchema = {
 	type: 'object',
 	properties: {
-		usernames: {
+		users: {
 			type: 'array',
-			items: {type: 'string'},
+			items: {type: 'number'},
 			minItems: 1,
 			maxItems: 100,
 		},
 	},
-	required: ['usernames'],
+	required: ['users'],
 }
 
 const presenceResponseSchema = {
@@ -44,20 +44,20 @@ export async function registerPresenceRoute(fastify: FastifyInstance, userRepo: 
 			},
 		},
 		async (req, reply) => {
-			const { usernames } = req.body;
+			const { users } = req.body;
 			const result: PresenceResponse = {};
 			
 			await Promise.all(
-				usernames.map(async (username) => {
+				users.map(async (user) => {
 					try {
-						const userId = userRepo.findByUsername(username)?.id;
+						const userId = userRepo.findById(user)?.id;
 						if (!userId) {
-							result[username] = 'unknown';
+							result[user] = 'unknown';
 						} else {
-							result[username] = fastify.isUserOnline(userId) ? 'online' : 'offline';
+							result[userId] = fastify.isUserOnline(userId) ? 'online' : 'offline';
 						}
 					} catch {
-						result[username] = 'unknown'; // fallback in case of DB errors
+						result[user] = 'unknown'; // fallback in case of DB errors
 					}
 				})
 			);
