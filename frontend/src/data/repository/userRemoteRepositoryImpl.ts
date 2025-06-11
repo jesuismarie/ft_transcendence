@@ -26,7 +26,7 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
                     email: res.data.email,
                     wins: res.data.wins,
                     losses: res.data.losses,
-                    avatar: res.data.avatar,
+                    avatar: res.data.avatarPath,
                 }
 
                 return new Right(user);

@@ -25,6 +25,7 @@ export class FriendList extends StatelessWidget {
             blocType: FriendBloc,
             buildWhen: (oldState, newState) => !oldState.equals(newState),
             builder: (context, state) => {
+                // console.log(`AAAAA::::: ${state.offset}`)
                 const friends = state.offset == 0 ? state.results.friends.slice(0, 3) : [];
                 return new Composite(friends.map((e) => new FriendListItem(e.id.toString(), e.username, e.avatarPath)), this.parentId)
             }

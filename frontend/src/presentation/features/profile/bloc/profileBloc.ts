@@ -16,20 +16,7 @@ import {AuthState} from "@/presentation/features/auth/logic/auth_state";
 export class ProfileBloc extends Cubit<ProfileState> {
 
     constructor(@inject('UserRepository') private userRemoteRepository: UserRemoteRepository) {
-        const saved = localStorage.getItem("profile_state");
-        let initialState: ProfileState;
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                initialState = ProfileState.fromJson(parsed); // тебе нужно добавить fromJson()
-            } catch {
-                initialState = new ProfileState({});
-            }
-        } else {
-            initialState = new ProfileState({});
-        }
-
-        super(initialState);
+        super(new ProfileState({}));
     }
 
     async selectAvatar(file: File): Promise<void> {
@@ -84,14 +71,8 @@ export class ProfileBloc extends Cubit<ProfileState> {
                 this.emit(this.state.copyWith({errorMessage: errorMsg, status: ProfileStatus.Error}));
             },
             onSuccess: (user) => {
-                // if (isOtherProfile) {
-                //     this.emit(this.state.copyWith({status: ProfileStatus.Success, otherProfile: user}));
-                // }
-
                 const newSTate = this.state.copyWith({status: ProfileStatus.Success, profile: user});
-                // else {
-                    this.emit(newSTate);
-                // }
+                this.emit(newSTate);
             }
         })
     }
@@ -103,7 +84,6 @@ export class ProfileBloc extends Cubit<ProfileState> {
     async resetState(): Promise<void> {
         this.emit(new ProfileState({}))
     }
-
 
 
     async onSaveProfile({username, email, password, newPassword, confirmPassword}: ProfileValueObject) {

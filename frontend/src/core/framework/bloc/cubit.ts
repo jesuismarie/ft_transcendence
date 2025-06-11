@@ -10,11 +10,6 @@ export class Cubit<State extends Equatable<State>> extends BlocBase<State> {
 
     // Method to update state explicitly
     emit(newState: State): void {
-        if (newState instanceof AuthState) {
-            localStorage.setItem('auth_state', JSON.stringify(newState.toJson()));
-        } else if (newState instanceof ProfileState) {
-            localStorage.setItem('profile_state', JSON.stringify(newState.toJson()));
-        }
         super.emit(newState);
     }
 }

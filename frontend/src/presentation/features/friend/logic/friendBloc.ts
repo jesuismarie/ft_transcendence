@@ -2,7 +2,6 @@ import {Cubit} from "@/core/framework/bloc/cubit";
 import {FriendState, FriendStatus} from "@/presentation/features/friend/logic/friendState";
 import {inject} from "tsyringe";
 import type {FriendRepository} from "@/domain/respository/friendRepository";
-import {Constants} from "@/core/constants/constants";
 import {ApiException} from "@/core/exception/exception";
 
 export class FriendBloc extends Cubit<FriendState> {
@@ -42,18 +41,12 @@ export class FriendBloc extends Cubit<FriendState> {
 
     async addFriend(currentId: number, friendID: number) {
         this.emit(this.state.copyWith({status: FriendStatus.Loading}))
-        // localStorage.setItem(`friendId${friendID}`, `${friendID}`);
-        // const seconds = 30 * 1000;
         const res = await this.friendRepository.addFriend(currentId, friendID);
         res.when({
             onSuccess: (data) => {
                 this.emit(this.state.copyWith({status: FriendStatus.Success}))
-                // setTimeout(() => {
-                //     localStorage.removeItem(`friendId${friendID}`);
-                // }, seconds)
             }, onError: (error) => {
                 console.log('Error:', error)
-                // localStorage.removeItem(`friendId${friendID}`);
                 let errorMessage: string | undefined;
                 if (error instanceof ApiException) {
                     errorMessage = error.message.removeBefore('body/').capitalizeFirst()
@@ -65,19 +58,13 @@ export class FriendBloc extends Cubit<FriendState> {
 
     async deleteFriend(currentId: number, friendID: number) {
         this.emit(this.state.copyWith({status: FriendStatus.Loading}))
-        // localStorage.setItem(`friendId${friendID}`, `${friendID}`);
-        // const seconds = 30 * 1000;
         const res = await this.friendRepository.removeFriend(currentId, friendID);
         res.when({
             onSuccess: (data) => {
 
                 this.emit(this.state.copyWith({status: FriendStatus.Success}))
-                // setTimeout(() => {
-                //     // localStorage.removeItem(`friendId${friendID}`);
-                // }, seconds)
             }, onError: (error) => {
                 console.log('Error:', error)
-                // localStorage.removeItem(`friendId${friendID}`);
                 let errorMessage: string | undefined;
                 if (error instanceof ApiException) {
                     errorMessage = error.message.removeBefore('body/').capitalizeFirst()
@@ -89,19 +76,13 @@ export class FriendBloc extends Cubit<FriendState> {
 
     async checkFriendStatus(currentId: number, friendID: number) {
         this.emit(this.state.copyWith({status: FriendStatus.Loading}))
-        // localStorage.setItem(`friendId${friendID}`, `${friendID}`);
-        // const seconds = 30 * 1000;
         const res = await this.friendRepository.checkFriendShip(currentId, friendID);
         res.when({
             onSuccess: (data) => {
 
                 this.emit(this.state.copyWith({status: FriendStatus.Success, isFriend: data.status}))
-                // setTimeout(() => {
-                //     // localStorage.removeItem(`friendId${friendID}`);
-                // }, seconds)
             }, onError: (error) => {
                 console.log('Error:', error)
-                // localStorage.removeItem(`friendId${friendID}`);
                 let errorMessage: string | undefined;
                 if (error instanceof ApiException) {
                     errorMessage = error.message.removeBefore('body/').capitalizeFirst()

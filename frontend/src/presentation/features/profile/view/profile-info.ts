@@ -23,6 +23,8 @@ import type {AuthState} from "@/presentation/features/auth/logic/auth_state";
 import {Bindings} from "@/presentation/features/bindings";
 import {Status} from "@/core/models/status";
 import {OnlineBloc} from "@/presentation/features/online/onlineBloc";
+import {FriendsView} from "@/presentation/features/friend/view/friends_view";
+import {FriendList} from "@/presentation/features/friend/view/friendList";
 
 
 export class ProfileInfo extends StatefulWidget {
@@ -132,7 +134,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
             <div class="px-4 pb-6 relative">
                 <div class="flex justify-center -mt-12">
                     <div class="relative">
-                        <img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="${this.widget.profileState.profile?.avatar ?? "/images/background1.jpg"}" alt="User avatar">
+                        <img id="avatar-image" class="h-24 w-24 rounded-full border-4 border-primary" src="${this.widget.profileState.profile?.avatar ?? "/images/background1.jpg"}" onerror="this.onerror=null; this.src='/images/background1.jpg';" alt="User avatar">
                         <div id="avatar-content-container"></div>
                       
                     </div>
@@ -233,15 +235,24 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         new BlocBuilder<FriendBloc, FriendState>({
                             blocType: FriendBloc,
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
-                            builder: (context, friendState) =>
-                                new SubmitButton({
+                            builder: (context, friendState) => {
+                                console.log(`YYYYYYYYYY:::: ${friendState.results.totalCount}`);
+                                return new SubmitButton({
                                     className: "px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover",
                                     id: "friend-list-btn",
-                                    isHidden: (friendState.results?.totalCount ?? 0) < 3,
-                                    parentId: "friend-list-btn-content",
+                                    onClick: () => {
+                                      showModal(ModalConstants.friendsModalName);
+                                    },
+                                    isHidden: !friendState.results.totalCount || friendState.results.totalCount <= 3,
                                     label: "All Friends",
-                                })
+                                })},
+                            parentId: "friend-list-btn-content",
+
                         }),
+                        new BlocBuilder<FriendBloc, FriendState>({
+                            blocType: FriendBloc,
+                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                            builder: (context, friendState) => new FriendList('friends-preview')}),
                         new BlocBuilder<AuthBloc, AuthState>({
                             blocType: AuthBloc,
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
@@ -268,7 +279,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         }),
                         new HtmlWidget(`<p class="text-gray-600">${context.read(OnlineBloc).getCurrentStatus() == Status.Online ? "Online" : "Offline"}</p>`, 'online-status'),
 
-
+                        // new FriendsView('friends-preview')
 
 
                     ],

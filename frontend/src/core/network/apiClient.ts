@@ -39,16 +39,22 @@ export class ApiClient {
     }
 
 
-    public putForm(url: string, data: FormData) {
+    public async putForm(url: string, data: FormData) {
         const token: string = this.preferenceService.getToken() ?? ''
-        return fetch(`${ApiConstants.baseUrlDev}${url}`, {
+        const res = await fetch(`${ApiConstants.baseUrlDev}${url}`, {
             method: "PUT",
             headers: {
-                'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${token}`
             },
             body: data,
         })
+        if (!res.ok) {
+            console.error(`FETCH::::: ${await res.text()}`)
+        }
+        else  {
+            console.log("FETCH::::::", await res.json())
+        }
+        return res;
     }
 
     public put(url: string, data: string) {

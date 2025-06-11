@@ -25,6 +25,7 @@ import {Constants} from "@/core/constants/constants";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {OnlineBloc} from "@/presentation/features/online/onlineBloc";
+import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 
 export const navigatorKey = new GlobalKey<Navigator>();
 
@@ -46,16 +47,21 @@ export class App extends StatelessWidget {
 
     build(context: BuildContext): Widget {
         return provideBlocProviders(new BuilderWidget((context) => {
-            const authBloc = context.read(AuthBloc);
+                const authBloc = context.read(AuthBloc);
 
-            const preferenceService = Resolver.preferenceService();
-            const token = preferenceService.getRefreshToken();
-            if (token && token.length > 0) {
-                authBloc.requestRefresh(token).then()
-            }
-
-            // const persistenceService: PersistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, authBloc);
-            // persistenceService.init();
+                const preferenceService = Resolver.preferenceService();
+                const token = preferenceService.getToken();
+                if (token && token.length > 0) {
+                    authBloc.requestRefresh(token).then(() => {
+                        authBloc.stream.subscribe((state) => {
+                            const profileBloc = context.read(ProfileBloc);
+                            if (state.user?.userId) {
+                                profileBloc.getUserProfile(state.user!.userId.toString()).then(profile => {
+                                });
+                            }
+                        })
+                    })
+                }
                 return new BlocProvider({
                     create: () => new OnlineBloc(authBloc),
                     child: new MaterialApp(

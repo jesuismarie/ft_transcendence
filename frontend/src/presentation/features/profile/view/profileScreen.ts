@@ -233,7 +233,6 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
                                 ],
                                 children: [
                                     new EditProfile('edit-profile-modal'),
-                                    new FriendsView('friends-modal'),
                                     new BlocBuilder<ProfileBloc, ProfileState>({
                                         blocType: ProfileBloc,
                                         buildWhen: (oldState, newState) => !oldState.equals(newState),
