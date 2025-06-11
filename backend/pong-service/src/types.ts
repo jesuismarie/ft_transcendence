@@ -1,6 +1,12 @@
 import { WebSocket } from "ws"
 import { createBall } from "./game/ball"
 
+export type Match = {
+    match_id: string,
+    player1_id: string,
+    player2_id: string,
+}
+
 export type Score = {
     left: number,
     right: number,
