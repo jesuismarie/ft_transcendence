@@ -10,6 +10,7 @@ export abstract class ApiConstants {
     static friends: string = `${ApiConstants.userBaseUrl}/friends`;
     static username: string = `${ApiConstants.userBaseUrl}/users/username/`;
     static users: string = `${ApiConstants.userBaseUrl}/users`;
+    static online: string = `${ApiConstants.userBaseUrl}/users/presence`;
     static updatePassword: string = `/password`;
     static avatar: string = `/avatar`;
     static relationships: string = `/relationship`;

@@ -7,6 +7,8 @@ import {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {SearchEntity} from "@/domain/entity/searchEntity";
+import {data} from "autoprefixer";
+import type {OnlineEntity} from "@/domain/entity/onlineStatus";
 
 @injectable()
 export class UserRemoteRepositoryImpl implements UserRemoteRepository {
@@ -114,6 +116,26 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
 
             if (response.status >= 200 && response.status < 400) {
                 return new Right(undefined);
+            } else {
+                return new Left(new GeneralException());
+            }
+        } catch (e) {
+            alert(e)
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async getOnlineStatuses(users: number[]): Promise<Either<GeneralException, OnlineEntity>> {
+        try {
+            const response = await this.apiClient.axiosClient().post(`${ApiConstants.online}`, {users: users});
+
+            if (response.status >= 200 && response.status < 400) {
+                return new Right(response.data as OnlineEntity);
             } else {
                 return new Left(new GeneralException());
             }

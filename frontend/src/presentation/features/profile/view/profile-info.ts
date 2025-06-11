@@ -21,6 +21,8 @@ import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {AvatarContent} from "@/presentation/features/profile/view/avatar-content";
 import type {AuthState} from "@/presentation/features/auth/logic/auth_state";
 import {Bindings} from "@/presentation/features/bindings";
+import {Status} from "@/core/models/status";
+import {OnlineBloc} from "@/presentation/features/online/onlineBloc";
 
 
 export class ProfileInfo extends StatefulWidget {
@@ -138,9 +140,11 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                 <p class="error-msg text-red-500 text-sm" data-error-for="avatar"></p>
                 <div class="text-center mt-4">
                     <h2 id="player-name" class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-gray-900">
+                        <div id="online-status" class="mt-6 grid grid-cols-2 gap-4 text-center"></div>
+                    
                         <!-- Player Username -->
                     </h2>
-                    <div id="online-status" class="flex items-center justify-center mt-2">
+                    <div id="username-container" class="flex items-center justify-center mt-2">
                         <!-- Online Status -->
                     </div>
                 </div>
@@ -254,7 +258,16 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                 })
                             },
                             parentId: "edit-profile-btn-container"
-                        })
+                        }),
+                        new BlocBuilder<ProfileBloc, ProfileState>({
+                            blocType: ProfileBloc,
+                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                            builder: (context, state) => new HtmlWidget(`<p class="text-gray-600">${state.profile?.username}</p>`),
+                            parentId: 'username-container'
+                        }),
+                        new HtmlWidget(`<p class="text-gray-600">${context.read(OnlineBloc).getCurrentStatus() == Status.Online ? "Online" : "Offline"}</p>`, 'online-status'),
+
+
 
 
                     ],

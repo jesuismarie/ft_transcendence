@@ -61,7 +61,10 @@ export class ProfileScreen extends StatelessWidget {
         return new MultiBlocProvider({
             providers: [
                 new BlocProvider({
-                    create: () => new TournamentBloc(Resolver.tournamentRepository()),
+                    create: () => new TournamentBloc(
+                        Resolver.tournamentRepository(),
+                        Resolver.userRepository()
+                    ),
                 }),
                 new BlocProvider({
                     create: () => new SearchBloc(Resolver.userRepository()),
@@ -76,7 +79,7 @@ export class ProfileScreen extends StatelessWidget {
                     {
                         create: () => new MatchBloc(Resolver.matchRepository()),
                     },
-                )
+                ),
             ],
             child: new ProfileScreenContent(this.userId)
         })

@@ -4,23 +4,21 @@ import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_reposi
 import {ApiException, type GeneralException} from "@/core/exception/exception";
 import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import type {Either} from "@/core/models/either";
-import {BlocBase} from "@/core/framework/bloc/blocBase";
 import {Cubit} from "@/core/framework/bloc/cubit";
 import type {PersistenceService} from "@/core/services/persistance_service";
 import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
 import {ApiConstants} from "@/core/constants/apiConstants";
-import {ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
-import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import type {PreferenceService} from "@/core/services/preference_service";
 import '@/core/extensions/stringExtension';
 import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
 import {Bindings} from "@/presentation/features/bindings";
+import {jwtDecode} from "jwt-decode";
 
 
 @injectable()
 export class AuthBloc extends Cubit<AuthState> {
 
-    persistenceService: PersistenceService
+    // persistenceService: PersistenceService
 
     constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository,
                 @inject("PreferenceService") private readonly preferenceService: PreferenceService
@@ -39,10 +37,15 @@ export class AuthBloc extends Cubit<AuthState> {
         }
 
         super(initialState);
-        this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
-        this.persistenceService.init();
+        // this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
+        // this.persistenceService.init();
     }
 
+
+    async close(): Promise<void> {
+        // this.persistenceService.disconnect();
+        return super.close();
+    }
 
     async resetState() {
         this.emit(this.state.copyWith({status: AuthStatus.Initial, errorMessage: ""}));
@@ -103,23 +106,41 @@ export class AuthBloc extends Cubit<AuthState> {
     async requestRefresh(accessToken: string): Promise<void> {
         AddTournament.isSendRequest = false;
         Bindings.isMatchRequest = false;
-        this.emit(this.state.copyWith({isRefresh: true}))
-        const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(accessToken);
-        res.when({
-            onError: (err: any) => {
-                let errorMessage: string | undefined;
-                if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
-                }
-                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage, isRefresh: false}));
-            },
-            onSuccess: (user) => {
-                this.preferenceService.setToken(user.accessToken);
-                this.preferenceService.setRefreshToken(user.refreshToken);
-                const newState = this.state.copyWith({status: AuthStatus.Success, user: user, isRefresh: false});
-                this.emit(newState);
+        this.emit(this.state.copyWith({isRefresh: true}));
+        try {
+            const decode = jwtDecode(accessToken);
+            const sub = decode.sub;
+            if (sub) {
+                const userId = Number.parseInt(sub!);
+
+                this.emit(this.state.copyWith({
+                    status: AuthStatus.Success,
+                    user: {accessToken: accessToken, refreshToken: '', userId: userId}
+                }));
             }
-        });
+            else  {
+                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Unknown Error"}))
+            }
+        }
+        catch (error) {
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Unknown Error"}))
+        }
+        // const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(accessToken);
+        // res.when({
+        //     onError: (err: any) => {
+        //         let errorMessage: string | undefined;
+        //         if (err instanceof ApiException) {
+        //             errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+        //         }
+        //         this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage, isRefresh: false}));
+        //     },
+        //     onSuccess: (user) => {
+        //         this.preferenceService.setToken(user.accessToken);
+        //         this.preferenceService.setRefreshToken(user.refreshToken);
+        //         const newState = this.state.copyWith({status: AuthStatus.Success, user: user, isRefresh: false});
+        //         this.emit(newState);
+        //     }
+        // });
     }
 
     async loginWithGoogle(): Promise<void> {

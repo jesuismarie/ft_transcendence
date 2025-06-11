@@ -2,16 +2,19 @@ import {Cubit} from "@/core/framework/bloc/cubit";
 import {TournamentState, TournamentStatus} from "@/presentation/features/tournaments/logic/tournamentState";
 import {inject} from "tsyringe";
 import type {TournamentRemoteRepository} from "@/domain/respository/tournamentRemoteRepository";
-import {ApiException, GeneralException} from "@/core/exception/exception";
-import {showError} from "@/utils/error_messages";
+import {ApiException} from "@/core/exception/exception";
 // import {startTournament} from "@/profile/tournament_details";
-import {ApiConstants} from "@/core/constants/apiConstants";
-import type {Either} from "@/core/models/either";
 import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
 import {Bindings} from "@/presentation/features/bindings";
+import {cloneDeep} from "lodash";
+import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
+import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
+import {OnlineStatuses} from "@/domain/entity/onlineStatus";
 
 export class TournamentBloc extends Cubit<TournamentState> {
-    constructor(@inject('TournamentRepository') private tournamentRemoteRepository: TournamentRemoteRepository) {
+    constructor(@inject('TournamentRepository') private tournamentRemoteRepository: TournamentRemoteRepository,
+                @inject('UserRepository') private userRepository: UserRemoteRepository
+                ) {
         super(new TournamentState(({})));
     }
 
@@ -58,7 +61,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
         AddTournament.isSendRequest = false;
     }
 
-   async getAllTournaments(offset: number, limit: number) {
+    async getAllTournaments(offset: number, limit: number) {
         this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
         const res = await this.tournamentRemoteRepository.getAllTournaments(offset, limit);
         res.when({
@@ -77,8 +80,54 @@ export class TournamentBloc extends Cubit<TournamentState> {
     }
 
     async startTournament(tournamentId: number): Promise<void> {
+        if (this.state.online.every((e) => e == OnlineStatuses.Online)) {
+            this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+            const res = await this.tournamentRemoteRepository.startTournament(tournamentId);
+            res.when({
+                onError: (e) => {
+                    let errorMessage: string | undefined;
+                    if (e instanceof ApiException) {
+                        errorMessage = e.message;
+                    } else {
+                        errorMessage = e.toString();
+                    }
+                    this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
+                }, onSuccess: (data) => {
+                    this.emit(this.state.copyWith({status: TournamentStatus.Success}))
+                }
+            });
+        }
+        else {
+            this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: "Please wait until all participants are online."}))
+        }
+    }
+
+    async getOnlineState(id: number): Promise<void> {
+        const tournaments = this.state.results.tournaments.filter((e) => e.id == id);
+
+        if (tournaments.length > 0) {
+            const tournament = tournaments[0];
+            this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+            const res = await this.userRepository.getOnlineStatuses(tournament.participants);
+            res.when({
+                onSuccess: (data) => {
+                    this.emit(this.state.copyWith({online: data, status: TournamentStatus.Success}))
+                }, onError: (error) => {
+                    console.log('Error:', error)
+                    let errorMessage: string | undefined;
+                    if (error instanceof ApiException) {
+                        errorMessage = error.message.removeBefore('body/').capitalizeFirst()
+                    }
+                    this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}));
+                }
+            })
+        }
+
+    }
+
+    async getRelevantParticipants(id: number): Promise<void> {
         this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
-        const res = await this.tournamentRemoteRepository.startTournament(tournamentId);
+        const res = await this.tournamentRemoteRepository.getRelevantParticipants(id);
         res.when({
             onError: (e) => {
                 let errorMessage: string | undefined;
@@ -89,9 +138,25 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
             }, onSuccess: (data) => {
-                this.emit(this.state.copyWith({status: TournamentStatus.Success}))
+                const newParticipants: TournamentInfoEntity  = cloneDeep<TournamentInfoEntity>(this.state.results);
+                const participantsIndex = this.state.results.tournaments.findIndex((e, index) => e.id === id ? index : -1);
+                if (participantsIndex != -1) {
+                    newParticipants.tournaments[participantsIndex] = {
+                        current_players_count: data.currentPlayersCount,
+                        max_players_count: data.maxPlayersCount,
+                        participants: data.participants,
+                        id: newParticipants.tournaments[participantsIndex].id,
+                        name: newParticipants.tournaments[participantsIndex].name,
+                        status: newParticipants.tournaments[participantsIndex].status,
+                        created_by: newParticipants.tournaments[participantsIndex].created_by,
+
+
+                    };
+                }
+                this.emit(this.state.copyWith({status: TournamentStatus.Success, results: newParticipants}))
             }
         });
+        Bindings.isTournamentItemBounded = false;
     }
 
     async deleteTournament(id: number, createdBy: number) {

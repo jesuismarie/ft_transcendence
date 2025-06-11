@@ -19,6 +19,12 @@ import {NotFoundWidget} from "@/presentation/common/widget/notFound";
 import {AppRoutes} from "@/core/constants/appRoutes";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
+import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
+import type {PersistenceService} from "@/core/services/persistance_service";
+import {Constants} from "@/core/constants/constants";
+import {ApiConstants} from "@/core/constants/apiConstants";
+import {BlocProvider} from "@/core/framework/bloc/blocProvider";
+import {OnlineBloc} from "@/presentation/features/online/onlineBloc";
 
 export const navigatorKey = new GlobalKey<Navigator>();
 
@@ -47,24 +53,29 @@ export class App extends StatelessWidget {
             if (token && token.length > 0) {
                 authBloc.requestRefresh(token).then()
             }
-                return new MaterialApp(
-                    {
-                        routeListen: (context, url) => {
-                            AuthGuard.navigationGuard(context!, routes);
-                        },
-                        navigatorKey: navigatorKey,
-                        home: new AuthScreen(),
-                        routes: {
-                            '/': (context) => new AuthScreen(),
-                            '/login': (context) => new LoginScreen(),
-                            '/profile': (context) => new ProfileScreen(),
-                            '/profile/:id': (context, params) => new ProfileScreen(params?.id),
-                            '/register': (context) => new RegisterScreen(),
-                            '/game': (context) => new PongGameScreen(),
-                            '/404': (context) => new NotFoundWidget(),
+            // const persistenceService: PersistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, authBloc);
+            // persistenceService.init();
+                return new BlocProvider({
+                    create: () => new OnlineBloc(authBloc),
+                    child: new MaterialApp(
+                        {
+                            routeListen: (context, url) => {
+                                AuthGuard.navigationGuard(context!, routes);
+                            },
+                            navigatorKey: navigatorKey,
+                            home: new AuthScreen(),
+                            routes: {
+                                '/': (context) => new AuthScreen(),
+                                '/login': (context) => new LoginScreen(),
+                                '/profile': (context) => new ProfileScreen(),
+                                '/profile/:id': (context, params) => new ProfileScreen(params?.id),
+                                '/register': (context) => new RegisterScreen(),
+                                '/game': (context) => new PongGameScreen(),
+                                '/404': (context) => new NotFoundWidget(),
+                            }
                         }
-                    }
-                )
+                    )
+                })
             }
         ));
     }

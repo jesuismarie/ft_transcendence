@@ -8,7 +8,7 @@ import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
-import {showError} from "@/utils/error_messages";
+import type {TournamentParticipantsEntity} from "@/domain/entity/tournamentParticipantsEntity";
 
 
 @injectable()
@@ -116,6 +116,30 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
             });
             if (res.status >= 200 && res.status < 400) {
                 return new Right(undefined);
+            } else {
+                return new Left(new GeneralException())
+            }
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async getRelevantParticipants(id: number): Promise<Either<GeneralException, TournamentParticipantsEntity>> {
+        try {
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.getTournament}?id=${id}`, {
+            });
+            if (res.status >= 200 && res.status < 400) {
+                const participants: TournamentParticipantsEntity = {
+                    maxPlayersCount: res.data.maxPlayersCount,
+                    currentPlayersCount: res.data.currentPlayersCount,
+                    participants: res.data.participants,
+                }
+                return new Right(participants);
             } else {
                 return new Left(new GeneralException())
             }
