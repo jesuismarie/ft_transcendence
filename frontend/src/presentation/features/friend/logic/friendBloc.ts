@@ -95,7 +95,7 @@ export class FriendBloc extends Cubit<FriendState> {
         res.when({
             onSuccess: (data) => {
 
-                this.emit(this.state.copyWith({status: FriendStatus.Success}))
+                this.emit(this.state.copyWith({status: FriendStatus.Success, isFriend: data.status}))
                 // setTimeout(() => {
                 //     // localStorage.removeItem(`friendId${friendID}`);
                 // }, seconds)

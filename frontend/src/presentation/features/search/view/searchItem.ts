@@ -29,9 +29,11 @@ export class SearchItem extends StatelessWidget {
             const userId = authBloc.state.user?.userId;
             if (this.user.id == userId) {
                 Navigator.of(context).pushNamed('/profile')
+                window.location.reload();
             }
             else {
                 Navigator.of(context).pushNamed(`/profile/${this.user.id}`);
+                window.location.reload();
             }
         })
     }

@@ -180,7 +180,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                             blocType: FriendBloc,
                             buildWhen: (oldState, newState) => oldState.isFriend != newState.isFriend,
                             builder: (_, friendState) => {
-
+                                console.log(`IIIIIIIIII:::: ${friendState.isFriend}`)
 
                                 let isHidden = !this.widget.userId;
                                 if (this.widget.userId && state.user?.userId) {
@@ -194,6 +194,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                         builder: (_, profileState) => {
                                             return new SubmitButton({
                                                 onClick:  () => {
+
                                                     if (friendState.status != FriendStatus.Loading) {
                                                         const userId = context.read(AuthBloc).state.user?.userId;
                                                         const friendBloc = context.read(FriendBloc)
@@ -206,7 +207,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                                 },
                                                 className: `mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]`,
                                                 id: "friend-request-btn",
-                                                isHidden: isHidden,
+                                                isHidden: isHidden || friendState.isFriend,
                                                 label: "Add Friend",
                                             })
                                         }
