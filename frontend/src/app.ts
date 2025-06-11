@@ -53,6 +53,7 @@ export class App extends StatelessWidget {
             if (token && token.length > 0) {
                 authBloc.requestRefresh(token).then()
             }
+
             // const persistenceService: PersistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, authBloc);
             // persistenceService.init();
                 return new BlocProvider({

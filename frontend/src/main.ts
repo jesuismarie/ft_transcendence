@@ -52,8 +52,6 @@ async function bootstrap() {
     await configureDependencies();
     // register dependencies
     runApp(new App());
-    const service = new PersistenceServiceImpl(ApiConstants.websocketUrl, new AuthBloc(Resolver.authRepository(), Resolver.preferenceService()));
-    service.init();
     waitForNavigatorReady(() => {
         const context = navigatorKey.currentContext();
         if (context) {

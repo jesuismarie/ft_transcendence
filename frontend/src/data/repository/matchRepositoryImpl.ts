@@ -16,7 +16,7 @@ export class MatchRepositoryImpl implements MatchRepository {
 
     async fetchMatchList(userId: number, offset: number, limit: number): Promise<Either<GeneralException, MatchHistory>> {
         try {
-            const res = await this.apiClient.axiosClient().get(`${ApiConstants.matchHistoryByUser}?user_id${userId}offset=${offset}&limit=${limit}`);
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.matchHistoryByUser}?user_id=${userId}&offset=${offset}&limit=${limit}`);
             if (res.status >= 200 && res.status < 400) {
                 const match: MatchHistory = {
                     totalCount: res.data.totalCount,
