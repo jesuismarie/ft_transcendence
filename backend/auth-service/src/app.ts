@@ -4,6 +4,7 @@
 import Fastify, { FastifyInstance } from "fastify";
 import cors from '@fastify/cors';
 import rateLimit from "@fastify/rate-limit";
+import helmet from "@fastify/helmet";
 
 // Plugins
 import envPlugin from "./plugins/env";
@@ -37,16 +38,13 @@ const buildServer = () => {
   app.register(userserviceClient);
   app.register(oauthGoogle);
 
-  // // Security and performance plugins
-  // app.register(helmet, {
-  //
-  //   // crossOriginOpenerPolicy: { policy: "*" },
-  // });
+  // Security and performance plugins
+  app.register(helmet);
   // Rate limiting to prevent abuse
   app.register(rateLimit, {
-    max: 10, // Limit each IP to 10 requests per minute
-    timeWindow: "1 minute", // Time window for the limit
-    ban: 2, // Ban IPs after 2 violations
+    max: 200,                     // Limit each IP to 200 requests per minute
+    timeWindow: "1 minute",       // Time window for the limit
+    ban: 10,                      // Ban IPs after 10 violations
     keyGenerator: (req) => req.ip,
   });
 

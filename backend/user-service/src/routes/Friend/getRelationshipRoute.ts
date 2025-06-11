@@ -19,6 +19,7 @@ export default async function getRelationshipRoute(app: FastifyInstance, userRep
 			}
 		},
 		async (req, reply : FastifyReply) => {
+			console.log(`Received request to check relationship between user ${req.params.userId} and friend ${req.params.friendId}`);
 			const userId = Number(req.params.userId);
 			const friendId = Number(req.params.friendId);
 			const userExists = userRepo.findById(userId);

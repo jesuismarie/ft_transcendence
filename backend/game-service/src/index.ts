@@ -17,15 +17,11 @@ const app = Fastify({ logger: true });
 app.register(initDb);
 app.register(errorEnvelope);
 
-
-
 // Регистрируем маршруты
 app.register(matchRoutes);
 app.register(tournamentRoutes);
 app.register(internalRoutes);
 app.register(monitoringRoutes);
-
-
 
 app.listen(
   {

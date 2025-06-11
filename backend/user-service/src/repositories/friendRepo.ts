@@ -59,6 +59,6 @@ export class FriendRepo implements FriendRepoInterface {
             WHERE (userId = ? AND friendId = ?) OR (userId = ? AND friendId = ?)
             LIMIT 1`
         );
-        return !!stmt.get(userId, friendId);
+        return !!stmt.get(userId, friendId, friendId, userId);
     }
 }

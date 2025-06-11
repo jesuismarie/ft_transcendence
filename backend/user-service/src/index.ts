@@ -50,7 +50,7 @@ app.register(fastifyHelmet, {
 });
 app.register(fastifyRateLimit, {
 	max: 10000,
-	timeWindow: '30 minutes'
+	timeWindow: '1 hour'
 });
 app.register(multipart, { limits: {fileSize: 1_000_000} });
 app.register(websocket, {
