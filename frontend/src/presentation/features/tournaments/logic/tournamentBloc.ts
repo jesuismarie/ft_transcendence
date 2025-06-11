@@ -4,7 +4,7 @@ import {inject} from "tsyringe";
 import type {TournamentRemoteRepository} from "@/domain/respository/tournamentRemoteRepository";
 import {ApiException, GeneralException} from "@/core/exception/exception";
 import {showError} from "@/utils/error_messages";
-import {startTournament} from "@/profile/tournament_details";
+// import {startTournament} from "@/profile/tournament_details";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import type {Either} from "@/core/models/either";
 import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
@@ -37,7 +37,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
         });
     }
 
-    async createTournament(name: string, maxPlayers: number, createdBy: string): Promise<void> {
+    async createTournament(name: string, maxPlayers: number, createdBy: number): Promise<void> {
         if (this.state.isValid) {
             this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
             const res = await this.tournamentRemoteRepository.createTournament(name, maxPlayers, createdBy);
@@ -94,7 +94,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
         });
     }
 
-    async deleteTournament(id: number, createdBy: string) {
+    async deleteTournament(id: number, createdBy: number) {
         this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
         const res = await this.tournamentRemoteRepository.deleteTournament(id, createdBy);
         res.when({

@@ -166,5 +166,6 @@ export class AuthBloc extends Cubit<AuthState> {
         this.preferenceService.unsetToken();
         this.preferenceService.unsetRefreshToken();
         localStorage.clear()
+        window.location.reload();
     }
 }

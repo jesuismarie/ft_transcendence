@@ -1,4 +1,3 @@
-import {fetchMatchList} from "@/profile/matches";
 import type {Either} from "@/core/models/either";
 import type {GeneralException} from "@/core/exception/exception";
 import type {MatchHistory} from "@/domain/entity/matchHistory";

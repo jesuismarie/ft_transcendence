@@ -4,7 +4,7 @@ import {type BuildContext} from "@/core/framework/core/buildContext";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {type Widget} from "@/core/framework/core/base";
 import {State, StatefulWidget} from "@/core/framework/widgets/statefulWidget";
-import {fetchAddTournament} from "@/profile/tournament_details";
+// import {fetchAddTournament} from "@/profile/tournament_details";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {hideModal, showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
@@ -58,11 +58,14 @@ export class AddTournament extends StatelessWidget {
         saveBtn?.addEventListener("click", () => {
             if (!AddTournament.isSendRequest) {
                 clearErrors();
+
                 const max_player_count = parseInt(this.capacityInputController.value)
                 tournamentBloc.validateTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '')
-                tournamentBloc.createTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.username ?? '').then(r => r)
-                AddTournament.isSendRequest = true
-                tournamentBloc.resetAfterSubmit()
+                if (profileBloc.state.profile?.id) {
+                    tournamentBloc.createTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.id).then(r => r)
+                    AddTournament.isSendRequest = true
+                    tournamentBloc.resetAfterSubmit()
+                }
             }
         });
     }

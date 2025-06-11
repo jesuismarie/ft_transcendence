@@ -7,7 +7,6 @@ import {type ApiClient} from "@/core/network/apiClient";
 import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
 import {ApiConstants} from "@/core/constants/apiConstants";
-import {TOURNAMENTS_LIMIT} from "@/profile/tournaments";
 import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
 import {showError} from "@/utils/error_messages";
 
@@ -90,7 +89,7 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
 
     async getAllTournaments(offset: number, limit: number): Promise<Either<GeneralException, TournamentInfoEntity>> {
         try {
-            const res = await this.apiClient.axiosClient().get(`${ApiConstants.getTournamentInfo}?offset=${offset}&limit=${TOURNAMENTS_LIMIT}`);
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.getTournamentInfo}?offset=${offset}&limit=${limit}`);
             if (res.status >= 200 && res.status < 400) {
                 const entity: TournamentInfoEntity = {
                     totalCount: res.data.totalCount,
