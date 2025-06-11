@@ -113,21 +113,26 @@ export class UserRepo implements UserRepoInterface {
 	}
 	
 	toView(user: User): UserView {
+		// avatarURL is domain name + user.avatarPath
+		// Assuming the avatarPath is a relative path, we can construct the full URL.
+		// TODO: Now its hardcoded, but it should be dynamic based on the environment.
+		const avatarURL = user.avatarPath ? `http://localhost:5003/user-service${user.avatarPath}` : null;
 		return {
 			id: user.id,
 			email: user.email,
 			username: user.username,
-			avatarPath: user.avatarPath,
+			avatarPath: avatarURL,
 			wins: 0,
 			losses: 0,
 			online: false
 		};
 	}
 	toQuickView(user: User): UserTypes.QuickUserResponse {
+		const avatarURL = user.avatarPath ? `http://localhost:5003/user-service${user.avatarPath}` : null;
 		return {
 			id: user.id,
 			username: user.username,
-			avatarPath: user.avatarPath,
+			avatarPath: avatarURL,
 		};
 	}
 }
