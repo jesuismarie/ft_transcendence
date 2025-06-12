@@ -1,10 +1,7 @@
 import { createBall } from "./ball";
-import { MatchPlayers, Score } from "../types";
+import { MatchPlayers, Score, Match } from "../types";
 
-export const matches = [
-    { match_id: '123', player1_id: 'alice', player2_id: 'bob' },
-    { match_id: '456', player1_id: 'charlie', player2_id: 'dave' },
-];
+export const matches = new Array<Match>();
 
 export function getOrCreateMatch(match_id: string, store: Map<string, MatchPlayers>): MatchPlayers | undefined{
     if( !store.has(match_id) ){

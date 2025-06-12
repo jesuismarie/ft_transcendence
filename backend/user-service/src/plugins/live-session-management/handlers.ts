@@ -1,33 +1,36 @@
+import Websocket from 'ws';
 import { allConnections, userConnections, onlineUsers, graceTimers, UserId } from './state';
 import type { StatusMessage } from './types';
-import WebSocket from "ws";
 
 
-export function handleConnection(socket : WebSocket) {
+export function handleConnection(socket : Websocket) {
 	let currentUserId: UserId | null = null;
 	allConnections.add(socket);
 	
 	socket.on('message', (msg) => {
 		try {
-			const data = JSON.parse(msg.toString()) as StatusMessage;
+			const data = JSON.parse(msg.toString()) as { event: string, payload: StatusMessage };
 			console.log(data);
-			if (!['online', 'offline'].includes(data.status)) {
+			// Check for a custom event type
+			if (data.event !== 'user:status') return ; // Just do nothing
+			const payload = data.payload as StatusMessage;
+			if (!['online', 'offline'].includes(payload.status)) {
 				socket.send("error");
 				return;
 			}
 			
-			currentUserId = Number(data.userId);
-			console.log(`User ${data.userId} is now ${data.status}`);
+			currentUserId = Number(payload.userId);
+			console.log(`User ${payload.userId} is now ${payload.status}`);
 			let set = userConnections.get(currentUserId);
-			if (!set) userConnections.set(currentUserId, (set = new Set<WebSocket>()));
+			if (!set) userConnections.set(currentUserId, (set = new Set<Websocket>()));
 			set.add(socket);
 			
 			console.log('Adding userId:', currentUserId, 'Type:', typeof currentUserId);
-			if (data.status === 'online') {
+			if (payload.status === 'online') {
 				onlineUsers.add(currentUserId);
-				clearGraceTimer(data.userId);
-			} else if (data.status === 'offline') {
-				maybeScheduleOffline(data.userId);
+				clearGraceTimer(payload.userId);
+			} else if (payload.status === 'offline') {
+				maybeScheduleOffline(payload.userId);
 			}
 			socket.send("ok");
 		} catch {

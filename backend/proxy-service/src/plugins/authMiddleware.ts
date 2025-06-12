@@ -3,6 +3,7 @@ import { services } from "../config";
 import axios from "axios";
 
 const excludedRoutes = ["/user-service/health",
+                        "/user-service/static",
                         "/metrics", "/public",
                         "/auth-service"
 ]; // Handlers that do not require authentication

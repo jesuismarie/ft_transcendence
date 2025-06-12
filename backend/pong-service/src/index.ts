@@ -6,6 +6,8 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import { handleSocketConnection } from "./socket";
 import monitoringRoutes from "./monitoring/routes";
+import healthRoute from "./routes/health";
+import createMatchRoute from "./routes/createMatchRoute";
 
 const app = Fastify();
 
@@ -23,6 +25,8 @@ const httpServer = createServer((req, res) => {
 const wss = new WebSocket.Server({ server: httpServer });
 
 wss.on("connection", handleSocketConnection);
+app.register(healthRoute);
+app.register(createMatchRoute);
 app.register(monitoringRoutes);
 
 // TODO: fix port

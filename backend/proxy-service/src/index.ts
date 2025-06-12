@@ -32,6 +32,10 @@ app.register(httpProxy, {
   upstream: services.authService,
   prefix: "/auth-service",
 });
+app.register(httpProxy, {
+  upstream: services.pongService,
+  prefix: "/pong-service",
+});
 app.register(monitorningRoutes);
 
 app.listen(
