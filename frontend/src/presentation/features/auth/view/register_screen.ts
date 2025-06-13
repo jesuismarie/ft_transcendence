@@ -1,34 +1,28 @@
 import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import {type BuildContext} from "@/core/framework/core/buildContext";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
-// import {loadSignUpForm} from "@/presentation/templates/templates";
 import {Navigator} from "@/core/framework/widgets/navigator";
 import type {Widget} from "@/core/framework/core/base";
-import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
-import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import {clearErrors, showError} from "@/utils/error_messages";
-import {Validator} from "@/utils/validation";
 
 export class RegisterScreen extends StatelessWidget {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        // const authGuard = new AuthGuard('/register', false, true);
-        // authGuard.guard(context)
         this.setup(context);
-
-        // loadSignUpForm(context)
-        // initGoogleRegister();
-        // initRegistrationForm();
     }
 
     setup(context: BuildContext) {
         const navigator = Navigator.of(context);
 
         const btn = document.getElementById('close-signup-btn');
+        const googleBtn = document.getElementById('google-register-btn')
+        googleBtn?.addEventListener('click', e => {
+            e.preventDefault();
+            context.read(AuthBloc).oauth()
+        })
         btn?.addEventListener('click', () => {
             navigator.pop()
         })
@@ -47,63 +41,8 @@ export class RegisterScreen extends StatelessWidget {
             const email = (formData.get('reg_email') as string)?.trim();
             const password = (formData.get('reg_password') as string)?.trim();
             const confirmPassword = (formData.get('reg_confirm_password') as string)?.trim();
-
-            let hasError = false;
-            clearErrors();
-
-            if (!username) {
-                showError('reg_username', 'Username is required.');
-                hasError = true;
-            } else if (!Validator.isValidUsername(username)) {
-                showError('reg_username', 'Invalid username.');
-                hasError = true;
-            }
-
-            if (!email) {
-                showError('reg_email', 'Email is required.');
-                hasError = true;
-            } else if (!Validator.isValidEmail(email)) {
-                showError('reg_email', 'Invalid email address.');
-                hasError = true;
-            }
-
-            if (!password) {
-                showError('reg_password', 'Password is required.');
-                hasError = true;
-            }
-
-            if (!confirmPassword) {
-                showError('reg_confirm_password', 'Please confirm your password.');
-                hasError = true;
-            }
-
-            if (!hasError && !Validator.isValidPassword(password)) {
-                showError('reg_password', 'Invalid password.');
-                showError('confirm_password', 'Invalid password.');
-                hasError = true;
-            }
-
-            if (password !== confirmPassword) {
-                showError('reg_confirm_password', 'Passwords do not match.');
-                hasError = true;
-            }
-
-            if (hasError)
-                return;
-
             const authLogic = context.read(AuthBloc)
-            await authLogic.register({username, password, email});
-            // if (authLogic.state.status === AuthStatus.Success) {
-            //     console.log('Registration successful:');
-            //     await authLogic.resetState();
-            //
-            //     navigator.pushNamed( '/profile');
-            //     return;
-            // }
-            // else if(authLogic.state.status === AuthStatus.Error) {
-            //     showError('reg_email', authLogic.state.errorMessage || 'Registration Failed.');
-            //     return;
-            // }
+            await authLogic.register({email, username, password, confirmPassword});
         });
     }
 
@@ -114,11 +53,9 @@ export class RegisterScreen extends StatelessWidget {
                 this.setup(context);
                 if (state.status == AuthStatus.Success) {
                     context.read(AuthBloc).resetState().then();
-                    // context.read(ProfileBloc).getUserProfile(state.user?.userId?.toString() ?? '').then(r => r);
                     Navigator.of(context).pushNamed('/profile')
                 }
                 if (state.status == AuthStatus.Error) {
-                    // showError('reg_username', state.errorMessage ?? "UNKNOWN ERROR");
                     context.read(AuthBloc).resetState().then();
                 }
             },

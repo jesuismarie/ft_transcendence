@@ -20,10 +20,12 @@ export class OAuthRedirectScreen extends StatelessWidget {
         authBloc.stream.subscribe((state) => {
             if (state.status == AuthStatus.Success) {
                 Navigator.of(context).pushNamed('/');
+                window.location.reload();
             }
             if(state.status == AuthStatus.Error) {
                 showFlushBar({message: "OAuth failed"});
                 Navigator.of(context).pushNamed('/');
+                window.location.reload();
             }
         })
     }

@@ -42,7 +42,6 @@ export class ProfileInfoContent extends State<ProfileInfo> {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
         this.setup(context);
     }
 

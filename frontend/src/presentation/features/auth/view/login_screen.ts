@@ -8,18 +8,11 @@ import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import {clearErrors, showError} from "@/utils/error_messages";
-import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
-import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
-import {Validator} from "@/utils/validation";
 
 export class LoginScreen extends StatelessWidget {
     didMounted(context: BuildContext) {
         super.didMounted(context);
         this.setup(context)
-        // const authGuard = new AuthGuard('/login', false, true);
-        // authGuard.guard(context)
-
     }
 
     setup(context: BuildContext) {
@@ -34,12 +27,7 @@ export class LoginScreen extends StatelessWidget {
             return;
 
         googleLoginButton.addEventListener('click', async () => {
-            const authBloc = context.read(AuthBloc);
-            authBloc.loginWithGoogle();
-
-            // window.location.href = `${ApiConstants.baseUrlDev}${ApiConstants.auth}`;
-            // listen /auth/redirect route params and
-            // send second request with code
+            context.read(AuthBloc).oauth();
         });
         const loginForm = document.getElementById('loginForm') as HTMLFormElement | null;
 
@@ -54,29 +42,9 @@ export class LoginScreen extends StatelessWidget {
             const email = (formData.get('login_email') as string)?.trim();
             const password = (formData.get('login_password') as string)?.trim();
 
-            let hasError = false;
-            clearErrors();
-
-            if (!email) {
-                showError('login_email', 'Email is required.');
-                hasError = true;
-            } else if (!Validator.isValidEmail(email)) {
-                showError('login_email', 'Invalid email format.');
-                hasError = true;
-            }
-
-            if (!password) {
-                showError('login_password', 'Password is required.');
-                hasError = true;
-            }
-
-            if (hasError)
-                return;
-
             const authBloc = context.read(AuthBloc)
             await authBloc.login({email, password});
         });
-        // loadSignInForm(context);
     }
 
 
@@ -87,7 +55,6 @@ export class LoginScreen extends StatelessWidget {
                 this.setup(context)
                 if (state.status == AuthStatus.Success) {
                     context.read(AuthBloc).resetState().then();
-                    // context.read(ProfileBloc).getUserProfile(state.user?.userId?.toString() ?? '').then(r => r);
                     Navigator.of(context).pushNamed('/profile')
                 }
                 if (state.status == AuthStatus.Error) {
