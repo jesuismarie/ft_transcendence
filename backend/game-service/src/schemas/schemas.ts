@@ -30,6 +30,11 @@ export const getTournamentsInfoSchema = {
   properties: {
     limit: { type: "number", default: 50 },
     offset: { type: "number", default: 0 },
+    status: {
+      type: "array",
+      items: { type: "string", enum: ["created", "in_progress", "ended"] },
+      default: [],
+    },
   },
 };
 
