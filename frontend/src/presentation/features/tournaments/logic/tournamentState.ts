@@ -9,6 +9,10 @@ export enum TournamentStatus {
     Initial = 'initial',
     Loading = 'loading',
     Success = 'success',
+    Created = 'created',
+    ErrorCreate = 'errorCreate',
+    SuccessOnline = 'successOnline',
+    SuccessRelevant = 'successRelevant',
     Error = 'error',
 }
 

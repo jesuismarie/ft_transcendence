@@ -44,11 +44,12 @@ export class RouteInformationParser {
 
 export abstract class AuthGuard {
     static navigationGuard(context: BuildContext, routes: { [key: string]: string }) {
-        const publicRoutes = ['/login', '/register', '/'];
+        const publicRoutes = ['/login', '/register', '/', '/oauth/complete'];
         const path = window.location.pathname;
         const preferenceService = Resolver.preferenceService();
         const token = preferenceService.getToken();
 
+        if (path)
         if (!RouteInformationParser.matchRoute(path, routes)) {
             Navigator.of(context).pushNamed('/404')
         }
@@ -61,6 +62,13 @@ export abstract class AuthGuard {
             Navigator.of(context).pushNamed('/profile');
             return;
         }
+        if (path == '/oauth/complete') {
+            const hashParams = new URLSearchParams(window.location.hash.slice(1));
+            const ticket = hashParams.get("ticket");
+            Navigator.of(context).pushNamed(`${path}/${ticket}`);
+            return;
+        }
+        console.log(`SSSSS:::: ${window.location.href} ${window.location.pathname}`);
         Navigator.of(context).pushNamed(path)
     }
 

@@ -16,6 +16,7 @@ import {TournamentStatus} from "@/presentation/features/tournaments/logic/tourna
 import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {Navigator} from "@/core/framework/widgets/navigator";
 import {showFlushBar} from "@/presentation/common/widget/flushBar";
+import {Constants} from "@/core/constants/constants";
 
 export class TournamentItem extends StatelessWidget {
     constructor(private tournamentItem: TournamentInfoDetailsEntity) {
@@ -46,6 +47,7 @@ export class TournamentItem extends StatelessWidget {
 					<div id="delete-tournament-btn-content"></div>
 					<div id="register-tournament-btn-content"></div>
 					<div id="unregister-tournament-btn-content"></div>
+					<div id="join-tournament-btn-content"></div>
 				</div>
 			</div>
 		</div>
@@ -56,7 +58,7 @@ export class TournamentItem extends StatelessWidget {
                     blocType: MatchBloc,
                     listener: (context, state) => {
                         if (state.status == MatchStatus.Created) {
-                            Navigator.of(context).pushNamed('/game')
+                            // Navigator.of(context).pushNamed('/game')
                         }
                         if (state.status === MatchStatus.Error) {
                             showFlushBar({message: state.errorMessage ?? "UNKNOWN ERROR"});
@@ -84,8 +86,9 @@ export class TournamentItem extends StatelessWidget {
 
                                     const unsubscribe = context.read(TournamentBloc).stream.subscribe((state) => {
                                         console.log(`{{{{{{{{{{{{{::::: ${state.status} ${JSON.stringify(state.online)}`);
-                                        if (state.status == TournamentStatus.Success) {
+                                        if (state.status == TournamentStatus.SuccessOnline) {
                                             context.read(MatchBloc).createMatch(this.tournamentItem.id, this.tournamentItem.created_by, state.online).then(r => r);
+                                            context.read(TournamentBloc).getAllTournaments(0, Constants.tournament_limit).then(() => {})
                                         }
                                     })
                                     Bindings.isTournamentItemBounded = true;
@@ -115,10 +118,38 @@ export class TournamentItem extends StatelessWidget {
                                     Bindings.isTournamentItemBounded = true;
                                 }
                             },
+                            disabled: this.tournamentItem.status != "created",
                             isHidden: state.profile && state.profile.id != this.tournamentItem.created_by,
                         })
                     },
                     parentId: "delete-tournament-btn-content"
+
+                }),
+                new BlocBuilder<ProfileBloc, ProfileState>({
+                    blocType: ProfileBloc,
+                    buildWhen: (oldState, newState) => !oldState.equals(newState),
+                    builder: (context, state) => {
+
+                        console.log(`UUUUUUUUUUUUUUU:::::: ${state.profile?.id} ${this.tournamentItem.created_by}`)
+                        return new SubmitButton({
+                            className: 'px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800',
+                            id: 'join-tournament-btn',
+                            label: 'Join',
+                            onClick: () => {
+                                const matchId = context.read(MatchBloc).state.currentMatch?.matchId;
+                                console.log(`MATCHHHHHHH ${matchId}`);
+                                if (matchId && state.profile && this.tournamentItem.participants.includes(state.profile!.id) && this.tournamentItem.status == 'in_progress') {
+                                    Navigator.of(context).pushNamed(`/game/${matchId}`);
+                                }
+                                else if (this.tournamentItem.status != 'in_progress') {
+                                    showFlushBar({message: 'Tournament not started yet'});
+                                }
+
+                            },
+                            isHidden: false,
+                        })
+                    },
+                    parentId: "join-tournament-btn-content"
 
                 }),
                 new BlocBuilder<ProfileBloc, ProfileState>({

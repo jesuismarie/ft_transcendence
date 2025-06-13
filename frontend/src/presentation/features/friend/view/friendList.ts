@@ -27,6 +27,9 @@ export class FriendList extends StatelessWidget {
             builder: (context, state) => {
                 // console.log(`AAAAA::::: ${state.offset}`)
                 const friends = state.offset == 0 ? state.results.friends.slice(0, 3) : [];
+                if (friends.length == 0) {
+                    return new HtmlWidget(`<p class="text-gray-500 p-4">No Friends yet.</p>`, this.parentId)
+                }
                 return new Composite(friends.map((e) => new FriendListItem(e.id.toString(), e.username, e.avatarPath)), this.parentId)
             }
         });

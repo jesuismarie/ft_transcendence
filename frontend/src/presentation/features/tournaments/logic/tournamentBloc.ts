@@ -9,7 +9,7 @@ import {Bindings} from "@/presentation/features/bindings";
 import {cloneDeep} from "lodash";
 import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
-import {OnlineStatuses} from "@/domain/entity/onlineStatus";
+import {Constants} from "@/core/constants/constants";
 
 export class TournamentBloc extends Cubit<TournamentState> {
     constructor(@inject('TournamentRepository') private tournamentRemoteRepository: TournamentRemoteRepository,
@@ -18,7 +18,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
         super(new TournamentState(({})));
     }
 
-    validateTournament(name: string, maxPlayers: number, createdBy: string): void {
+    validateTournament(name: string): void {
         this.emit(this.state.copyWith({isValid: name.length != 0}))
     }
 
@@ -38,6 +38,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
+        await this.getAllTournaments(0, Constants.tournament_limit);
     }
 
     async unregisterToTournament(id: number, userId: number): Promise<void> {
@@ -56,6 +57,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
+        await this.getAllTournaments(0, Constants.tournament_limit);
     }
 
     async createTournament(name: string, maxPlayers: number, createdBy: number): Promise<void> {
@@ -70,11 +72,15 @@ export class TournamentBloc extends Cubit<TournamentState> {
                     } else {
                         errorMessage = e.toString();
                     }
-                    this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
+                    this.emit(this.state.copyWith({status: TournamentStatus.ErrorCreate, errorMessage: errorMessage}))
                 }, onSuccess: (data) => {
-                    this.emit(this.state.copyWith({status: TournamentStatus.Success, createdTournament: data}))
+                    this.emit(this.state.copyWith({status: TournamentStatus.Created, createdTournament: data}))
                 }
             });
+            await this.getAllTournaments(0, Constants.tournament_limit);
+        }
+        else {
+            this.emit(this.state.copyWith({status: TournamentStatus.ErrorCreate, errorMessage: "Please select tournament name"}))
         }
         AddTournament.isSendRequest = false;
     }
@@ -108,7 +114,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
             const res = await this.userRepository.getOnlineStatuses(tournament.participants);
             res.when({
                 onSuccess: (data) => {
-                    this.emit(this.state.copyWith({online: data, status: TournamentStatus.Success}))
+                    this.emit(this.state.copyWith({online: data, status: TournamentStatus.SuccessOnline}))
                 }, onError: (error) => {
                     console.log('Error:', error)
                     let errorMessage: string | undefined;
@@ -118,6 +124,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                     this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}));
                 }
             })
+            await this.getAllTournaments(0, Constants.tournament_limit);
         }
 
     }
@@ -150,9 +157,10 @@ export class TournamentBloc extends Cubit<TournamentState> {
 
                     };
                 }
-                this.emit(this.state.copyWith({status: TournamentStatus.Success, results: newParticipants}))
+                this.emit(this.state.copyWith({status: TournamentStatus.SuccessRelevant, results: newParticipants}))
             }
         });
+        await this.getAllTournaments(0, Constants.tournament_limit);
         Bindings.isTournamentItemBounded = false;
     }
 
@@ -172,6 +180,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
+        await this.getAllTournaments(0, Constants.tournament_limit);
         Bindings.isTournamentItemBounded = false;
     }
 

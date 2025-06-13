@@ -24,6 +24,7 @@ import {Status} from "@/core/models/status";
 import {OnlineBloc} from "@/presentation/features/online/onlineBloc";
 import {FriendsView} from "@/presentation/features/friend/view/friends_view";
 import {FriendList} from "@/presentation/features/friend/view/friendList";
+import {showFlushBar} from "@/presentation/common/widget/flushBar";
 
 
 export class ProfileInfo extends StatefulWidget {
@@ -74,11 +75,11 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                 blocType: ProfileBloc,
                 listener: (context, profileState) => {
                     if (!profileState.isValid || profileState.status == ProfileStatus.Error) {
-                        showError('avatar', profileState.errorMessage?.toString() ?? 'Unknown error');
+                        showFlushBar({message: profileState.errorMessage?.toString() ?? 'Unknown error'});
                         profileBloc.resetStatus().then();
                     }
                     if (profileState.status == ProfileStatus.Uploaded) {
-                        clearErrors();
+                        // clearErrors();
                         profileBloc.resetStatus().then();
                     }
                 },

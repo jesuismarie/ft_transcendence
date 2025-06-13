@@ -35,7 +35,7 @@ export class LoginScreen extends StatelessWidget {
 
         googleLoginButton.addEventListener('click', async () => {
             const authBloc = context.read(AuthBloc);
-            await authBloc.loginWithGoogle();
+            authBloc.loginWithGoogle();
 
             // window.location.href = `${ApiConstants.baseUrlDev}${ApiConstants.auth}`;
             // listen /auth/redirect route params and

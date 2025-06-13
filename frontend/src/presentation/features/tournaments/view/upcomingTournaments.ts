@@ -12,6 +12,7 @@ import {TournamentState, TournamentStatus} from "@/presentation/features/tournam
 import {Constants} from "@/core/constants/constants";
 import {Bindings} from "@/presentation/features/bindings";
 import {SubmitButton} from "@/presentation/common/widget/submitButton";
+import {clearErrors} from "@/utils/error_messages";
 
 export class UpcomingTournaments extends StatelessWidget {
     constructor(public parentId?: string) {

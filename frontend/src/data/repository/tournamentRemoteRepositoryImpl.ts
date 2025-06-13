@@ -140,8 +140,8 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
             if (res.status >= 200 && res.status < 400) {
                 const match: MatchEntity = {
                     matchId: res.data.match_id,
-                    player1Id: res.data.player1_id,
-                    player2Id: res.data.player2_id,
+                    player1Id: res.data.player_1,
+                    player2Id: res.data.player_2,
                     participants: res.data.participants,
                     status: res.data.status,
                 }

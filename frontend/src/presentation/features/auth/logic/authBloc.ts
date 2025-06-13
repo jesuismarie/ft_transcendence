@@ -10,6 +10,7 @@ import '@/core/extensions/stringExtension';
 import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
 import {Bindings} from "@/presentation/features/bindings";
 import {jwtDecode} from "jwt-decode";
+import {ApiConstants} from "@/core/constants/apiConstants";
 
 
 @injectable()
@@ -129,23 +130,34 @@ export class AuthBloc extends Cubit<AuthState> {
         }
     }
 
-    async loginWithGoogle(): Promise<void> {
+    loginWithGoogle(): void {
+        window.location.href = ApiConstants.auth;
+    }
 
-        const res: Either<GeneralException, UserEntity> = await this.authRepository.loginWithGoogle();
-        res.when({
-            onError: (err: any) => {
-                console.log('Error:', err)
-                let errorMessage: string | undefined;
-                if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+
+    async handleRedirection(ticket?: string): Promise<void> {
+
+        if (ticket) {
+            const res: Either<GeneralException, UserEntity> = await this.authRepository.oauth(ticket);
+            res.when({
+                onError: (err: any) => {
+                    console.log('Error:', err)
+                    let errorMessage: string | undefined;
+                    if (err instanceof ApiException) {
+                        errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    }
+                    this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                },
+                onSuccess: (user) => {
+                    this.preferenceService.setToken(user.accessToken);
+                    this.preferenceService.setRefreshToken(user.refreshToken);
+                    this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
                 }
-                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
-            },
-            onSuccess: (user) => {
-                this.preferenceService.setToken(user.accessToken);
-                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
-            }
-        });
+            });
+        }
+        else {
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "OAuth failed"}));
+        }
     }
 
     // async getUserProfile(id: string): Promise<void> {

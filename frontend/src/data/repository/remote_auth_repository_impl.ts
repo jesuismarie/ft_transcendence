@@ -69,16 +69,17 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
         }
     }
 
-    async loginWithGoogle(): Promise<Either<GeneralException, UserEntity>> {
+    async oauth(ticket: string): Promise<Either<GeneralException, UserEntity>> {
         try {
-            const response = await this.apiClient.get(`${ApiConstants.baseUrlDev}${ApiConstants.auth}`);
+            const response = await this.apiClient.axiosClient().post(`${ApiConstants.claim}`, {
+                loginTicket: ticket
+            });
 
-            if (response.ok) {
-                const data = await response.json();
+            if (response.status >= 200 && response.status < 400) {
                 const user: UserEntity = {
-                    userId: data.userId,
-                    accessToken: data.accessToken,
-                    refreshToken: data.refreshToken,
+                    userId: response.data.userId,
+                    accessToken: response.data.accessToken,
+                    refreshToken: response.data.refreshToken,
                 };
                 return new Right(user);
             }

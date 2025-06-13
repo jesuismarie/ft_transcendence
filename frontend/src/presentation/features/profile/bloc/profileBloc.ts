@@ -53,7 +53,8 @@ export class ProfileBloc extends Cubit<ProfileState> {
 
                     this.emit(this.state.copyWith({status: ProfileStatus.Uploaded, errorMessage: undefined}));
                 }
-            })
+            });
+            await this.getUserProfile(this.state.profile.id.toString());
         }
     }
 
