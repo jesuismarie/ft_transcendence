@@ -109,3 +109,11 @@ export const gamestatsSchema = {
     user: { type: "integer" },
   },
 };
+
+export const getTournamentActiveMatchSchema = {
+  type: "object",
+  required: ["id"],
+  properties: {
+    id: { type: "integer" },
+  },
+};
