@@ -7,6 +7,7 @@ import {getTournamentsInfoSchema} from "../../schemas/schemas";
 interface GetTournamentsInfoRequest {
   limit?: number;
   offset?: number;
+  status?: string[];
 }
 
 interface GetTournamentsInfoResponse {
@@ -35,15 +36,21 @@ export default async function getTournamentsInfoRoute(app: FastifyInstance) {
         },
       },
       async (request, reply) => {
-    const { limit = 50, offset = 0 } =
+    const { limit = 50, offset = 0, status } =
       request.query as GetTournamentsInfoRequest;
 
     try {
-      const tournaments = tournamentRepo.getAllCreated(
-        limit,
-        offset
-      ) as Tournament[];
-      const totalCount = tournamentRepo.countAllCreated();
+      let tournaments: Tournament[];
+      let totalCount: number;
+
+      if (status && Array.isArray(status) && status.length > 0) {
+        tournaments = tournamentRepo.getAllByStatuses(status, limit, offset) as Tournament[];
+        totalCount = tournamentRepo.countAllByStatuses(status);
+      } else {
+        tournaments = tournamentRepo.getAll(limit, offset) as Tournament[];
+        totalCount = tournamentRepo.countAll();
+      }
+
       const tournamentsInfo = tournaments.map((tournament) => {
         const participants = tournamentPlayerRepo.getPlayersByTournament(
           tournament.id
