@@ -7,7 +7,7 @@ import {ModalConstants} from "@/core/constants/modalConstants";
 import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
 import {Resolver} from "@/di/resolver";
-import {FRIENDS_LIMIT} from "@/profile/friends";
+// import {FRIENDS_LIMIT} from "@/profile/friends";
 import {Constants} from "@/core/constants/constants";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";

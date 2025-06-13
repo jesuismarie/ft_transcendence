@@ -9,6 +9,7 @@ import type {ApiError} from "@/utils/types";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
 import type {TournamentParticipantsEntity} from "@/domain/entity/tournamentParticipantsEntity";
+import type {MatchEntity} from "@/domain/entity/matchEntity";
 
 
 @injectable()
@@ -19,6 +20,27 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
     async registerToTournament(id: number, userId: number): Promise<Either<GeneralException, void>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.registerToTournament, {
+                user_id: userId,
+                tournament_id: id,
+            });
+            if (res.status >= 200 && res.status < 400) {
+                return new Right(undefined);
+            } else {
+                return new Left(new GeneralException())
+            }
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async unregisterFromTournament(id: number, userId: number): Promise<Either<GeneralException, void>> {
+        try {
+            const res = await this.apiClient.axiosClient().post(ApiConstants.unregisterFromTournament, {
                 user_id: userId,
                 tournament_id: id,
             });
@@ -109,13 +131,21 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
         }
     }
 
-    async startTournament(id: number): Promise<Either<GeneralException, void>> {
+    async startTournament(id: number, createdBy: number): Promise<Either<GeneralException, MatchEntity>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.startTournament, {
-                body: id,
+                tournament_id: id,
+                created_by: createdBy
             });
             if (res.status >= 200 && res.status < 400) {
-                return new Right(undefined);
+                const match: MatchEntity = {
+                    matchId: res.data.match_id,
+                    player1Id: res.data.player1_id,
+                    player2Id: res.data.player2_id,
+                    participants: res.data.participants,
+                    status: res.data.status,
+                }
+                return new Right(match);
             } else {
                 return new Left(new GeneralException())
             }

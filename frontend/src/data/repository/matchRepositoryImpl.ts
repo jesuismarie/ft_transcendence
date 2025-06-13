@@ -7,7 +7,8 @@ import type {FriendEntity} from "@/domain/entity/friendEntity";
 import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
 import {inject, injectable} from "tsyringe";
-import type {ApiClient} from "@/core/network/apiClient";
+import  {type ApiClient} from "@/core/network/apiClient";
+import type {MatchValueObject} from "@/domain/value_objects/match_value_object";
 
 @injectable()
 export class MatchRepositoryImpl implements MatchRepository {
@@ -23,6 +24,28 @@ export class MatchRepositoryImpl implements MatchRepository {
                     matches: res.data.matches
                 }
                 return new Right(match);
+            }
+            return new Left(new GeneralException());
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async createMatch(match: MatchValueObject): Promise<Either<GeneralException, void>> {
+        console.log(`UUUUUU:::: ${JSON.stringify(match)}`)
+        try {
+            const res = await this.apiClient.axiosClient().post(ApiConstants.createMatch, {
+                match_id: match.matchId,
+                player1_id: match.player1Id,
+                player2_id: match.player2Id,
+            });
+            if (res.status >= 200 && res.status < 400) {
+                return new Right(undefined);
             }
             return new Left(new GeneralException());
         } catch (e) {

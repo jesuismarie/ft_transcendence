@@ -1,7 +1,7 @@
 import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import {type BuildContext} from "@/core/framework/core/buildContext";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
-import {loadSignUpForm} from "@/presentation/templates/templates";
+// import {loadSignUpForm} from "@/presentation/templates/templates";
 import {Navigator} from "@/core/framework/widgets/navigator";
 import type {Widget} from "@/core/framework/core/base";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";

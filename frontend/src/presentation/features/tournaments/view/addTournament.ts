@@ -74,7 +74,6 @@ export class AddTournament extends StatelessWidget {
         return new BlocListener<TournamentBloc, TournamentState>(
             {
                 listener: (context: BuildContext, state) => {
-                    this.setup(context);
                     if (!state.isValid) {
                         showError("add_tournament", "Please enter a tournament name.");
                     }

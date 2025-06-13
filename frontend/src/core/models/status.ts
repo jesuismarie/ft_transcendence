@@ -4,6 +4,6 @@ export type PresenceMessage = {
 };
 
 export enum Status {
-    Online = "ONLINE",
-    Offline = "OFFLINE",
+    Online = "online",
+    Offline = "offline",
 }

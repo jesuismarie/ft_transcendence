@@ -57,7 +57,7 @@ export abstract class AuthGuard {
             return;
 
         }
-        if (token && token.length > 0 && (publicRoutes.includes(path) || path == '/')) {
+        if (token && token.length > 0 && publicRoutes.includes(path)) {
             Navigator.of(context).pushNamed('/profile');
             return;
         }

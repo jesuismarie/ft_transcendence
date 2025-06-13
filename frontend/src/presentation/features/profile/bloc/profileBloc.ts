@@ -58,10 +58,13 @@ export class ProfileBloc extends Cubit<ProfileState> {
     }
 
     async getUserProfile(id: string): Promise<void> {
+
         this.emit(this.state.copyWith({status: ProfileStatus.Loading}))
         const res = await this.userRemoteRepository.getProfile(id);
+        console.log(`USSSSSS:::::: ${id}`);
         res.when({
             onError: (error) => {
+                console.log(`EERRRRRR::::: ${error}`)
                 let errorMsg: string | null;
                 if (error instanceof ApiException) {
                     errorMsg = error.message;
@@ -90,7 +93,6 @@ export class ProfileBloc extends Cubit<ProfileState> {
         if (!this.validateForm({username, email, password, newPassword, confirmPassword})) {
             this.emit(this.state.copyWith({isValid: false}));
         } else if (!this.state.profile?.id) {
-            alert(this.state.profile?.id)
             this.emit(this.state.copyWith({
                 status: ProfileStatus.Error,
                 errorMessage: 'User is not Authenticated',

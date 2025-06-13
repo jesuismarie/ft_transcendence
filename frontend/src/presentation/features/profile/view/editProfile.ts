@@ -6,7 +6,7 @@ import {hideModal, showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
 import {TextController} from "@/core/framework/controllers/textController";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import {initiate2FASetup} from "@/profile/twofa";
+// import {initiate2FASetup} from "@/profile/twofa";
 import {clearErrors} from "@/utils/error_messages";
 import {Composite} from "@/core/framework/widgets/composite";
 import {OtpScreen} from "@/presentation/features/otp/view/otpScreen";
@@ -155,9 +155,7 @@ export class EditProfileContent extends StatelessWidget {
 			</div>
 		</div>
         `, this.parentId)],
-            children: [new MountAwareComposite((context) =>
-                new BuilderWidget((context) => new OtpScreen('twofa-container'))
-            )]
+            children: [new OtpScreen('twofa-container')]
         });
     }
 

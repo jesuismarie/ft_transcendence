@@ -65,7 +65,7 @@ export abstract class WidgetElement implements IWidgetElement {
             this.currentContext = new BuildContext(this);
 
             // Mount fresh DOM subtree
-            this.mount(parent, this.currentContext);
+            this.mount(parent, this.currentContext).then(() => {});
 
             this._isRebuilding = false;
         });
@@ -85,6 +85,7 @@ export abstract class WidgetElement implements IWidgetElement {
         this.dom?.remove();
         if (this.child) {
             this.child.unmount();
+
         }
         this._isMounted = false;
     }

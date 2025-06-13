@@ -25,7 +25,6 @@ export class OTPBloc extends Cubit<OTPState> {
                 }
                 this.emit(this.state.copyWith({status: OTPStatus.Error, errorMessage: errorMsg}));
             }, onSuccess: (data) => {
-                const newstate = this.state.copyWith({status: OTPStatus.Success, otp: data})
                 this.emit(this.state.copyWith({status: OTPStatus.TwoFAPending, otp: data}));
             }
         })

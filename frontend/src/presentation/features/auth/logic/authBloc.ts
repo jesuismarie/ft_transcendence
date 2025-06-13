@@ -5,9 +5,6 @@ import {ApiException, type GeneralException} from "@/core/exception/exception";
 import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import type {Either} from "@/core/models/either";
 import {Cubit} from "@/core/framework/bloc/cubit";
-import type {PersistenceService} from "@/core/services/persistance_service";
-import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
-import {ApiConstants} from "@/core/constants/apiConstants";
 import type {PreferenceService} from "@/core/services/preference_service";
 import '@/core/extensions/stringExtension';
 import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
@@ -84,28 +81,51 @@ export class AuthBloc extends Cubit<AuthState> {
         });
     }
 
-    async requestRefresh(accessToken: string): Promise<void> {
+    async requestRefresh(accessToken: string, refreshToken: string): Promise<void> {
         AddTournament.isSendRequest = false;
         Bindings.isMatchRequest = false;
+        console.log("REFRESSSSHHHh")
         this.emit(this.state.copyWith({isRefresh: true}));
         try {
             const decode = jwtDecode(accessToken);
             const sub = decode.sub;
-            if (sub) {
-                const userId = Number.parseInt(sub!);
-
-                this.emit(this.state.copyWith({
-                    status: AuthStatus.Success,
-                    user: {accessToken: accessToken, refreshToken: '', userId: userId}
-                }));
+            const exp = decode.exp;
+            if (exp) {
+                const now = Math.floor(Date.now() / 1000);
+                if (exp < now) {
+                    console.log("EXPIREDDDD")
+                    const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(refreshToken);
+                     res.when({
+                        onError:  (err: any) => {
+                            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: err.message}));
+                            // await this.logout();
+                        },
+                        onSuccess:  (user) => {
+                            this.preferenceService.setToken(user.accessToken);
+                            this.preferenceService.setToken(user.refreshToken);
+                            this.emit(this.state.copyWith({user: user, status: AuthStatus.Success}));
+                        }
+                    })
+                }
             }
-            else  {
-                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Unknown Error"}))
+            else {
+                if (sub) {
+                    const userId = Number.parseInt(sub!);
+                    console.log(`USERIDDD:::: ${userId}`)
+                    this.emit(this.state.copyWith({
+                        status: AuthStatus.Success,
+                        user: {accessToken: accessToken, refreshToken: '', userId: userId}
+                    }));
+                } else {
+                    this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Unknown Error"}));
+                    // await this.logout();
+                }
             }
         }
         catch (error) {
             console.log(`ERRRR:::: ${error}`)
             this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Unknown Error"}))
+            // await this.logout();
         }
     }
 

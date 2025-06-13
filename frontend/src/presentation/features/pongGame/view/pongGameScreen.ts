@@ -5,8 +5,8 @@ import {initPongGame} from "@/game/client/browser";
 import type {Widget} from "@/core/framework/core/base";
 
 export class PongGameScreen extends StatelessWidget {
-    afterMounted(context: BuildContext) {
-        super.afterMounted(context);
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
         initPongGame(context);
     }
 

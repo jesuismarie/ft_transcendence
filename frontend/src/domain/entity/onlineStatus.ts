@@ -4,4 +4,4 @@ export enum OnlineStatuses {
     Unknown = 'unknown'
 }
 
-export type OnlineEntity = OnlineStatuses[]
+export type OnlineEntity = Array<OnlineStatuses>

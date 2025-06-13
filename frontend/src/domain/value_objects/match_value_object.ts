@@ -1,5 +1,5 @@
 export interface MatchValueObject {
-    userId: number;
+    player1Id: number;
     matchId: number;
-    opponentId: number;
+    player2Id: number;
 }

@@ -40,6 +40,24 @@ export class TournamentBloc extends Cubit<TournamentState> {
         });
     }
 
+    async unregisterToTournament(id: number, userId: number): Promise<void> {
+        this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+        const res = await this.tournamentRemoteRepository.unregisterFromTournament(id, userId);
+        res.when({
+            onError: (e) => {
+                let errorMessage: string | undefined;
+                if (e instanceof ApiException) {
+                    errorMessage = e.message;
+                } else {
+                    errorMessage = e.toString();
+                }
+                this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
+            }, onSuccess: (data) => {
+                this.emit(this.state.copyWith({status: TournamentStatus.Success}))
+            }
+        });
+    }
+
     async createTournament(name: string, maxPlayers: number, createdBy: number): Promise<void> {
         if (this.state.isValid) {
             this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
@@ -74,33 +92,12 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
             }, onSuccess: (data) => {
-                this.emit(this.state.copyWith({status: TournamentStatus.Success, results: data}))
+                this.emit(this.state.copyWith({status: TournamentStatus.Success, results: data, offset: offset}))
             }
         });
     }
 
-    async startTournament(tournamentId: number): Promise<void> {
-        if (this.state.online.every((e) => e == OnlineStatuses.Online)) {
-            this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
-            const res = await this.tournamentRemoteRepository.startTournament(tournamentId);
-            res.when({
-                onError: (e) => {
-                    let errorMessage: string | undefined;
-                    if (e instanceof ApiException) {
-                        errorMessage = e.message;
-                    } else {
-                        errorMessage = e.toString();
-                    }
-                    this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
-                }, onSuccess: (data) => {
-                    this.emit(this.state.copyWith({status: TournamentStatus.Success}))
-                }
-            });
-        }
-        else {
-            this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: "Please wait until all participants are online."}))
-        }
-    }
+
 
     async getOnlineState(id: number): Promise<void> {
         const tournaments = this.state.results.tournaments.filter((e) => e.id == id);

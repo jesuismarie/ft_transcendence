@@ -62,6 +62,7 @@ export class UpcomingTournaments extends StatelessWidget {
                 ),
                 new BlocBuilder<TournamentBloc, TournamentState>({
                     blocType: TournamentBloc,
+                    buildWhen: (oldState, newState) => !oldState.equals(newState),
                     builder: (context, state) => new SubmitButton({
                         className: 'mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover',
                         id: 'view-tournament',

@@ -8,7 +8,8 @@ import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {SearchEntity} from "@/domain/entity/searchEntity";
 import {data} from "autoprefixer";
-import type {OnlineEntity} from "@/domain/entity/onlineStatus";
+import {type OnlineEntity, OnlineStatuses} from "@/domain/entity/onlineStatus";
+import type {User} from "@/domain/entity/user";
 
 @injectable()
 export class UserRemoteRepositoryImpl implements UserRemoteRepository {
@@ -17,10 +18,10 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
     }
 
     async getProfile(id: string): Promise<Either<GeneralException, UserView>> {
-        const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}/${id}`);
         try {
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}/${id}`);
             if (res.status >= 200 && res.status < 400) {
-                const user: UserView = {
+                const user: User = {
                     id: res.data.id,
                     username: res.data.username,
                     email: res.data.email,
@@ -44,8 +45,9 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
     }
 
     async searchUser(query: string, offset: number, limit: number): Promise<Either<GeneralException, SearchEntity>> {
-        const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`);
         try {
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`);
+
             if (res.status >= 200 && res.status < 400) {
                 const user: SearchEntity = {
                     totalCount: res.data.totalCount,
@@ -135,12 +137,12 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
             const response = await this.apiClient.axiosClient().post(`${ApiConstants.online}`, {users: users});
 
             if (response.status >= 200 && response.status < 400) {
-                return new Right(response.data as OnlineEntity);
+                const online: OnlineEntity = Object.values(response.data)
+                return new Right(online);
             } else {
                 return new Left(new GeneralException());
             }
         } catch (e) {
-            alert(e)
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
                 return new Left(new ApiException(500, error.message, error));

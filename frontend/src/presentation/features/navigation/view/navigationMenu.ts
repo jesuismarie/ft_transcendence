@@ -23,9 +23,9 @@ export class NavigationMenu extends StatefulWidget {
 
 export class NavigationMenuState extends State<NavigationMenu> {
 
-    initState(context: BuildContext) {
-        super.initState(context);
-        WidgetBinding.getInstance().postFrameCallback(()=>{
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
+        // WidgetBinding.getInstance().postFrameCallback(()=>{
             const btn = document.getElementById('search-modal-btn');
             const logoutBtn = document.getElementById('logout-btn');
             btn?.addEventListener('click', () => {
@@ -38,7 +38,7 @@ export class NavigationMenuState extends State<NavigationMenu> {
                 await context.read(ProfileBloc).resetState();
                 Navigator.of(context).pushNamed('/')
             })
-        })
+        // })
 
     }
 

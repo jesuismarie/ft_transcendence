@@ -31,12 +31,10 @@ import {Resolver} from "@/di/resolver";
 import {SearchBloc} from "@/presentation/features/search/logic/searchBloc";
 import {Constants} from "@/core/constants/constants";
 import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
-import {ModalsBloc} from "@/presentation/features/modals/bloc/modalsBloc";
 import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
 import {WidgetBinding} from "@/core/framework/core/widgetBinding";
 import {BlocListener} from "@/core/framework/bloc/blocListener";
 import type {AuthState} from "@/presentation/features/auth/logic/auth_state";
-import type {ModalsState} from "@/presentation/features/modals/bloc/modalsState";
 import {DependWidget} from "@/core/framework/widgets/dependWidget";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {TextController} from "@/core/framework/controllers/textController";
@@ -77,7 +75,10 @@ export class ProfileScreen extends StatelessWidget {
 
                 new BlocProvider(
                     {
-                        create: () => new MatchBloc(Resolver.matchRepository()),
+                        create: () => new MatchBloc(
+                            Resolver.matchRepository(),
+                            Resolver.tournamentRepository()
+                        ),
                     },
                 ),
             ],
@@ -134,9 +135,6 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
 
 
     build(context: BuildContext): Widget {
-        const modalState = context.read(ModalsBloc).state
-        const navigator = Navigator.of(context);
-        const authBloc = context.read(AuthBloc);
 
         return new BlocListener<AuthBloc, AuthState>({
             blocType: AuthBloc,
@@ -203,21 +201,13 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
                             new BlocBuilder<AuthBloc, AuthState>({
                                 buildWhen: (oldState, newState) => !oldState.equals(newState),
                                 blocType: AuthBloc,
-                                builder: (context, authState) => new BlocBuilder<ProfileBloc, ProfileState>({
-                                    blocType: ProfileBloc,
-                                    buildWhen: (oldState, newState) => !oldState.equals(newState),
-                                    builder: (context, state) => {
-                                        // let isHidden = !this.widget.userId;
-                                        // if (this.widget.userId && state.profile?.id) {
-                                        //     isHidden = state.profile!.id != (Number.parseInt(this.widget.userId!))
-                                        // }
+                                builder: (context, authState) => {
                                         let isHidden = !this.widget.userId;
                                         if (this.widget.userId && authState.user?.userId) {
                                             isHidden = authState.user.userId == (Number.parseInt(this.widget.userId!));
                                         }
                                         return new UpcomingTournamentWidget(isHidden, 'upcoming-tournaments-content-container')
                                     }
-                                })
                             })
                         ],
                         children: [

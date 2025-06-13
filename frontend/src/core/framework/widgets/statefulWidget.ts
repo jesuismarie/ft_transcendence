@@ -81,13 +81,14 @@ export class StatefulElement extends WidgetElement {
 
     async mount(parentDom: HTMLElement, context: BuildContext) {
         await super.mount(parentDom, context);
+
         WidgetBinding.getInstance().postFrameCallback(() => {
             this.state.onMount(true);
             this.state.afterMounted(this.currentContext);
             if (!this.didMount) {
                 this.didMount = true;
                 (this.widget as StatefulWidget).onMount(true);
-                this.state.didMounted(context);
+                this.state.didMounted(this.currentContext);
                 (this.widget as StatefulWidget).onMount(true);
             }
         })

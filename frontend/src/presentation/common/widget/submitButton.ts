@@ -7,7 +7,8 @@ export interface SubmitButtonParams {
     parentId?: string;
     className?: string;
     label?: string;
-    id?: string
+    id?: string;
+    disabled?: boolean;
     isHidden?: boolean;
     onClick?: () => void;
 }
@@ -19,7 +20,7 @@ export class SubmitButton extends  StatelessWidget {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-
+        console.log(`<<<<<<<<<<<<:::: ${this}`);
         const elem = this.params.id ? document.getElementById(this.params.id) : null;
         elem?.addEventListener('click', (e: Event) => {
             if (this.params.onClick) {
@@ -29,8 +30,9 @@ export class SubmitButton extends  StatelessWidget {
     }
 
     build(context: BuildContext): Widget {
-        return new HtmlWidget(`
-            <button id="${this.params.id ?? ""}" class="${this.params.isHidden ? "hidden" : ""} ${this.params.className ?? ""}">${this.params.label ?? ""}</button>
+        console.log(`RRRRRRRRRRR:::: ${JSON.stringify(this.params)}`);
+        return this.params.isHidden ? new HtmlWidget(``, this.params.parentId) : new HtmlWidget(`
+            <button ${this.params.disabled ? "disabled" : ""} id="${this.params.id ?? ""}" class="${this.params.className ?? ""}">${this.params.label ?? ""}</button>
         `, this.parentId);
     }
 
