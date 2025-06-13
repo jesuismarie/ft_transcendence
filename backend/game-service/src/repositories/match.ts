@@ -266,4 +266,20 @@ export class MatchRepo {
     const row = stmt.get(match_id);
     return row ? (row as Match) : null;
   }
+
+  getActiveMatchByTournamentId(tournamentId: number, db?: Database): Match {
+    const database = db ?? this.db;
+    const stmt = database.prepare(`
+      SELECT
+        id AS id,
+        player_1,
+        player_2,
+        status,
+        tournament_id
+      FROM match
+      WHERE tournament_id = ? AND status = 'in_progress'
+      LIMIT 1
+    `);
+    return stmt.get(tournamentId) as Match;
+  }
 }
