@@ -1,6 +1,45 @@
 import type { CanvasPongContext, KeyState } from "../types";
 
 export const CanvasRender = ( width: number, height: number, targetDOM: HTMLElement | null ): CanvasPongContext => {
+
+    // const style = document.createElement("style");
+    // style.innerHTML = `
+    //     .pong_game {
+    //         position: relative;
+    //         width: 100%;
+    //         height: 100%;
+    //     }
+    //
+    //     .pong_game_box {
+    //         position: absolute;
+    //         top: 0;
+    //         left: 0;
+    //         right: 0;
+    //         bottom: 0;
+    //         opacity: 100;
+    //         z-index: 2;
+    //         background: rgba(0, 0, 0, 0.5);
+    //         display: flex;
+    //         align-items: center;
+    //         justify-content: center;
+    //     }
+    //
+    //     .pong_game_box.show_message_box {
+    //         display: flex;
+    //     }
+    //
+    //     .pong_game_box_content {
+    //         color: white;
+    //         text-align: center;
+    //         font-size: 20px;
+    //     }
+    //
+    //     .pong_game_box_content_logo img {
+    //         max-width: 100px;
+    //         margin-bottom: 1rem;
+    //     }
+    // `;
+    // document.head.appendChild(style);
     const containerElement: HTMLDivElement = document.createElement('div');
     containerElement.classList.add("pong_game");
     
@@ -18,7 +57,7 @@ export const CanvasRender = ( width: number, height: number, targetDOM: HTMLElem
 
     const messageElementContentLogo: HTMLDivElement = document.createElement('div');
     messageElementContentLogo.classList.add("pong_game_box_content_logo");
-    messageElementContentLogo.innerHTML = "<img src=\"/assets/images/pong_logo.png\" />"
+    messageElementContentLogo.innerHTML = `<img src="/images/pong_logo_2.png" alt="ss" style="max-height: 50px; width: auto;"/>`
 
     const messageElementContentText: HTMLDivElement = document.createElement('div');
     messageElementContentText.classList.add("pong_game_box_content_text");

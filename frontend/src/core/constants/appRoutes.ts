@@ -10,4 +10,5 @@ export abstract class AppRoutes {
     static profileDetails: string = '/profile/:id';
     static game: string = '/game'
     static notFound: string = '/404'
+    static authRedirect: string = '/oauth/complete/'
 }

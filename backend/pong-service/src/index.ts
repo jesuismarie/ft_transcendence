@@ -11,10 +11,10 @@ import createMatchRoute from "./routes/createMatchRoute";
 
 const app = Fastify();
 
-app.register(cors, {
-    origin: true, // or (origin, cb) => cb(null, true)
-    credentials: true
-});
+// app.register(cors, {
+//     origin: true, // or (origin, cb) => cb(null, true)
+//     credentials: true
+// });
 
 // Step 4: Wait for Fastify to initialize
 app.ready().then((server) => {});

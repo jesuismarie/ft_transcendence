@@ -18,7 +18,7 @@ export function initPongGame(context: BuildContext) {
                 const height = width / aspectRatio;
 
                 const canvas = CanvasRender(width, height, container);
-                init(canvas);
+                init(canvas, context).then(() => {});
 
                 window.addEventListener('resize', () => {
                         const canvasElement = canvas.getContext().canvas;

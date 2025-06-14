@@ -9,8 +9,11 @@ import authMiddleware from "./plugins/authMiddleware";
 const app = Fastify({ logger: true });
 
 app.register(cors, {
-  origin: true, // or (origin, cb) => cb(null, true)
-  credentials: true,
+  origin: '*',
+//   origin: true, // or (origin, cb) => cb(null, true)
+//   credentials: true,
+  	methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
 });
 
 app.register(errorEnvelope);

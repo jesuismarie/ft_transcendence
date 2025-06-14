@@ -7,9 +7,9 @@ import {type ApiClient} from "@/core/network/apiClient";
 import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
 import {ApiConstants} from "@/core/constants/apiConstants";
-import {TOURNAMENTS_LIMIT} from "@/profile/tournaments";
 import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
-import {showError} from "@/utils/error_messages";
+import type {TournamentParticipantsEntity} from "@/domain/entity/tournamentParticipantsEntity";
+import type {MatchEntity} from "@/domain/entity/matchEntity";
 
 
 @injectable()
@@ -17,7 +17,49 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
     constructor(@inject('ApiClient') private readonly apiClient: ApiClient) {
     }
 
-    async createTournament(name: string, maxPlayerCount: number, createdBy: string): Promise<Either<GeneralException, TournamentEntity>> {
+    async registerToTournament(id: number, userId: number): Promise<Either<GeneralException, void>> {
+        try {
+            const res = await this.apiClient.axiosClient().post(ApiConstants.registerToTournament, {
+                user_id: userId,
+                tournament_id: id,
+            });
+            if (res.status >= 200 && res.status < 400) {
+                return new Right(undefined);
+            } else {
+                return new Left(new GeneralException())
+            }
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async unregisterFromTournament(id: number, userId: number): Promise<Either<GeneralException, void>> {
+        try {
+            const res = await this.apiClient.axiosClient().post(ApiConstants.unregisterFromTournament, {
+                user_id: userId,
+                tournament_id: id,
+            });
+            if (res.status >= 200 && res.status < 400) {
+                return new Right(undefined);
+            } else {
+                return new Left(new GeneralException())
+            }
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async createTournament(name: string, maxPlayerCount: number, createdBy: number): Promise<Either<GeneralException, TournamentEntity>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.createTournament, {
                 name: name,
@@ -44,12 +86,12 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
         }
     }
 
-    async deleteTournament(id: number, createdBy: string): Promise<Either<GeneralException, void>> {
+    async deleteTournament(id: number, createdBy: number): Promise<Either<GeneralException, void>> {
         try {
             const res = await this.apiClient.axiosClient().delete(`${ApiConstants.deleteTournament}`, {
                 method: 'DELETE',
                 headers: {'Content-Type': 'application/json'},
-                data: JSON.stringify({id, createdBy}),
+                data: {tournament_id: id, created_by: createdBy},
             });
 
             if (res.status >= 200 && res.status < 400) {
@@ -69,11 +111,11 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
 
     async getAllTournaments(offset: number, limit: number): Promise<Either<GeneralException, TournamentInfoEntity>> {
         try {
-            const res = await this.apiClient.axiosClient().get(`${ApiConstants.getTournamentInfo}?offset=${offset}&limit=${TOURNAMENTS_LIMIT}`);
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.getTournamentInfo}?offset=${offset}&limit=${limit}`);
             if (res.status >= 200 && res.status < 400) {
                 const entity: TournamentInfoEntity = {
                     totalCount: res.data.totalCount,
-                    tournament: res.data.tournament,
+                    tournaments: res.data.tournaments,
                 }
                 return new Right(entity);
             } else {
@@ -89,13 +131,45 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
         }
     }
 
-    async startTournament(id: number): Promise<Either<GeneralException, void>> {
+    async startTournament(id: number, createdBy: number): Promise<Either<GeneralException, MatchEntity>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.startTournament, {
-                body: id,
+                tournament_id: id,
+                created_by: createdBy
             });
             if (res.status >= 200 && res.status < 400) {
-                return new Right(undefined);
+                const match: MatchEntity = {
+                    matchId: res.data.match_id,
+                    player1Id: res.data.player_1,
+                    player2Id: res.data.player_2,
+                    participants: res.data.participants,
+                    status: res.data.status,
+                }
+                return new Right(match);
+            } else {
+                return new Left(new GeneralException())
+            }
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async getRelevantParticipants(id: number): Promise<Either<GeneralException, TournamentParticipantsEntity>> {
+        try {
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.getTournament}?id=${id}`, {
+            });
+            if (res.status >= 200 && res.status < 400) {
+                const participants: TournamentParticipantsEntity = {
+                    maxPlayersCount: res.data.maxPlayersCount,
+                    currentPlayersCount: res.data.currentPlayersCount,
+                    participants: res.data.participants,
+                }
+                return new Right(participants);
             } else {
                 return new Left(new GeneralException())
             }

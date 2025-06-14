@@ -6,7 +6,7 @@ import {hideModal, showModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
 import {TextController} from "@/core/framework/controllers/textController";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import {initiate2FASetup} from "@/profile/twofa";
+// import {initiate2FASetup} from "@/profile/twofa";
 import {clearErrors} from "@/utils/error_messages";
 import {Composite} from "@/core/framework/widgets/composite";
 import {OtpScreen} from "@/presentation/features/otp/view/otpScreen";
@@ -17,6 +17,7 @@ import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
 import type {OTPState} from "@/presentation/features/otp/logic/otpState";
 import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
 import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
+import {DependComposite} from "@/core/framework/widgets/dependComposite";
 
 
 export class EditProfile extends StatelessWidget {
@@ -51,7 +52,10 @@ export class EditProfileContent extends StatelessWidget {
 
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("MOUNTEDDDD");
+        this.setup(context);
+    }
+
+    setup(context: BuildContext) {
         const profileBloc = context.read(ProfileBloc)
         const otpBloc = context.read(OTPBloc)
         const usernameInput = document.getElementById("edit-username") as HTMLInputElement;
@@ -66,7 +70,7 @@ export class EditProfileContent extends StatelessWidget {
 
         closeBtn?.addEventListener('click', () => {
             hideModal(ModalConstants.editProfileModalName)
-            profileBloc.resetStatus().then(r => r);
+            // profileBloc.resetStatus().then(r => r);
             otpBloc.resetOtp()
         })
         enable2faBtn?.addEventListener('click', async () => {
@@ -81,25 +85,33 @@ export class EditProfileContent extends StatelessWidget {
                 username: this.userNameController.text,
                 email: this.emailController.text,
                 confirmPassword: this.confirmPasswordController.text,
-                password: this.passwordController.text,
+                password: this.oldPasswordController.text,
                 newPassword: this.passwordController.text,
             }).then(r => r)
         })
-
-        this.userNameController.bindInput(usernameInput!);
-        this.emailController.bindInput(emailInput!);
-        this.oldPasswordController.bindInput(oldPasswordInput!);
-        this.passwordController.bindInput(passwordInput!);
-        this.confirmPasswordController.bindInput(confirmPasswordInput!);
+        if (usernameInput) {
+            this.userNameController.bindInput(usernameInput!);
+        }
+        if(emailInput) {
+            this.emailController.bindInput(emailInput!);
+        }
+        if (oldPasswordInput) {
+            this.oldPasswordController.bindInput(oldPasswordInput!);
+        }
+        if(emailInput) {
+            this.passwordController.bindInput(passwordInput!);
+        }
+        if (confirmPasswordInput) {
+            this.confirmPasswordController.bindInput(confirmPasswordInput!);
+        }
     }
 
 
-    afterMounted(context: BuildContext) {
-        super.afterMounted(context);
-    }
 
     build(context: BuildContext): Widget {
-        return new Composite([new HtmlWidget(`
+        // return new HtmlWidget('');
+        return new DependComposite({
+            dependWidgets: [new HtmlWidget(`
         <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
 			<div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
 				<h3 class="text-lg font-medium">
@@ -142,11 +154,9 @@ export class EditProfileContent extends StatelessWidget {
 				<button id="close-edit-modal" type="button" class="px-4 py-2 text-sm rounded-md border border-hover hover:text-hover">Close</button>
 			</div>
 		</div>
-        `, this.parentId),
-            new MountAwareComposite((context) =>
-                new BuilderWidget((context) => new OtpScreen('twofa-container'))
-            )
-        ]);
+        `, this.parentId)],
+            children: [new OtpScreen('twofa-container')]
+        });
     }
 
 

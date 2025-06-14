@@ -7,6 +7,10 @@ import {configureDependencies} from "@/di/service_locator";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {WidgetsBinding} from "@/core/framework/core/widgetBinding";
 import type {RouteBuilder} from "@/core/framework/widgets/navigator";
+import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
+import {ApiConstants} from "@/core/constants/apiConstants";
+import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
+import {Resolver} from "@/di/resolver";
 //
 // import '../index.css';
 // import {

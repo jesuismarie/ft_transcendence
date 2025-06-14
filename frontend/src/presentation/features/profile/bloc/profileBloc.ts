@@ -1,7 +1,7 @@
 import {inject, injectable} from "tsyringe";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import {BlocBase} from "@/core/framework/bloc/blocBase";
-import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
+import {fileToBase64, ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import {readImageFile, validateImageFile} from "@/profile/avatar";
 import {showError} from "@/utils/error_messages";
 import {Validator} from "@/utils/validation";
@@ -9,6 +9,7 @@ import type {ProfileValueObject} from "@/domain/value_objects/profile_value_obje
 import {AxiosError} from "axios";
 import {ApiException} from "@/core/exception/exception";
 import {Cubit} from "@/core/framework/bloc/cubit";
+import {AuthState} from "@/presentation/features/auth/logic/auth_state";
 
 
 @injectable()
@@ -21,17 +22,19 @@ export class ProfileBloc extends Cubit<ProfileState> {
     async selectAvatar(file: File): Promise<void> {
         const validate = validateImageFile(file);
         const imageDataUrl = await readImageFile(file);
-        console.log(`IMageURL:::: ${imageDataUrl} ${this.state.selectedAvatarUrl}`)
+        const base64 = await fileToBase64(file);
+
         this.emit(this.state.copyWith({
             selectedAvatar: file,
-            isValid: !validate || validate.length == 0,
+            selectedAvatarUrl: imageDataUrl?.toString(),
+            selectedAvatarBase64: base64,
+            isValid: !validate || validate.length === 0,
             errorMessage: validate?.toString(),
-            selectedAvatarUrl: imageDataUrl?.toString()
         }));
     }
 
+
     async uploadAvatar(): Promise<void> {
-        console.log(`AAA::: ${this.state.profile?.id} ${this.state.selectedAvatar} ${this.state.isValid}`)
         if (this.state.profile?.id && this.state.selectedAvatar && this.state.isValid) {
             this.emit(this.state.copyWith({status: ProfileStatus.Loading}))
             const formData = new FormData();
@@ -47,17 +50,22 @@ export class ProfileBloc extends Cubit<ProfileState> {
                     }
                     this.emit(this.state.copyWith({status: ProfileStatus.Error, errorMessage: errorMsg}));
                 }, onSuccess: (data) => {
+
                     this.emit(this.state.copyWith({status: ProfileStatus.Uploaded, errorMessage: undefined}));
                 }
-            })
+            });
+            await this.getUserProfile(this.state.profile.id.toString());
         }
     }
 
-    async getUserProfile(id: string, isOtherProfile: boolean): Promise<void> {
+    async getUserProfile(id: string): Promise<void> {
+
         this.emit(this.state.copyWith({status: ProfileStatus.Loading}))
         const res = await this.userRemoteRepository.getProfile(id);
+        console.log(`USSSSSS:::::: ${id}`);
         res.when({
             onError: (error) => {
+                console.log(`EERRRRRR::::: ${error}`)
                 let errorMsg: string | null;
                 if (error instanceof ApiException) {
                     errorMsg = error.message;
@@ -67,12 +75,8 @@ export class ProfileBloc extends Cubit<ProfileState> {
                 this.emit(this.state.copyWith({errorMessage: errorMsg, status: ProfileStatus.Error}));
             },
             onSuccess: (user) => {
-                if (isOtherProfile) {
-                    this.emit(this.state.copyWith({status: ProfileStatus.Success, otherProfile: user}));
-                }
-                else {
-                    this.emit(this.state.copyWith({status: ProfileStatus.Success, profile: user}));
-                }
+                const newSTate = this.state.copyWith({status: ProfileStatus.Success, profile: user});
+                this.emit(newSTate);
             }
         })
     }
@@ -81,9 +85,10 @@ export class ProfileBloc extends Cubit<ProfileState> {
         this.emit(this.state.copyWith({status: ProfileStatus.Initial, errorMessage: '', isValid: true}))
     }
 
-    setStatus(status: ProfileStatus) {
-        this.emit(this.state.copyWith({status: status}))
+    async resetState(): Promise<void> {
+        this.emit(new ProfileState({}))
     }
+
 
     async onSaveProfile({username, email, password, newPassword, confirmPassword}: ProfileValueObject) {
         if (!this.validateForm({username, email, password, newPassword, confirmPassword})) {
@@ -97,7 +102,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
         } else {
             const currentUser = this.state.profile;
             if (currentUser && username !== currentUser.username || email !== currentUser.email && password != newPassword) {
-                this.emit(this.state.copyWith({status: ProfileStatus.Loading, errorMessage: undefined}));
+                this.emit(this.state.copyWith({status: ProfileStatus.Loading}));
                 const res = await this.userRemoteRepository.updateProfile(this.state.profile?.id, username, email);
                 await res.when({
                     onError: async (e) => {
@@ -109,6 +114,8 @@ export class ProfileBloc extends Cubit<ProfileState> {
                         }
                         this.emit(this.state.copyWith({status: ProfileStatus.Error, errorMessage: errorMsg}));
                     }, onSuccess: async () => {
+
+
                         const res = await this.userRemoteRepository.updatePassword(this.state.profile!.id, password, newPassword);
                         res.when({
                             onError: (e) => {
@@ -128,7 +135,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
                         })
                     }
                 });
-                await this.getUserProfile(currentUser.id.toString(), false);
+                await this.getUserProfile(currentUser.id.toString());
             }
         }
     }
@@ -141,15 +148,12 @@ export class ProfileBloc extends Cubit<ProfileState> {
         if (!username) {
             showError("edit_username", "Username is required.");
             hasError = true;
-        } else if (!Validator.isValidUsername(username)) {
-            showError("edit_username", "Invalid username.");
-            hasError = true;
         }
 
         if (!email) {
             showError("edit_email", "Email is required.");
             hasError = true;
-        } else if (!Validator.isValidEmail(password)) {
+        } else if (!Validator.isValidEmail(email)) {
             showError("edit_email", "Invalid email.");
             hasError = true;
         }
@@ -157,6 +161,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
         if (password && !newPassword) {
             showError("new_password", "New password is required.");
             hasError = true;
+            alert(`1 ${hasError}`)
         } else if (!password && newPassword) {
             showError("old_password", "Old password is required.");
             hasError = true;
@@ -173,6 +178,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
                 hasError = true;
             }
         }
+
         return !hasError;
     }
 }

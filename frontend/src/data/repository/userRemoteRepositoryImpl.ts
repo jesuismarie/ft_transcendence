@@ -3,34 +3,38 @@ import type {UserRemoteRepository} from "@/domain/respository/userRemoteReposito
 import {type Either, Left, Right} from "@/core/models/either";
 import {ApiException, GeneralException} from "@/core/exception/exception";
 import {inject, injectable} from "tsyringe";
-import  {type ApiClient} from "@/core/network/apiClient";
+import {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {SearchEntity} from "@/domain/entity/searchEntity";
+import {type OnlineEntity} from "@/domain/entity/onlineStatus";
+import {type User} from "@/domain/entity/user";
 
 @injectable()
 export class UserRemoteRepositoryImpl implements UserRemoteRepository {
 
-    constructor(@inject('ApiClient') private apiClient: ApiClient) {}
+    constructor(@inject('ApiClient') private apiClient: ApiClient) {
+    }
 
-    async getProfile(id: string): Promise<Either<GeneralException, UserView>> {
-        const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}/${id}`);
+    async getProfile(id: string): Promise<Either<GeneralException, User>> {
         try {
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}/${id}`);
             if (res.status >= 200 && res.status < 400) {
-                const user: UserView = {
-                    id: res.data.userId,
+                const user: User = {
+                    online: res.data.online,
+                    id: res.data.id,
                     username: res.data.username,
                     email: res.data.email,
                     wins: res.data.wins,
                     losses: res.data.losses,
-                    avatar: res.data.avatar,
+                    avatar: res.data.avatarPath,
                 }
+
                 return new Right(user);
             } else {
                 return new Left(new GeneralException())
             }
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
                 return new Left(new ApiException(500, error.message, error));
@@ -41,19 +45,19 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
     }
 
     async searchUser(query: string, offset: number, limit: number): Promise<Either<GeneralException, SearchEntity>> {
-        const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`);
         try {
+            const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`);
+
             if (res.status >= 200 && res.status < 400) {
                 const user: SearchEntity = {
-                    totalCount: res.data.totalCount,
+                    totalCount: res.data.total,
                     users: res.data.users
                 }
                 return new Right(user);
             } else {
                 return new Left(new GeneralException())
             }
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
                 return new Left(new ApiException(500, error.message, error));
@@ -64,32 +68,29 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
     }
 
     async updateAvatar(id: number, data: FormData): Promise<Either<GeneralException, void>> {
-       try {
-           const response = await this.apiClient.axiosClient().post(`${ApiConstants.users}/:${id}${ApiConstants.avatar}`, {
-               body: data,
-           });
-
-           if (response.status >= 200 && response.status < 400) {
-               return new Right(undefined);
-           } else {
-               return new Left(new GeneralException());
-           }
-       }
-       catch (e) {
-           if (e instanceof AxiosError) {
-               const error: ApiError = e.response?.data
-               return new Left(new ApiException(500, error.message, error));
-           } else {
-               return new Left(new ApiException(500, e?.toString()));
-           }
-       }
+        try {
+            const response = await this.apiClient.putForm(`${ApiConstants.users}/${id}${ApiConstants.avatar}`,
+                data,
+            );
+            if (response.status >= 200 && response.status < 400) {
+                return new Right(undefined);
+            } else {
+                return new Left(new GeneralException());
+            }
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
     }
-
 
 
     async updateProfile(id: number, username: string, email: string): Promise<Either<GeneralException, void>> {
         try {
-            const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/:${id}`, {
+            const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/${id}`, {
                 data: {username: username, email: email}
             });
 
@@ -98,8 +99,7 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
             } else {
                 return new Left(new GeneralException());
             }
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
                 return new Left(new ApiException(500, error.message, error));
@@ -111,17 +111,38 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
 
     async updatePassword(id: number, oldPassword: string, newPassword: string): Promise<Either<GeneralException, void>> {
         try {
-            const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/:${id}${ApiConstants.updatePassword}`, {
-                data: {currentPwd: oldPassword, newPwd: newPassword}
-            });
+            const data = {currentPwd: oldPassword, newPwd: newPassword};
+            const response = await this.apiClient.put(`${ApiConstants.users}/${id}${ApiConstants.updatePassword}`,
+                JSON.stringify(data),
+            );
 
             if (response.status >= 200 && response.status < 400) {
                 return new Right(undefined);
             } else {
                 return new Left(new GeneralException());
             }
+        } catch (e) {
+            alert(e)
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
         }
-        catch (e) {
+    }
+
+    async getOnlineStatuses(users: number[]): Promise<Either<GeneralException, OnlineEntity>> {
+        try {
+            const response = await this.apiClient.axiosClient().post(`${ApiConstants.online}`, {users: users});
+
+            if (response.status >= 200 && response.status < 400) {
+                const online: OnlineEntity = Object.values(response.data)
+                return new Right(online);
+            } else {
+                return new Left(new GeneralException());
+            }
+        } catch (e) {
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
                 return new Left(new ApiException(500, error.message, error));

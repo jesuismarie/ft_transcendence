@@ -1,17 +1,23 @@
 export abstract class ApiConstants {
     // static baseUrl: string = import.meta.env.VITE_API_URL;
     static baseUrlDev: string = "http://localhost:5003";
+    static gameWebsocketBaseUrl: string = "ws://localhost:5005";
     static websocketUrl = "ws://localhost:5002/users/ws";
-    static authBaseUrl = "/auth-service"
-    static userBaseUrl = "/user-service"
-    static gameBaseUrl = "/game-service"
-    static auth: string = `${ApiConstants.authBaseUrl}/auth/oauth/google`;
+    static authBaseUrl = `/auth-service`
+    static userBaseUrl = `/user-service`
+    static gameBaseUrl = `/game-service`
+    static pongBaseUrl = `/pong-service`
+    static claim: string = `${ApiConstants.authBaseUrl}/auth/oauth/google/claim`;
+    static activeMatch: string = `${ApiConstants.gameBaseUrl}/get-tournament-active-match`;
+    static auth: string = `${ApiConstants.baseUrlDev}${ApiConstants.authBaseUrl}/auth/oauth/google`;
     static register: string = `${ApiConstants.authBaseUrl}/auth/register`;
     static friends: string = `${ApiConstants.userBaseUrl}/friends`;
     static username: string = `${ApiConstants.userBaseUrl}/users/username/`;
     static users: string = `${ApiConstants.userBaseUrl}/users`;
+    static online: string = `${ApiConstants.userBaseUrl}/presence`;
     static updatePassword: string = `/password`;
     static avatar: string = `/avatar`;
+    static createMatch: string = `${ApiConstants.pongBaseUrl}/create-match`;
     static relationships: string = `/relationship`;
     static createTournament: string = `${ApiConstants.gameBaseUrl}/create-tournament`;
     static getTournament: string = `${ApiConstants.gameBaseUrl}/get-tournament-participants`;

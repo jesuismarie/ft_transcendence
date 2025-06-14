@@ -7,12 +7,15 @@ import { score } from "./lib/score";
 import { connectSocket } from "./connectSocket";
 import type { BallModel, CanvasPongContext, GameTableModel, PlayerModel, Score } from "./types";
 import { Messages } from "./lib/messages";
+import type {BuildContext} from "@/core/framework/core/buildContext";
+import {Navigator} from "@/core/framework/widgets/navigator";
+import {MatchBloc} from "@/presentation/features/match/bloc/match_bloc";
 
 let animationFrameId: number | null = null;
 let moveInterval: ReturnType<typeof setInterval> | null = null;
 let isViewer = false;
 
-export const init = async ( gameCanvas: CanvasPongContext ) => {
+export const init = async ( gameCanvas: CanvasPongContext, context: BuildContext ) => {
     
     const gameScore = score(gameCanvas);
     const gameTableInstance = gameTable(gameCanvas, 2, 20);
@@ -23,8 +26,8 @@ export const init = async ( gameCanvas: CanvasPongContext ) => {
 
     let playerId: "left" | "right" | null = null;
 
-    const [ , matchId, username ] = window.location.pathname.split('/');
-    
+    const [ , ,matchId, username ] = window.location.pathname.split('/');
+    console.log(`URLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL:::: ${window.location.pathname.split('/')} ${matchId}, ${username}`);
     const socket = connectSocket(matchId, username);
 
     socket.on("viewer:joined", () => {
@@ -87,7 +90,7 @@ export const init = async ( gameCanvas: CanvasPongContext ) => {
         }
     });
 
-    socket.on("game:waiting", () => {         
+    socket.on("game:waiting", () => {
         stopGameLoop();
         gameCanvas.setMessage(Messages.waiting);
         renderCenterText(gameCanvas);
@@ -130,6 +133,8 @@ export const init = async ( gameCanvas: CanvasPongContext ) => {
         stopGameLoop();
         gameCanvas.setMessage(data.message);
         renderCenterText(gameCanvas, data.message);
+        // context.read(MatchBloc).next()
+        // Navigator.of(context).pushNamed('/profile');
     });
 
     socket.on("game:countdown", (data: {remaining: number}) => {                
@@ -224,6 +229,7 @@ const stopGameLoop = () => {
 
 const renderCenterText = (gameCanvas: CanvasPongContext, text: string = "Waiting for opponent...") => {
     const ctx = gameCanvas.getContext();
+    console.log("WAITTTTT")
 
     ctx.fillStyle = '#03102a';
     ctx.fillRect(0,0, gameCanvas.getWidth(), gameCanvas.getHeight());
@@ -239,7 +245,7 @@ const renderCenterText = (gameCanvas: CanvasPongContext, text: string = "Waiting
 
 const startCountDown = (gameCanvas: CanvasPongContext, count: number, callback: () => void) => {
     const ctx = gameCanvas.getContext();
-
+    console.log("COUNTERRRR::::: ")
     ctx.fillStyle = "#03102a";
     ctx.fillRect(0,0, gameCanvas.getWidth(), gameCanvas.getHeight());
 

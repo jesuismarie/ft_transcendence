@@ -6,20 +6,30 @@ import type {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 export class PersistenceServiceImpl implements PersistenceService {
     private ws: WebSocket | null = null;
     private readonly backendUrl: string;
+    private _currentStatus: Status;
 
     constructor(backendUrl: string, private authBloc: AuthBloc) {
+        this._currentStatus = Status.Offline
         this.backendUrl = backendUrl;
+    }
+
+    currentStatus() {
+        return this._currentStatus;
     }
 
     public init(): void {
         this.ws = new WebSocket(this.backendUrl);
 
         this.ws.onopen = () => {
+            console.log("OPEN CONNNECTTTT");
+            this._currentStatus = Status.Online;
             this.sendStatus(Status.Online);
             window.addEventListener("beforeunload", this.handleUnload);
         };
 
         this.ws.onclose = () => {
+            console.log("CLOSEEEE CONNNECTTTT");
+            this._currentStatus = Status.Offline;
             this.sendStatus(Status.Offline);
             window.removeEventListener("beforeunload", this.handleUnload);
         };
@@ -30,6 +40,7 @@ export class PersistenceServiceImpl implements PersistenceService {
     }
 
     public handleUnload = (): void => {
+        this._currentStatus = Status.Offline;
         this.sendStatus(Status.Offline);
     };
 
@@ -45,6 +56,7 @@ export class PersistenceServiceImpl implements PersistenceService {
     }
 
     public disconnect(): void {
+        this._currentStatus = Status.Offline;
         this.sendStatus(Status.Offline);
         this.ws?.close();
     }

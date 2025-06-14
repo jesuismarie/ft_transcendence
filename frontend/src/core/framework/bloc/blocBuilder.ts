@@ -3,7 +3,7 @@ import {BlocBase} from "./blocBase";
 
 import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {Widget} from "@/core/framework/core/base";
-import {WidgetBinding} from "@/core/framework/core/widgetBinding";
+import {waitForElement, WidgetBinding} from "@/core/framework/core/widgetBinding";
 import type {Equatable} from "@/core/framework/core/equatable";
 import {EventBindingManager} from "@/core/framework/core/listenersRegisty";
 import {WidgetElement} from "@/core/framework/renderer/ElementWidget";
@@ -59,10 +59,10 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
     constructor(widget: BlocBuilder<B, S>, private parentId?: string) {
         super(widget);
         this.widget = widget;
+        this.currentContext = new BuildContext(this);
     }
 
-    mount(parentDom: HTMLElement, context: BuildContext): void {
-        this.context = context;
+    async mount(parentDom: HTMLElement, context: BuildContext): Promise<void> {
 
         if (this.widget.bloc) {
             this.bloc = this.widget.bloc;
@@ -85,28 +85,32 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
                 this.rebuild();
             } else if (!this.currentState.equals(newState)) {
                 this.currentState = newState;
+                this.rebuild();
             }
         });
+        this.dom = await this.render(parentDom, context);
+        // await super.mount(parentDom, context);
 
 
-        super.mount(parentDom, context);
+
+        // await
     }
 
     rebuild() {
         if (!this.rebuildScheduled) {
             this.rebuildScheduled = true;
-            requestAnimationFrame(() => {
+            requestAnimationFrame(async () => {
                 this.rebuildScheduled = false;
-                this.performRebuild();
+               await this.performRebuild();
 
             });
         }
 
     }
 
-    private performRebuild() {
+    private async performRebuild() {
         this.unmount();
-        this.mount(this.dom!, new BuildContext(this));
+        await this.mount(this.dom!, new BuildContext(this));
     }
 
     unmount() {
@@ -116,20 +120,23 @@ class BlocBuilderElement<B extends BlocBase<S>, S extends Equatable<S>> extends 
         this.didMount = false
     }
 
-    render(parentDom: HTMLElement, context: BuildContext): HTMLElement {
+    async render(parentDom: HTMLElement, context: BuildContext): Promise<HTMLElement> {
         const template = document.createElement("my-widget");
         const builtWidget = this.widget.builder(this.currentContext, this.currentState);
-        this.child= builtWidget.createElement() as WidgetElement;
+        this.child = builtWidget.createElement() as WidgetElement;
         this.child.parent = this;
+        if (this.parentId) {
+            await waitForElement(this.parentId)
+        }
         const mountPoint = this.parentId ? document.getElementById(this.parentId) : template;
 
         if (!mountPoint) {
             throw new Error(`Mount point with id "${this.parentId}" not found.`);
         }
-        this.child.mount(template, this.currentContext);
+        // await this.child.mount(template, this.currentContext);
 
         const parent = this.parentId ? mountPoint : parentDom;
-        this.child.mount(template, new BuildContext(this.child));
+        await this.child.mount(template,this.child.currentContext);
         const comp = parent?.querySelectorAll('my-widget');
         if (comp && comp.length > 0) {
             comp.forEach((e) => e.remove())

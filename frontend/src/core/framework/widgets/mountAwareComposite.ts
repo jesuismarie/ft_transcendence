@@ -7,7 +7,6 @@ import {UniqueKey} from "@/core/framework/core/key";
 export class MountAwareComposite extends StatefulWidget {
     constructor(
         private readonly builder: (context: BuildContext) => Widget,
-        private readonly parentId?: string,
         public key: string = new UniqueKey().toString()
     ) {
         super(key);

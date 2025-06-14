@@ -13,7 +13,6 @@ export class ApiClient {
     public axiosClient(): AxiosInstance {
         const token: string = this.preferenceService.getToken() ?? ''
 
-        console.log(`GGGGGGGGGGGGGGG:::: ${token}`);
         this._axiosClient = axios.create({
             baseURL: ApiConstants.baseUrlDev,
             headers: {
@@ -34,7 +33,39 @@ export class ApiClient {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
+
             }
+        })
+    }
+
+
+    public async putForm(url: string, data: FormData) {
+        const token: string = this.preferenceService.getToken() ?? ''
+        const res = await fetch(`${ApiConstants.baseUrlDev}${url}`, {
+            method: "PUT",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: data,
+        })
+        if (!res.ok) {
+            console.error(`FETCH::::: ${await res.text()}`)
+        }
+        else  {
+            console.log("FETCH::::::", await res.json())
+        }
+        return res;
+    }
+
+    public put(url: string, data: string) {
+        const token: string = this.preferenceService.getToken() ?? ''
+        return fetch(url, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: data,
         })
     }
 

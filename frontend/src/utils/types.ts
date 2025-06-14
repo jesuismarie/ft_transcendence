@@ -99,22 +99,22 @@ export interface AddFriendRequest {
 	friendId:	number;
 }
 
-export interface GetMatchHistoryResponse {
-	totalCount:	number;
-	matches:	MatchHistory[];
-}
+// export interface GetMatchHistoryResponse {
+// 	totalCount:	number;
+// 	matches:	MatchHistory[];
+// }
 
-export interface MatchHistory {
-	id:				number;
-	opponent:		string;
-	status:			number;
-	is_won:			boolean;
-	score: {
-		user:		number;
-		opponent:	number;
-	};
-	date:			string;
-}
+// export interface MatchHistory {
+// 	id:				number;
+// 	opponent:		string;
+// 	status:			number;
+// 	is_won:			boolean;
+// 	score: {
+// 		user:		number;
+// 		opponent:	number;
+// 	};
+// 	date:			string;
+// }
 
 export interface GetTournamentsInfoResponse {
 	totalCount:	number;

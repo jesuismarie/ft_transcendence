@@ -41,7 +41,6 @@ export class OtpScreen extends StatelessWidget {
             parentId: this.parentId,
             buildWhen: (oldState: OTPState, newState: OTPState) => !oldState.equals(newState),
             builder: (context, state) => {
-                console.log(`BUILDDDERRR:::: ${state.status}`);
                 if (state.status == OTPStatus.Loading) {
                     return new HtmlWidget(`Loading QR code...`)
                 }

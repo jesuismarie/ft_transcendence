@@ -2,5 +2,5 @@ import type {TournamentInfoDetailsEntity} from "@/domain/entity/tournamentInfoDe
 
 export interface TournamentInfoEntity {
     totalCount:	number;
-    tournament:	TournamentInfoDetailsEntity[];
+    tournaments: TournamentInfoDetailsEntity[];
 }

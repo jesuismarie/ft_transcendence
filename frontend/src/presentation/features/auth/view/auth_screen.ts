@@ -18,21 +18,28 @@ export class AuthScreen extends  StatefulWidget {
 
 export class  AuthScreenState extends State<AuthScreen> {
 
+
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        console.log("AUTHH MOUNTEDDDDD");
-        // const authGuard = new AuthGuard('/', false, true);
-        // authGuard.guard(context)
+       this.setup(context);
+
+
+    }
+
+
+    setup(context: BuildContext) {
         const authBloc = context.read(AuthBloc);
+        // const authBloc = context.watch(AuthBloc);
+
+
+
         const navigator = Navigator.of(context);
         const btn = document.getElementById('to-sign-in');
         const signupBtn = document.getElementById('to-sign-up');
         const tempProf = document.getElementById('temp-prof');
-        // context.logWidgetTree(context);
-        console.log(`BTNNNN:::: ${btn}`)
+
         btn?.addEventListener('click', e => {
             e.preventDefault();
-            console.log("NAVVVVV");
             navigator.pushNamed('/login')
         })
         signupBtn?.addEventListener('click', e => {
@@ -54,9 +61,15 @@ export class  AuthScreenState extends State<AuthScreen> {
     }
 
 
-
     build(context: BuildContext): Widget {
-        return new HtmlWidget(`
+
+        return new BlocListener<AuthBloc, AuthState>({
+            blocType: AuthBloc,
+            listener: (context, state) => {
+                this.setup(context);
+
+            },
+            child: new HtmlWidget(`
         <div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center text-center">
       <h1 class="wipe-text neon-text flex gap-0 overflow-hidden text-[2.5rem] sm:text-[4rem] md:text-[5rem] lg:text-[8rem] font-bold select-none text-primary animate-neonGlow"> WELCOME TO PONG! </h1>
       <div class="max-sm:flex-col login-div w-[70%] flex justify-evenly items-center gap-4 mt-10">
@@ -78,6 +91,7 @@ export class  AuthScreenState extends State<AuthScreen> {
           <button id="twofa-verify" class="bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md">Verify</button>
         </div>
       </div>
-    </div>`);
+    </div>`)
+        });
     }
 }

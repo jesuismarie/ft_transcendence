@@ -1,4 +1,6 @@
 // lib/connectSocket.ts
+import {ApiConstants} from "@/core/constants/apiConstants";
+
 type Listener = (data: any) => void;
 
 class WebSocketWrapper {
@@ -6,9 +8,18 @@ class WebSocketWrapper {
   private listeners: Map<string, Listener[]> = new Map();
 
   constructor(matchId: string, username: string) {
-    const url = `ws://pong-service:5003/${matchId}/${username}`;
-    this.ws = new WebSocket(url);
 
+    const url = `${ApiConstants.gameWebsocketBaseUrl}/${matchId}/${username}`;
+    this.ws = new WebSocket(url);
+    console.log(`URLLLLLLLLLL::::: ${url}`)
+    this.ws.onopen = () => {
+      console.log("WebSocket GAME  opened");
+
+    }
+
+    this.ws.onerror = (e) => {
+      console.error(`WebSocket GAME ERROR ${JSON.stringify(e)}`);
+    }
     this.ws.onmessage = (event) => {
       try {
         const { event: evt, data } = JSON.parse(event.data);

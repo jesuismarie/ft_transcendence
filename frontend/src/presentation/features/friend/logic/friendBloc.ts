@@ -2,7 +2,6 @@ import {Cubit} from "@/core/framework/bloc/cubit";
 import {FriendState, FriendStatus} from "@/presentation/features/friend/logic/friendState";
 import {inject} from "tsyringe";
 import type {FriendRepository} from "@/domain/respository/friendRepository";
-import {Constants} from "@/core/constants/constants";
 import {ApiException} from "@/core/exception/exception";
 
 export class FriendBloc extends Cubit<FriendState> {
@@ -40,12 +39,56 @@ export class FriendBloc extends Cubit<FriendState> {
     getFriends() {
     }
 
-    addFriend() {
+    async addFriend(currentId: number, friendID: number) {
+        this.emit(this.state.copyWith({status: FriendStatus.Loading}))
+        const res = await this.friendRepository.addFriend(currentId, friendID);
+        res.when({
+            onSuccess: (data) => {
+                this.emit(this.state.copyWith({status: FriendStatus.Success}))
+            }, onError: (error) => {
+                console.log('Error:', error)
+                let errorMessage: string | undefined;
+                if (error instanceof ApiException) {
+                    errorMessage = error.message.removeBefore('body/').capitalizeFirst()
+                }
+                this.emit(this.state.copyWith({status: FriendStatus.Error, errorMessage: errorMessage}));
+            }
+        })
     }
 
-    deleteFriend() {
+    async deleteFriend(currentId: number, friendID: number) {
+        this.emit(this.state.copyWith({status: FriendStatus.Loading}))
+        const res = await this.friendRepository.removeFriend(currentId, friendID);
+        res.when({
+            onSuccess: (data) => {
+
+                this.emit(this.state.copyWith({status: FriendStatus.Success}))
+            }, onError: (error) => {
+                console.log('Error:', error)
+                let errorMessage: string | undefined;
+                if (error instanceof ApiException) {
+                    errorMessage = error.message.removeBefore('body/').capitalizeFirst()
+                }
+                this.emit(this.state.copyWith({status: FriendStatus.Error, errorMessage: errorMessage}));
+            }
+        })
     }
 
-    checkFriendStatus() {
+    async checkFriendStatus(currentId: number, friendID: number) {
+        this.emit(this.state.copyWith({status: FriendStatus.Loading}))
+        const res = await this.friendRepository.checkFriendShip(currentId, friendID);
+        res.when({
+            onSuccess: (data) => {
+
+                this.emit(this.state.copyWith({status: FriendStatus.Success, isFriend: data.status}))
+            }, onError: (error) => {
+                console.log('Error:', error)
+                let errorMessage: string | undefined;
+                if (error instanceof ApiException) {
+                    errorMessage = error.message.removeBefore('body/').capitalizeFirst()
+                }
+                this.emit(this.state.copyWith({status: FriendStatus.Error, errorMessage: errorMessage}));
+            }
+        })
     }
 }

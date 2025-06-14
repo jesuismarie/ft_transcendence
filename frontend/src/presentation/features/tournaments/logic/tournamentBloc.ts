@@ -2,62 +2,40 @@ import {Cubit} from "@/core/framework/bloc/cubit";
 import {TournamentState, TournamentStatus} from "@/presentation/features/tournaments/logic/tournamentState";
 import {inject} from "tsyringe";
 import type {TournamentRemoteRepository} from "@/domain/respository/tournamentRemoteRepository";
-import {ApiException, GeneralException} from "@/core/exception/exception";
-import {showError} from "@/utils/error_messages";
-import {startTournament} from "@/profile/tournament_details";
-import {ApiConstants} from "@/core/constants/apiConstants";
-import type {Either} from "@/core/models/either";
+import {ApiException} from "@/core/exception/exception";
+// import {startTournament} from "@/profile/tournament_details";
+import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
+import {Bindings} from "@/presentation/features/bindings";
+import {cloneDeep} from "lodash";
+import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
+import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
+import {Constants} from "@/core/constants/constants";
+import type {MatchRepository} from "@/domain/respository/matchRepository";
+import type {TournamentInfoDetailsEntity} from "@/domain/entity/tournamentInfoDetailsEntity";
+import type {MatchEntity} from "@/domain/entity/matchEntity";
+import type {ActiveMatchEntity} from "@/domain/entity/activeMatchEntity";
+
+export enum PaginationType {
+    none = "none",
+    page = "page",
+}
+
 
 export class TournamentBloc extends Cubit<TournamentState> {
-    constructor(@inject('TournamentRepository') private tournamentRemoteRepository: TournamentRemoteRepository) {
+    constructor(@inject('TournamentRepository') private tournamentRemoteRepository: TournamentRemoteRepository,
+                @inject('UserRepository') private userRepository: UserRemoteRepository,
+                @inject('MatchRepository') private matchRepository: MatchRepository
+    ) {
         super(new TournamentState(({})));
     }
 
-    validateTournament(name: string, maxPlayers: number, createdBy: string): void {
+    validateTournament(name: string): void {
         this.emit(this.state.copyWith({isValid: name.length != 0}))
     }
 
-    async createTournament(name: string, maxPlayers: number, createdBy: string): Promise<void> {
-        if (this.state.isValid) {
-            this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
-            const res = await this.tournamentRemoteRepository.createTournament(name, maxPlayers, createdBy);
-            res.when({
-                onError: (e) => {
-                    let errorMessage: string | undefined;
-                    if (e instanceof ApiException) {
-                        errorMessage = e.message;
-                    } else {
-                        errorMessage = e.toString();
-                    }
-                    this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
-                }, onSuccess: (data) => {
-                    this.emit(this.state.copyWith({status: TournamentStatus.Success, createdTournament: data}))
-                }
-            });
-        }
-    }
-
-   async getAllTournaments(offset: number, limit: number) {
+    async registerToTournament(id: number, userId: number): Promise<void> {
         this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
-        const res = await this.tournamentRemoteRepository.getAllTournaments(offset, limit);
-        res.when({
-            onError: (e) => {
-                let errorMessage: string | undefined;
-                if (e instanceof ApiException) {
-                    errorMessage = e.message;
-                } else {
-                    errorMessage = e.toString();
-                }
-                this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
-            }, onSuccess: (data) => {
-                this.emit(this.state.copyWith({status: TournamentStatus.Success, results: data}))
-            }
-        });
-    }
-
-    async startTournament(tournamentId: number): Promise<void> {
-        this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
-        const res = await this.tournamentRemoteRepository.startTournament(tournamentId);
+        const res = await this.tournamentRemoteRepository.registerToTournament(id, userId);
         res.when({
             onError: (e) => {
                 let errorMessage: string | undefined;
@@ -71,9 +49,176 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
+        await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
     }
 
-    async deleteTournament(id: number, createdBy: string) {
+    async unregisterToTournament(id: number, userId: number): Promise<void> {
+        this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+        const res = await this.tournamentRemoteRepository.unregisterFromTournament(id, userId);
+        res.when({
+            onError: (e) => {
+                let errorMessage: string | undefined;
+                if (e instanceof ApiException) {
+                    errorMessage = e.message;
+                } else {
+                    errorMessage = e.toString();
+                }
+                this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
+            }, onSuccess: (data) => {
+                this.emit(this.state.copyWith({status: TournamentStatus.Success}))
+            }
+        });
+        await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
+    }
+
+    async createTournament(name: string, maxPlayers: number, createdBy: number): Promise<void> {
+        if (this.state.isValid) {
+            this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+            const res = await this.tournamentRemoteRepository.createTournament(name, maxPlayers, createdBy);
+            res.when({
+                onError: (e) => {
+                    let errorMessage: string | undefined;
+                    if (e instanceof ApiException) {
+                        errorMessage = e.message;
+                    } else {
+                        errorMessage = e.toString();
+                    }
+                    this.emit(this.state.copyWith({status: TournamentStatus.ErrorCreate, errorMessage: errorMessage}))
+                }, onSuccess: (data) => {
+                    this.emit(this.state.copyWith({status: TournamentStatus.Created, createdTournament: data}))
+                }
+            });
+            await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
+        } else {
+            this.emit(this.state.copyWith({
+                status: TournamentStatus.ErrorCreate,
+                errorMessage: "Please select tournament name"
+            }))
+        }
+        AddTournament.isSendRequest = false;
+    }
+
+    async getAllTournaments(offset: number, limit: number, type: PaginationType) {
+        this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+        const res = await this.tournamentRemoteRepository.getAllTournaments(offset, limit);
+        await res.when({
+            onError: async (e) => {
+                let errorMessage: string | undefined;
+                if (e instanceof ApiException) {
+                    errorMessage = e.message;
+                } else {
+                    errorMessage = e.toString();
+                }
+                this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
+            }, onSuccess: async (data) => {
+                const matchesResponse = data.tournaments.map(async (e) => {
+                    const response = await this.matchRepository.getActiveMatch(e.id);
+                    return response.when({
+                        onError: () => {
+                            console.log("TOURNAMENT:::: No any match")
+
+                            return undefined;
+                        },
+                        onSuccess: (match) => {
+                            return match;
+                        }
+                    })
+                })
+                const matches = await Promise.all(matchesResponse);
+                const tournaments = data.tournaments.map((e) => {
+                    const tournament: TournamentInfoDetailsEntity = {
+                        id: e.id,
+                        name: e.name,
+                        created_by: e.created_by,
+                        max_players_count: e.max_players_count,
+                        current_players_count: e.current_players_count,
+                        status: e.status,
+                        participants: e.participants,
+                        activeMatch: matches.find((match) => (match && match.tournamentId == e.id) ? match : undefined)
+                    };
+                    return tournament;
+                });
+                const tournamentInfo: TournamentInfoEntity = {
+                    totalCount: data.totalCount,
+                    tournaments: tournaments,
+                }
+                if (type == PaginationType.none) {
+                    this.emit(this.state.copyWith({
+                        status: TournamentStatus.Success,
+                        results: tournamentInfo,
+                        pageResults: tournamentInfo,
+                        offset: offset
+                    }))
+                } else {
+                    this.emit(this.state.copyWith({
+                        status: TournamentStatus.Success,
+                        pageResults: tournamentInfo,
+                        offset: offset
+                    }))
+                }
+            }
+        });
+    }
+
+
+    async getOnlineState(id: number): Promise<void> {
+        const tournaments = this.state.results.tournaments.filter((e) => e.id == id);
+
+        if (tournaments.length > 0) {
+            const tournament = tournaments[0];
+            this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+            const res = await this.userRepository.getOnlineStatuses(tournament.participants);
+            res.when({
+                onSuccess: (data) => {
+                    this.emit(this.state.copyWith({online: data, status: TournamentStatus.SuccessOnline}))
+                }, onError: (error) => {
+                    console.log('Error:', error)
+                    let errorMessage: string | undefined;
+                    if (error instanceof ApiException) {
+                        errorMessage = error.message.removeBefore('body/').capitalizeFirst()
+                    }
+                    this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}));
+                }
+            })
+            await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
+        }
+
+    }
+
+    async getRelevantParticipants(id: number): Promise<void> {
+        this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
+        const res = await this.tournamentRemoteRepository.getRelevantParticipants(id);
+        res.when({
+            onError: (e) => {
+                let errorMessage: string | undefined;
+                if (e instanceof ApiException) {
+                    errorMessage = e.message;
+                } else {
+                    errorMessage = e.toString();
+                }
+                this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
+            }, onSuccess: (data) => {
+                const newParticipants: TournamentInfoEntity = cloneDeep<TournamentInfoEntity>(this.state.results);
+                const participantsIndex = this.state.results.tournaments.findIndex((e, index) => e.id === id ? index : -1);
+                if (participantsIndex != -1) {
+                    newParticipants.tournaments[participantsIndex] = {
+                        current_players_count: data.currentPlayersCount,
+                        max_players_count: data.maxPlayersCount,
+                        participants: data.participants,
+                        id: newParticipants.tournaments[participantsIndex].id,
+                        name: newParticipants.tournaments[participantsIndex].name,
+                        status: newParticipants.tournaments[participantsIndex].status,
+                        created_by: newParticipants.tournaments[participantsIndex].created_by,
+                    };
+                }
+                this.emit(this.state.copyWith({status: TournamentStatus.SuccessRelevant, results: newParticipants}))
+            }
+        });
+        await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
+        Bindings.isTournamentItemBounded = false;
+    }
+
+    async deleteTournament(id: number, createdBy: number) {
         this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
         const res = await this.tournamentRemoteRepository.deleteTournament(id, createdBy);
         res.when({
@@ -89,10 +234,13 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
+        await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
+        Bindings.isTournamentItemBounded = false;
     }
 
     resetAfterSubmit() {
         this.emit(this.state.copyWith({isValid: true, status: TournamentStatus.Initial, errorMessage: undefined}));
+        // AddTournament.isSendRequest = false;
     }
 
 }

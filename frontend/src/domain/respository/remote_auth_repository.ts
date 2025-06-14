@@ -17,5 +17,5 @@ export interface RemoteAuthRepository {
 
     requestRefresh(accessToken: string): Promise<Either<GeneralException, UserEntity>>;
 
-    loginWithGoogle(): Promise<Either<GeneralException, UserEntity>>;
+    oauth(ticket: string): Promise<Either<GeneralException, UserEntity>>;
 }

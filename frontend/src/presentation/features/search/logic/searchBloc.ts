@@ -2,12 +2,13 @@ import {inject, injectable} from "tsyringe";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import {BlocBase} from "@/core/framework/bloc/blocBase";
 import {SearchState, SearchStatus} from "@/presentation/features/search/logic/searchState";
+import {SearchResults} from "@/presentation/features/search/view/searchResults";
 
 @injectable()
 export class SearchBloc extends BlocBase<SearchState>{
 
     constructor(@inject('UserRepository') private userRepository: UserRemoteRepository) {
-        super(new SearchState({query2: ''}))
+        super(new SearchState({}))
     }
 
 
@@ -22,28 +23,14 @@ export class SearchBloc extends BlocBase<SearchState>{
         res.when({
             onSuccess: (data) => {
                 this.emit(this.state.copyWith({results: data, offset: offset, status: SearchStatus.Success}))
-                // this.state = ;
             }, onError: (error) => {
                 this.emit(this.state.copyWith({
-                    results: undefined,
+                    results: {totalCount: 0, users: []},
                     status: SearchStatus.Error,
                     errorMessage: error.message
                 }));
             }
         })
-    }
-
-    onQueryChanged(query: string) {
-        const oldQuery = this.state.query;
-        this.emit(this.state.copyWith({query: query, oldQuery: oldQuery}))
-    }
-
-    onOffsetChanged(offset: number) {
-        this.emit(this.state.copyWith({offset: offset}))
-    }
-
-    resetStatus() {
-        this.emit(this.state.copyWith({status: SearchStatus.Initial, errorMessage: ''}))
     }
 
 }

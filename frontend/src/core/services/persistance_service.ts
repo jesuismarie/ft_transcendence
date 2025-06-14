@@ -6,4 +6,5 @@ export interface PersistenceService {
     handleUnload(): void;
     sendStatus(status: Status): void;
     handleUnload(): void;
+    currentStatus(): Status;
 }

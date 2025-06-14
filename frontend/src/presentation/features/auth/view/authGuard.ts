@@ -1,12 +1,7 @@
 import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import type {BuildContext} from "@/core/framework/core/buildContext";
-// import type {Widget} from "@/core/framework/widget";
-// import {currentUser, currentUserId} from "@/utils/user";
-import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {Resolver} from "@/di/resolver";
-import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
-import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import {Navigator, type RouteBuilder} from "@/core/framework/widgets/navigator";
+import {Navigator} from "@/core/framework/widgets/navigator";
 
 
 export class RouteInformationParser {
@@ -44,11 +39,12 @@ export class RouteInformationParser {
 
 export abstract class AuthGuard {
     static navigationGuard(context: BuildContext, routes: { [key: string]: string }) {
-        const publicRoutes = ['/login', '/register', '/'];
+        const publicRoutes = ['/login', '/register', '/', '/oauth/complete'];
         const path = window.location.pathname;
         const preferenceService = Resolver.preferenceService();
         const token = preferenceService.getToken();
 
+        if (path)
         if (!RouteInformationParser.matchRoute(path, routes)) {
             Navigator.of(context).pushNamed('/404')
         }
@@ -57,10 +53,17 @@ export abstract class AuthGuard {
             return;
 
         }
-        if (token && token.length > 0 && (publicRoutes.includes(path) || path == '/')) {
+        if (token && token.length > 0 && publicRoutes.includes(path)) {
             Navigator.of(context).pushNamed('/profile');
             return;
         }
+        if (path == '/oauth/complete') {
+            const hashParams = new URLSearchParams(window.location.hash.slice(1));
+            const ticket = hashParams.get("ticket");
+            Navigator.of(context).pushNamed(`${path}/${ticket}`);
+            return;
+        }
+        console.log(`SSSSS:::: ${window.location.href} ${window.location.pathname}`);
         Navigator.of(context).pushNamed(path)
     }
 

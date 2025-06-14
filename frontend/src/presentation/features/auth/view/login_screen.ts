@@ -1,38 +1,60 @@
 import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import {type BuildContext} from "@/core/framework/core/buildContext";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
-import {loadSignInForm} from "@/presentation/templates/templates";
+// import {loadSignInForm} from "@/presentation/templates/templates";
 import {Navigator} from "@/core/framework/widgets/navigator";
 import type {Widget} from "@/core/framework/core/base";
 import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {type AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
-import {showError} from "@/utils/error_messages";
-import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
-import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
+import {clearErrors, showError} from "@/utils/error_messages";
 
 export class LoginScreen extends StatelessWidget {
     didMounted(context: BuildContext) {
         super.didMounted(context);
-        // const authGuard = new AuthGuard('/login', false, true);
-        // authGuard.guard(context)
-        const nav = Navigator.of(context);
+        this.setup(context)
+    }
+
+    setup(context: BuildContext) {
+        const navigator = Navigator.of(context);
+
         const btn = document.getElementById('close-btn-login');
         btn?.addEventListener('click', () => {
-            console.log("Clicccc")
-            nav.pop()
+            navigator.pop()
         })
-        loadSignInForm(context);
+        const googleLoginButton = document.getElementById('google-login-btn');
+        if (!googleLoginButton)
+            return;
+
+        googleLoginButton.addEventListener('click', async () => {
+            context.read(AuthBloc).oauth();
+        });
+        const loginForm = document.getElementById('loginForm') as HTMLFormElement | null;
+
+        if (!loginForm)
+            return;
+
+        loginForm.addEventListener('submit', async (event: Event) => {
+            event.preventDefault();
+            clearErrors();
+
+            const formData = new FormData(loginForm);
+            const email = (formData.get('login_email') as string)?.trim();
+            const password = (formData.get('login_password') as string)?.trim();
+
+            const authBloc = context.read(AuthBloc)
+            await authBloc.login({email, password});
+        });
     }
+
 
     build(context: BuildContext): Widget {
         return new BlocListener<AuthBloc, AuthState>({
             blocType: AuthBloc,
             listener: (context, state) => {
+                this.setup(context)
                 if (state.status == AuthStatus.Success) {
                     context.read(AuthBloc).resetState().then();
-                    // context.read(ProfileBloc).getUserProfile(state.user?.userId?.toString() ?? '').then(r => r);
                     Navigator.of(context).pushNamed('/profile')
                 }
                 if (state.status == AuthStatus.Error) {

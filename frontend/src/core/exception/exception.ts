@@ -13,7 +13,7 @@ export class GeneralException extends Error {
 export class ApiException extends GeneralException {
     constructor(
         public statusCode: number = 500,
-        message: string = '',
+        public message: string = '',
         public error?: unknown
     ) {
         super(message);

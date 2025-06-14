@@ -9,12 +9,11 @@ import errorEnvelope from "./plugins/errorEnvelope";
 
 const app = Fastify({ logger: true });
 
-app.register(cors, {
-    origin: true,
-    credentials: true
-});
-
-// Регистрируем плагины
+// app.register(cors, {
+//     origin: true, // or (origin, cb) => cb(null, true)
+//     credentials: true
+// });
+// Регистрируем базу данных как плагин
 app.register(initDb);
 app.register(errorEnvelope);
 

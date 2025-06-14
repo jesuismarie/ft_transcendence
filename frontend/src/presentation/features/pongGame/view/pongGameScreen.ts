@@ -1,12 +1,12 @@
 import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import {type BuildContext} from "@/core/framework/core/buildContext";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
-import {initPongGame} from "@/game/client/browser";
+import {initPongGame} from "@/game/browser";
 import type {Widget} from "@/core/framework/core/base";
 
 export class PongGameScreen extends StatelessWidget {
-    afterMounted(context: BuildContext) {
-        super.afterMounted(context);
+    didMounted(context: BuildContext) {
+        super.didMounted(context);
         initPongGame(context);
     }
 
@@ -17,8 +17,7 @@ export class PongGameScreen extends StatelessWidget {
       <p class="flex gap-0 overflow-hidden text-[1rem] sm:text-[2rem] md:text-[3rem] font-bold select-none text-primary">
         <span id="player1-score">0</span> : <span id="player2-score">0</span>
       </p>
-      <button id="startgame">START!</button>
-      <canvas class="container bg-black border-5 border-solid border-white" id="gamecontainer"></canvas>
+      <div class="container bg-black border-5 border-solid border-white" id="gamecontainer"></div>
     </div>`);
     }
 }

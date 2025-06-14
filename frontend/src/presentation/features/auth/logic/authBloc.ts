@@ -4,146 +4,248 @@ import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_reposi
 import {ApiException, type GeneralException} from "@/core/exception/exception";
 import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import type {Either} from "@/core/models/either";
-import {BlocBase} from "@/core/framework/bloc/blocBase";
 import {Cubit} from "@/core/framework/bloc/cubit";
-import type {PersistenceService} from "@/core/services/persistance_service";
-import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
-import {ApiConstants} from "@/core/constants/apiConstants";
-import {ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
-import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import type {PreferenceService} from "@/core/services/preference_service";
 import '@/core/extensions/stringExtension';
+import {AddTournament} from "@/presentation/features/tournaments/view/addTournament";
+import {Bindings} from "@/presentation/features/bindings";
+import {jwtDecode} from "jwt-decode";
+import {ApiConstants} from "@/core/constants/apiConstants";
+import {clearErrors, showError} from "@/utils/error_messages";
+import {Validator} from "@/utils/validation";
 
 
 @injectable()
 export class AuthBloc extends Cubit<AuthState> {
-
-    persistenceService: PersistenceService
-
     constructor(@inject('AuthRepository') private readonly authRepository: RemoteAuthRepository,
                 @inject("PreferenceService") private readonly preferenceService: PreferenceService
     ) {
-        super(new AuthState({}))
-        this.persistenceService = new PersistenceServiceImpl(ApiConstants.websocketUrl, this);
-        // this.persistenceService.init();
+        super(new AuthState({}));
     }
 
+
+    validateLoginForm(email: string, password: string): boolean {
+        let hasError = false;
+        clearErrors();
+
+        if (!email) {
+            showError('login_email', 'Email is required.');
+            hasError = true;
+        } else if (!Validator.isValidEmail(email)) {
+            showError('login_email', 'Invalid email format.');
+            hasError = true;
+        }
+
+        if (!password) {
+            showError('login_password', 'Password is required.');
+            hasError = true;
+        }
+
+        return hasError;
+    }
+
+    validateRegisterForm(username: string, email: string, password: string, confirmPassword: string): boolean {
+
+        let hasError = false;
+        clearErrors();
+
+        if (!username) {
+            showError('reg_username', 'Username is required.');
+            hasError = true;
+        } else if (!Validator.isValidUsername(username)) {
+            showError('reg_username', 'Invalid username.');
+            hasError = true;
+        }
+
+        if (!email) {
+            showError('reg_email', 'Email is required.');
+            hasError = true;
+        } else if (!Validator.isValidEmail(email)) {
+            showError('reg_email', 'Invalid email address.');
+            hasError = true;
+        }
+
+        if (!password) {
+            showError('reg_password', 'Password is required.');
+            hasError = true;
+        }
+
+        if (!confirmPassword) {
+            showError('reg_confirm_password', 'Please confirm your password.');
+            hasError = true;
+        }
+
+        if (!hasError && !Validator.isValidPassword(password)) {
+            showError('reg_password', 'Invalid password.');
+            showError('confirm_password', 'Invalid password.');
+            hasError = true;
+        }
+
+        if (password !== confirmPassword) {
+            showError('reg_confirm_password', 'Passwords do not match.');
+            hasError = true;
+        }
+        return hasError;
+    }
+
+    async close(): Promise<void> {
+        return super.close();
+    }
 
     async resetState() {
         this.emit(this.state.copyWith({status: AuthStatus.Initial, errorMessage: ""}));
     }
 
-    async register({email, username, password}: {
+    async register({email, username, password, confirmPassword}: {
         email: string;
         username: string;
-        password: string
+        password: string;
+        confirmPassword: string;
     }): Promise<void> {
-        const res: Either<GeneralException, UserEntity> = await this.authRepository.register({
-            email,
-            username,
-            password
-        });
-        res.when({
-            onError: (err: any) => {
-                let errorMessage: string | undefined;
-                if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+        const hasError = this.validateRegisterForm(username,email, password, confirmPassword);
+        if (!hasError) {
+            const res: Either<GeneralException, UserEntity> = await this.authRepository.register({
+                email,
+                username,
+                password
+            });
+            console.log(res)
+            res.when({
+                onError: (err: any) => {
+                    let errorMessage: string | undefined;
+                    if (err instanceof ApiException) {
+                        errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    }
+                    console.log('Error:', err)
+                    this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                    // user = null;
+                },
+                onSuccess: (user) => {
+                    this.preferenceService.setToken(user.accessToken);
+                    this.preferenceService.setRefreshToken(user.refreshToken);
+                    this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
                 }
-                console.log('Error:', err)
-                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
-                // user = null;
-            },
-            onSuccess: (user) => {
-                this.preferenceService.setToken(user.accessToken);
-                this.preferenceService.setRefreshToken(user.refreshToken);
-                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
-            }
-        });
+            });
+        }
+        else {
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Failed to register."}));
+        }
     }
 
     async login({email, password}: {
         email: string;
         password: string
     }): Promise<void> {
+        const hasError = this.validateLoginForm(email, password);
+        if (!hasError) {
+            const res: Either<GeneralException, UserEntity> = await this.authRepository.login({email, password});
+            res.when({
+                onError: (err: any) => {
 
-        const res: Either<GeneralException, UserEntity> = await this.authRepository.login({email, password});
-        res.when({
-            onError: (err: any) => {
-                console.log('Error:', err)
-                let errorMessage: string | undefined;
-                if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    let errorMessage: string | undefined;
+                    if (err instanceof ApiException) {
+                        errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    }
+                    this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                },
+                onSuccess: (user) => {
+                    this.preferenceService.setToken(user.accessToken);
+                    this.preferenceService.setRefreshToken(user.refreshToken);
+                    this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
                 }
-                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
-                // user = null;
-            },
-            onSuccess: (user) => {
-                this.preferenceService.setToken(user.accessToken);
-                this.preferenceService.setRefreshToken(user.refreshToken);
-                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
-            }
-        });
+            });
+        }
+        else {
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Failed to Login."}));
+        }
     }
 
-    async requestRefresh(accessToken: string): Promise<void> {
-        const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(accessToken);
-        res.when({
-            onError: (err: any) => {
-                console.log('Error:', err)
-                let errorMessage: string | undefined;
-                if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+    async requestRefresh(accessToken: string, refreshToken: string): Promise<void> {
+        AddTournament.isSendRequest = false;
+        Bindings.isMatchRequest = false;
+        console.log("REFRESSSSHHHh")
+        this.emit(this.state.copyWith({isRefresh: true}));
+        try {
+            const decode = jwtDecode(accessToken);
+            const sub = decode.sub;
+            const exp = decode.exp;
+            if (exp) {
+                const now = Math.floor(Date.now() / 1000);
+                if (exp < now) {
+                    console.log("EXPIREDDDD")
+                    const res: Either<GeneralException, UserEntity> = await this.authRepository.requestRefresh(refreshToken);
+                     res.when({
+                        onError:  (err: any) => {
+                            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: err.message}));
+                            // await this.logout();
+                        },
+                        onSuccess:  (user) => {
+                            this.preferenceService.setToken(user.accessToken);
+                            this.preferenceService.setToken(user.refreshToken);
+                            this.emit(this.state.copyWith({user: user, status: AuthStatus.Success}));
+                        }
+                    })
                 }
-                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
-                // user = null;
-            },
-            onSuccess: (user) => {
-                console.log(`USERRR:::: ${user.userId}`)
-                this.preferenceService.setToken(user.accessToken);
-                this.preferenceService.setRefreshToken(user.refreshToken);
-                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
             }
-        });
+            else {
+                if (sub) {
+                    const userId = Number.parseInt(sub!);
+                    console.log(`USERIDDD:::: ${userId}`)
+                    this.emit(this.state.copyWith({
+                        status: AuthStatus.Success,
+                        user: {accessToken: accessToken, refreshToken: '', userId: userId}
+                    }));
+                } else {
+                    this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Unknown Error"}));
+                    // await this.logout();
+                }
+            }
+        }
+        catch (error) {
+            console.log(`ERRRR:::: ${error}`)
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Unknown Error"}))
+            // await this.logout();
+        }
     }
 
-    async loginWithGoogle(): Promise<void> {
-
-        const res: Either<GeneralException, UserEntity> = await this.authRepository.loginWithGoogle();
-        res.when({
-            onError: (err: any) => {
-                console.log('Error:', err)
-                let errorMessage: string | undefined;
-                if (err instanceof ApiException) {
-                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
-                }
-                this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
-                // user = null;
-            },
-            onSuccess: (user) => {
-                this.preferenceService.setToken(user.accessToken);
-                this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
-            }
-        });
+    oauth(): void {
+        window.location.href = ApiConstants.auth;
     }
 
-    // async getUserProfile(id: string): Promise<void> {
-    //     const res = await this.userRemoteRepository.getProfile(id);
-    //     res.when({
-    //         onError: (error) => {
-    //             this.emit(this.state.copyWith({errorMessage: error.message, status: ProfileStatus.Error}));
-    //         },
-    //         onSuccess: (user) => {
-    //             this.emit(this.state.copyWith({status: ProfileStatus.Success, profile: user}));
-    //         }
-    //     })
-    // }
 
-    validate() {
+    async handleRedirection(ticket?: string): Promise<void> {
 
+        if (ticket) {
+            const res: Either<GeneralException, UserEntity> = await this.authRepository.oauth(ticket);
+            res.when({
+                onError: (err: any) => {
+                    console.log('Error:', err)
+                    let errorMessage: string | undefined;
+                    if (err instanceof ApiException) {
+                        errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    }
+                    this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                },
+                onSuccess: (user) => {
+                    this.preferenceService.setToken(user.accessToken);
+                    this.preferenceService.setRefreshToken(user.refreshToken);
+                    this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
+                }
+            });
+        }
+        else {
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "OAuth failed"}));
+        }
+    }
+
+    async fullResetState(): Promise<void> {
+        this.emit(new AuthState({}))
     }
 
     async logout(): Promise<void> {
         this.preferenceService.unsetToken();
         this.preferenceService.unsetRefreshToken();
+        localStorage.clear()
+        window.location.reload();
     }
 }

@@ -2,6 +2,7 @@ export class TextController {
     private _value: string = "";
     private _listeners: ((value: string) => void)[] = [];
     private _boundInput?: HTMLInputElement;
+    private _isClosed: boolean = false;
 
     constructor(initialValue: string = "") {
         this._value = initialValue;
@@ -9,6 +10,17 @@ export class TextController {
 
     get text(): string {
         return this._value;
+    }
+
+    isClosed(): boolean {
+        return this._isClosed
+    }
+
+    close(): void {
+        this._listeners = [];
+        this.unbind();
+        this._value = "";
+        this._isClosed = true;
     }
 
     set text(val: string) {
