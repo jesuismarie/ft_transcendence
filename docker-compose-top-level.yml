@@ -15,9 +15,8 @@ services:
       build:
         context: .
         dockerfile: backend/auth-service/Dockerfile
-      ports:
-        - "5000:5000"
-        - "5555:5555"
+#      ports:
+#        - "5000:5000"
       networks:
         - bridge-network
       env_file:
@@ -36,9 +35,8 @@ services:
       build:
         context: .
         dockerfile: backend/game-service/Dockerfile
-      ports:
-        - "5001:5001"
-        - "5551:5555"
+#      ports:
+#        - "5001:5001"
       networks:
         - bridge-network
       env_file:
@@ -57,9 +55,8 @@ services:
       build:
         context: .
         dockerfile: backend/user-service/Dockerfile
-      ports:
-        - "5002:5002"
-        - "5552:5555"
+#      ports:
+#        - "5002:5002"
       networks:
         - bridge-network
       env_file:
@@ -80,7 +77,6 @@ services:
         dockerfile: backend/proxy-service/Dockerfile
       ports:
         - "5003:5003"
-        - "5553:5555"
       networks:
         - bridge-network
       env_file:
@@ -102,9 +98,8 @@ services:
       build:
         context: .
         dockerfile: backend/pong-service/Dockerfile
-      ports:
-        - "5005:5005"
-        - "5554:5555"
+#      ports:
+#        - "5005:5005"
       networks:
         - bridge-network
       env_file:
