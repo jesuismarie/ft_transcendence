@@ -10,7 +10,7 @@ FROM nginx:alpine AS production
 
 WORKDIR /usr/share/nginx/html
 
-RUN rm -rf ./*
+RUN mkdir -p /etc/ssl && rm -rf ./*
 
 COPY --from=builder /app/dist .
 COPY --from=builder /app/config/nginx/default.conf /etc/nginx/conf.d/default.conf
