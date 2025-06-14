@@ -56,4 +56,6 @@ build:
 push:
 	@$(MAKE) --no-print-directory -f Makefile.prod push
 
-.PHONY: net rmnet mup mdown mfclean up down fclean build push
+re: fclean up
+
+.PHONY: re net rmnet mup mdown mfclean up down fclean build push
