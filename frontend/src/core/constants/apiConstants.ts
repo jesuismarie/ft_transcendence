@@ -1,13 +1,14 @@
 export abstract class ApiConstants {
     // static baseUrl: string = import.meta.env.VITE_API_URL;
-    static baseUrlDev: string = "http://localhost:5003";
-    static gameWebsocketBaseUrl: string = "ws://localhost:5005";
-    static websocketUrl = "ws://localhost:5002/users/ws";
+    static baseUrlDev: string = "https://proxy-service:5003";
+    static gameWebsocketBaseUrl: string = "ws://pong-service:5005";
+    static websocketUrl = "wss://user-service:5002/users/ws";
     static authBaseUrl = `/auth-service`
     static userBaseUrl = `/user-service`
     static gameBaseUrl = `/game-service`
     static pongBaseUrl = `/pong-service`
     static claim: string = `${ApiConstants.authBaseUrl}/auth/oauth/google/claim`;
+    static getUserNames: string = `${ApiConstants.userBaseUrl}/users/usernames`;
     static activeMatch: string = `${ApiConstants.gameBaseUrl}/get-tournament-active-match`;
     static auth: string = `${ApiConstants.baseUrlDev}${ApiConstants.authBaseUrl}/auth/oauth/google`;
     static register: string = `${ApiConstants.authBaseUrl}/auth/register`;
@@ -35,6 +36,4 @@ export abstract class ApiConstants {
     static logout: string = `${ApiConstants.authBaseUrl}/logout`;
     static twoFAEnable: string = `${ApiConstants.authBaseUrl}/auth/2fa/enable`;
     static twoFAVerify: string = `${ApiConstants.authBaseUrl}/auth/2fa/verify`;
-
-
 }

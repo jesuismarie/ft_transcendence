@@ -22,6 +22,7 @@ export class SearchBloc extends BlocBase<SearchState>{
         const res = await this.userRepository.searchUser(query, offset, limit);
         res.when({
             onSuccess: (data) => {
+                console.log(JSON.stringify(`++++++ ${JSON.stringify(data)}`));
                 this.emit(this.state.copyWith({results: data, offset: offset, status: SearchStatus.Success}))
             }, onError: (error) => {
                 this.emit(this.state.copyWith({

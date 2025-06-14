@@ -78,7 +78,8 @@ export class ProfileScreen extends StatelessWidget {
                     {
                         create: () => new MatchBloc(
                             Resolver.matchRepository(),
-                            Resolver.tournamentRepository()
+                            Resolver.tournamentRepository(),
+                            Resolver.userRepository()
                         ),
                     },
                 ),
@@ -227,7 +228,9 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
                                     new BlocBuilder<ProfileBloc, ProfileState>({
                                         blocType: ProfileBloc,
                                         buildWhen: (oldState, newState) => !oldState.equals(newState),
-                                        builder: (_, state) => new MatchHistory(this.widget.userId ? Number.parseInt(this.widget.userId) : undefined),
+                                        builder: (_, state) => {
+
+                                            return new MatchHistory(state.profile?.id ? Number.parseInt(state.profile!.id.toString()) : undefined)},
                                         parentId: 'match-history-details'
                                     }),
 

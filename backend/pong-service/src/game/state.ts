@@ -1,5 +1,6 @@
 import { createBall } from "./ball";
 import { MatchPlayers, Score, Match } from "../types";
+import axios, {AxiosInstance } from "axios";
 
 export const matches = new Array<Match>();
 
@@ -55,17 +56,16 @@ export async function sendReportToServer(matchId: string, matchState: MatchPlaye
 
 
     try {
-      const response = await fetch('http://game-service:5001/report-match', { // TODO move to secrets
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer C8yJqmt8flJlPqTUy6ESf4EemfrSSGJPFa2GPnLmjas=', // TODO change using proxy service
-        },
-        body: JSON.stringify(result)
-      });
+        const axiosClient: AxiosInstance = axios.create({
+            baseURL: 'http://game-service:5001/',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+      const response = await axiosClient.post('save-match-result', result);
   
-      if (!response.ok) {
-        console.error('Failed to send match report:', await response.text());
+      if (!(response.status >= 200 && response.status < 400)) {
+        console.error('Failed to send match report');
       } else {
         console.log('Match report successfully sent');
       }

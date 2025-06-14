@@ -75,7 +75,6 @@ export class  AuthScreenState extends State<AuthScreen> {
       <div class="max-sm:flex-col login-div w-[70%] flex justify-evenly items-center gap-4 mt-10">
         <button id="to-sign-in">Sign In</button>
         <button id="to-sign-up">Sign up</button>
-        <button id="temp-prof">Temprory Profile</button>
       </div>
     </div>
     <div id="twofa-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">

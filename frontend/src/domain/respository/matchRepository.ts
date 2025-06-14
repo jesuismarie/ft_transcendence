@@ -8,4 +8,5 @@ export interface MatchRepository {
     fetchMatchList(userId: number, offset: number, limit: number): Promise<Either<GeneralException, MatchHistory>>;
     createMatch(match: MatchValueObject): Promise<Either<GeneralException, void>>;
     getActiveMatch(tournamentId: number): Promise<Either<GeneralException, ActiveMatchEntity>>;
+    getNextMatch(tournamentId: number): Promise<Either<GeneralException, ActiveMatchEntity>>;
 }
