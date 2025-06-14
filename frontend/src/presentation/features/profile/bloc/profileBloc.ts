@@ -102,7 +102,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
         } else {
             const currentUser = this.state.profile;
             if (currentUser && username !== currentUser.username || email !== currentUser.email && password != newPassword) {
-                this.emit(this.state.copyWith({status: ProfileStatus.Loading, errorMessage: undefined}));
+                this.emit(this.state.copyWith({status: ProfileStatus.Loading}));
                 const res = await this.userRemoteRepository.updateProfile(this.state.profile?.id, username, email);
                 await res.when({
                     onError: async (e) => {

@@ -48,12 +48,6 @@ export class ProfileInfoContent extends State<ProfileInfo> {
 
     setup(context: BuildContext) {
 
-        const openGameBtn = document.getElementById('open-game-btn');
-
-        openGameBtn?.addEventListener('click', () => {
-            Navigator.of(context).pushNamed(AppRoutes.game)
-        })
-
         const friendBloc = context.read(FriendBloc)
 
         const userId = context.read(AuthBloc).state.user?.userId;
