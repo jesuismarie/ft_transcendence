@@ -55,12 +55,8 @@ export async function sendReportToServer(matchId: string, matchState: MatchPlaye
 
 
     try {
-      const response = await fetch('http://game-service:5001/report-match', { // TODO move to secrets
+      const response = await fetch('http://game-service:5001/save-match-result', { // TODO move to secrets
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer C8yJqmt8flJlPqTUy6ESf4EemfrSSGJPFa2GPnLmjas=', // TODO change using proxy service
-        },
         body: JSON.stringify(result)
       });
   
