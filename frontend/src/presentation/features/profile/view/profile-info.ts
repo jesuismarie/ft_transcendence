@@ -115,7 +115,6 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         <p id="player-losses" class="text-black font-bold">0</p>
                     </div>
                 </div>
-<!--                <button id="open-game-btn" class="mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]">Play</button>-->
                 <div id="friend-request-btn-container"></div>
                 <div id="edit-profile-btn-container"></div>
             </div>
