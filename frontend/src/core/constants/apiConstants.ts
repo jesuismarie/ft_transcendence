@@ -1,8 +1,8 @@
 export abstract class ApiConstants {
     // static baseUrl: string = import.meta.env.VITE_API_URL;
-    static baseUrlDev: string = "http://localhost:5003";
-    static gameWebsocketBaseUrl: string = "ws://localhost:5005";
-    static websocketUrl = "ws://localhost:5002/users/ws";
+    static baseUrlDev: string = "https://proxy-service:5003";
+    static gameWebsocketBaseUrl: string = "ws://pong-service:5005";
+    static websocketUrl = "wss://user-service:5002/users/ws";
     static authBaseUrl = `/auth-service`
     static userBaseUrl = `/user-service`
     static gameBaseUrl = `/game-service`
@@ -36,6 +36,4 @@ export abstract class ApiConstants {
     static logout: string = `${ApiConstants.authBaseUrl}/logout`;
     static twoFAEnable: string = `${ApiConstants.authBaseUrl}/auth/2fa/enable`;
     static twoFAVerify: string = `${ApiConstants.authBaseUrl}/auth/2fa/verify`;
-
-
 }

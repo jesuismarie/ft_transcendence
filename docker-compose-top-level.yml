@@ -15,8 +15,8 @@ services:
       build:
         context: .
         dockerfile: backend/auth-service/Dockerfile
-#      ports:
-#        - "5000:5000"
+      ports:
+        - "5000:5000"
       networks:
         - bridge-network
       env_file:
