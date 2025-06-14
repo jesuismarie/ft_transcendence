@@ -87,7 +87,7 @@ export const init = async ( gameCanvas: CanvasPongContext ) => {
         }
     });
 
-    socket.on("game:waiting", () => {         
+    socket.on("game:waiting", () => {
         stopGameLoop();
         gameCanvas.setMessage(Messages.waiting);
         renderCenterText(gameCanvas);
@@ -224,6 +224,7 @@ const stopGameLoop = () => {
 
 const renderCenterText = (gameCanvas: CanvasPongContext, text: string = "Waiting for opponent...") => {
     const ctx = gameCanvas.getContext();
+    console.log("WAITTTTT")
 
     ctx.fillStyle = '#03102a';
     ctx.fillRect(0,0, gameCanvas.getWidth(), gameCanvas.getHeight());
@@ -239,7 +240,7 @@ const renderCenterText = (gameCanvas: CanvasPongContext, text: string = "Waiting
 
 const startCountDown = (gameCanvas: CanvasPongContext, count: number, callback: () => void) => {
     const ctx = gameCanvas.getContext();
-
+    console.log("COUNTERRRR::::: ")
     ctx.fillStyle = "#03102a";
     ctx.fillRect(0,0, gameCanvas.getWidth(), gameCanvas.getHeight());
 

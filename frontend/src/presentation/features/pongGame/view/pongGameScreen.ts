@@ -18,7 +18,7 @@ export class PongGameScreen extends StatelessWidget {
         <span id="player1-score">0</span> : <span id="player2-score">0</span>
       </p>
       <button id="startgame">START!</button>
-      <canvas class="container bg-black border-5 border-solid border-white" id="gamecontainer"></canvas>
+      <div class="container bg-black border-5 border-solid border-white" id="gamecontainer"></div>
     </div>`);
     }
 }
