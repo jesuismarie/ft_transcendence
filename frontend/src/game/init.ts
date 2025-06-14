@@ -7,12 +7,15 @@ import { score } from "./lib/score";
 import { connectSocket } from "./connectSocket";
 import type { BallModel, CanvasPongContext, GameTableModel, PlayerModel, Score } from "./types";
 import { Messages } from "./lib/messages";
+import type {BuildContext} from "@/core/framework/core/buildContext";
+import {Navigator} from "@/core/framework/widgets/navigator";
+import {MatchBloc} from "@/presentation/features/match/bloc/match_bloc";
 
 let animationFrameId: number | null = null;
 let moveInterval: ReturnType<typeof setInterval> | null = null;
 let isViewer = false;
 
-export const init = async ( gameCanvas: CanvasPongContext ) => {
+export const init = async ( gameCanvas: CanvasPongContext, context: BuildContext ) => {
     
     const gameScore = score(gameCanvas);
     const gameTableInstance = gameTable(gameCanvas, 2, 20);
@@ -130,6 +133,8 @@ export const init = async ( gameCanvas: CanvasPongContext ) => {
         stopGameLoop();
         gameCanvas.setMessage(data.message);
         renderCenterText(gameCanvas, data.message);
+        // context.read(MatchBloc).next()
+        // Navigator.of(context).pushNamed('/profile');
     });
 
     socket.on("game:countdown", (data: {remaining: number}) => {                
