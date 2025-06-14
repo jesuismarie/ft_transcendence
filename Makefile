@@ -27,6 +27,8 @@ else
 	docker network rm $(TRANSCENDENCE_NETWORK_NAME) >/dev/null 2>&1 || true
 endif
 
+.DEFAULT_GOAL := up
+
 mup: net
 	@$(MAKE) --no-print-directory -C devops/monitoring up
 
