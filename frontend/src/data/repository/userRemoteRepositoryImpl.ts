@@ -50,7 +50,7 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
 
             if (res.status >= 200 && res.status < 400) {
                 const user: SearchEntity = {
-                    totalCount: res.data.totalCount,
+                    totalCount: res.data.total,
                     users: res.data.users
                 }
                 return new Right(user);

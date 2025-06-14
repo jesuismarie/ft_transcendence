@@ -2,12 +2,9 @@ import {StatelessWidget} from "@/core/framework/widgets/statelessWidget";
 import {type BuildContext} from "@/core/framework/core/buildContext";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {type Widget} from "@/core/framework/core/base";
-import {hideModal, showModal} from "@/utils/modal_utils";
+import {hideModal} from "@/utils/modal_utils";
 import {ModalConstants} from "@/core/constants/modalConstants";
-import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
-import {Resolver} from "@/di/resolver";
-// import {FRIENDS_LIMIT} from "@/profile/friends";
 import {Constants} from "@/core/constants/constants";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
@@ -28,19 +25,9 @@ export class FriendsView extends StatelessWidget {
         const friendBloc = context.read(FriendBloc);
         const authBloc = context.read(AuthBloc);
 
-        const previewContainer = document.getElementById("friends-preview") as HTMLElement;
-        const listContainer = document.getElementById("friend-modal-list") as HTMLElement;
-
         const prevPageBtn = document.getElementById("prev-friends-page") as HTMLButtonElement;
         const nextPageBtn = document.getElementById("next-friends-page") as HTMLButtonElement;
-        const pageInfo = document.getElementById("friend-page-info") as HTMLElement;
-        const paginatioBtns = document.getElementById("friend-pagination") as HTMLElement;
 
-        // const closeModalBtn = document.getElementById("close-friends-modal") as HTMLButtonElement;
-
-        // closeModalBtn?.addEventListener("click", () => {
-        //     hideModal(ModalConstants.friendsModalName)
-        // })
 
         prevPageBtn?.addEventListener("click", (e) => {
             const offset = friendBloc.state.offset;

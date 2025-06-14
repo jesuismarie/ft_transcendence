@@ -7,12 +7,11 @@ import {ModalConstants} from "@/core/constants/modalConstants";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {TournamentList} from "@/presentation/features/tournaments/view/tournamentList";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
-import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
+import {PaginationType, TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 import {TournamentState, TournamentStatus} from "@/presentation/features/tournaments/logic/tournamentState";
 import {Constants} from "@/core/constants/constants";
 import {Bindings} from "@/presentation/features/bindings";
 import {SubmitButton} from "@/presentation/common/widget/submitButton";
-import {clearErrors} from "@/utils/error_messages";
 
 export class UpcomingTournaments extends StatelessWidget {
     constructor(public parentId?: string) {
@@ -25,7 +24,7 @@ export class UpcomingTournaments extends StatelessWidget {
         if (!Bindings.isTournamentBounded) {
 
             const tournamentBloc = context.read(TournamentBloc);
-            tournamentBloc.getAllTournaments(0, Constants.tournament_limit).then(() => {
+            tournamentBloc.getAllTournaments(0, Constants.tournament_limit, PaginationType.none).then(() => {
             })
             Bindings.isTournamentBounded = true;
         }
@@ -53,7 +52,7 @@ export class UpcomingTournaments extends StatelessWidget {
                         buildWhen: (oldState, newState) => !oldState.equals(newState),
                         builder: (context, state) => {
                             if (state.status == TournamentStatus.Loading) {
-                                return new HtmlWidget(`Loading`)
+                                return new HtmlWidget(`<p>Loading</p>`)
                             }
                             return new TournamentList(state.results ?? {totalCount: 0, tournament: []})
                         },
@@ -67,7 +66,10 @@ export class UpcomingTournaments extends StatelessWidget {
                     builder: (context, state) => new SubmitButton({
                         className: 'mt-4 px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover',
                         id: 'view-tournament',
-                        isHidden: state.results.totalCount <= 5,
+                        onClick: () => {
+                          showModal(ModalConstants.tournamentModalName)
+                        },
+                        isHidden: state.results.totalCount <= Constants.tournament_limit,
                         label: 'Browse Tournaments'
                     }),
                     parentId: 'view-tournament-list-container'

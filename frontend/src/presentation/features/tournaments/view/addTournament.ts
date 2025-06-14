@@ -94,8 +94,9 @@ export class AddTournament extends StatelessWidget {
                                 const tournamentBloc = context.read(TournamentBloc);
                                 hideModal(ModalConstants.addTournamentModalName)
                                 tournamentBloc.resetAfterSubmit()
-                            }
-                        }, 'close-tournament-btn-content'),
+                            },
+                            parentId: 'close-tournament-btn-content'
+                        }, ),
 
                         new SubmitButton({
                             className: 'bg-hover hover:shadow-neon text-white py-2 px-4 rounded-md',
@@ -112,8 +113,9 @@ export class AddTournament extends StatelessWidget {
                                     tournamentBloc.createTournament(this.nameInputController.text, max_player_count, profileBloc.state.profile?.id).then(r => r)
                                     AddTournament.isSendRequest = true
                                 }
-                            }
-                        }, 'add-tournament-btn-content'),
+                            },
+                            parentId: 'add-tournament-btn-content'
+                        }),
 
                     ]})
             });

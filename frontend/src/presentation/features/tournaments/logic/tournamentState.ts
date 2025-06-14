@@ -21,6 +21,7 @@ export class TournamentState implements Equatable<TournamentState>{
     readonly status: TournamentStatus;
     readonly createdTournament?: TournamentEntity;
     readonly results: TournamentInfoEntity;
+    readonly pageResults: TournamentInfoEntity;
     readonly offset: number;
     readonly errorMessage?: string;
     readonly online: OnlineEntity;
@@ -30,6 +31,7 @@ export class TournamentState implements Equatable<TournamentState>{
         offset?: number;
         status?: TournamentStatus;
         results?: TournamentInfoEntity;
+        pageResults?: TournamentInfoEntity;
         createdTournament?: TournamentEntity;
         online?: OnlineEntity;
         errorMessage?: string;
@@ -41,6 +43,7 @@ export class TournamentState implements Equatable<TournamentState>{
         this.offset = params.offset ?? 0;
         this.online = params.online ?? new Array<OnlineStatuses>();
         this.results = params.results ?? {totalCount: 0, tournaments: []};
+        this.pageResults = params.pageResults ?? {totalCount: 0, tournaments: []};
         this.errorMessage = params.errorMessage;
     }
 
@@ -49,6 +52,7 @@ export class TournamentState implements Equatable<TournamentState>{
         status: TournamentStatus;
         isValid?: boolean,
         results?: TournamentInfoEntity;
+        pageResults?: TournamentInfoEntity;
         online: OnlineEntity
         createdTournament?: TournamentEntity;
         errorMessage?: string;
@@ -58,6 +62,7 @@ export class TournamentState implements Equatable<TournamentState>{
             online: params.online ?? this.online,
             isValid: params.isValid ?? this.isValid,
             status: params.status ?? this.status,
+            pageResults: params.pageResults ?? this.pageResults,
             results: params.results ?? this.results,
             createdTournament: params.createdTournament ?? this.createdTournament,
             errorMessage: params.errorMessage ?? this.errorMessage,

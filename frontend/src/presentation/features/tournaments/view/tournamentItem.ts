@@ -5,7 +5,7 @@ import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {SubmitButton} from "@/presentation/common/widget/submitButton";
 import type {TournamentInfoDetailsEntity} from "@/domain/entity/tournamentInfoDetailsEntity";
 import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
-import {TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
+import {PaginationType, TournamentBloc} from "@/presentation/features/tournaments/logic/tournamentBloc";
 import {Bindings} from "@/presentation/features/bindings";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
@@ -19,7 +19,7 @@ import {showFlushBar} from "@/presentation/common/widget/flushBar";
 import {Constants} from "@/core/constants/constants";
 
 export class TournamentItem extends StatelessWidget {
-    constructor(private tournamentItem: TournamentInfoDetailsEntity) {
+    constructor(private tournamentItem: TournamentInfoDetailsEntity, private currentId?: number) {
         super();
     }
 
@@ -43,11 +43,11 @@ export class TournamentItem extends StatelessWidget {
 					</p>
 				</div>
 				<div align="right" class="mt-2 sm:mt-0 flex flex-col sm:flex-row gap-2 items-end sm:items-start">
-					<div id="start-tournament-btn-content"></div>
-					<div id="delete-tournament-btn-content"></div>
-					<div id="register-tournament-btn-content"></div>
-					<div id="unregister-tournament-btn-content"></div>
-					<div id="join-tournament-btn-content"></div>
+					<div id="start-tournament-btn-content-${this.tournamentItem.id}"></div>
+					<div id="delete-tournament-btn-content-${this.tournamentItem.id}"></div>
+					<div id="register-tournament-btn-content-${this.tournamentItem.id}"></div>
+					<div id="unregister-tournament-btn-content-${this.tournamentItem.id}"></div>
+					<div id="join-tournament-btn-content-${this.tournamentItem.id}"></div>
 				</div>
 			</div>
 		</div>
@@ -88,7 +88,7 @@ export class TournamentItem extends StatelessWidget {
                                         console.log(`{{{{{{{{{{{{{::::: ${state.status} ${JSON.stringify(state.online)}`);
                                         if (state.status == TournamentStatus.SuccessOnline) {
                                             context.read(MatchBloc).createMatch(this.tournamentItem.id, this.tournamentItem.created_by, state.online).then(r => r);
-                                            context.read(TournamentBloc).getAllTournaments(0, Constants.tournament_limit).then(() => {})
+                                            context.read(TournamentBloc).getAllTournaments(0, Constants.tournament_limit, PaginationType.none).then(() => {})
                                         }
                                     })
                                     Bindings.isTournamentItemBounded = true;
@@ -97,7 +97,7 @@ export class TournamentItem extends StatelessWidget {
                             },
                             isHidden: state.profile && state.profile.id != this.tournamentItem.created_by,
                         }),
-                        parentId: "start-tournament-btn-content"
+                        parentId: `start-tournament-btn-content-${this.tournamentItem.id}`
                     })
                 }),
                 new BlocBuilder<ProfileBloc, ProfileState>({
@@ -122,7 +122,7 @@ export class TournamentItem extends StatelessWidget {
                             isHidden: state.profile && state.profile.id != this.tournamentItem.created_by,
                         })
                     },
-                    parentId: "delete-tournament-btn-content"
+                    parentId: `delete-tournament-btn-content-${this.tournamentItem.id}`
 
                 }),
                 new BlocBuilder<ProfileBloc, ProfileState>({
@@ -146,10 +146,10 @@ export class TournamentItem extends StatelessWidget {
                                 }
 
                             },
-                            isHidden: false,
+                            isHidden: this.tournamentItem.id != this.currentId,
                         })
                     },
-                    parentId: "join-tournament-btn-content"
+                    parentId: `join-tournament-btn-content-${this.tournamentItem.id}`
 
                 }),
                 new BlocBuilder<ProfileBloc, ProfileState>({
@@ -170,10 +170,10 @@ export class TournamentItem extends StatelessWidget {
                                     Bindings.isTournamentItemBounded = true;
                                 }
                             },
-                            isHidden: state.profile && (state.profile.id == this.tournamentItem.created_by || this.tournamentItem.participants.includes(state.profile.id)),
+                            isHidden: state.profile && (state.profile.id == this.tournamentItem.created_by || !!this.currentId || this.currentId == this.tournamentItem.id),
                         })
                     },
-                    parentId: "register-tournament-btn-content"
+                    parentId: `register-tournament-btn-content-${this.tournamentItem.id}`
 
                 }),
 
@@ -194,10 +194,10 @@ export class TournamentItem extends StatelessWidget {
                                     Bindings.isTournamentItemBounded = true;
                                 }
                             },
-                            isHidden: state.profile && (state.profile.id == this.tournamentItem.created_by || !this.tournamentItem.participants.includes(state.profile.id)),
+                            isHidden: state.profile && (state.profile.id == this.tournamentItem.created_by || !this.currentId || (this.tournamentItem.id != this.currentId!)),
                         })
                     },
-                    parentId: "unregister-tournament-btn-content"
+                    parentId: `unregister-tournament-btn-content-${this.tournamentItem.id}`
 
                 })
             ]

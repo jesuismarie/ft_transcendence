@@ -23,7 +23,7 @@ export class SearchState implements Equatable<SearchState>{
     constructor(params: {
         status?: SearchStatus;
         query?: string;
-        query2: string;
+        query2?: string;
         oldQuery?: string;
         offset?: number;
         results?: SearchEntity;

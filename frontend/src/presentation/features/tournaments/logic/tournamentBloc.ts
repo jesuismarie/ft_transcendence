@@ -11,10 +11,16 @@ import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import {Constants} from "@/core/constants/constants";
 
+export enum PaginationType {
+    none = "none",
+    page = "page",
+}
+
+
 export class TournamentBloc extends Cubit<TournamentState> {
     constructor(@inject('TournamentRepository') private tournamentRemoteRepository: TournamentRemoteRepository,
                 @inject('UserRepository') private userRepository: UserRemoteRepository
-                ) {
+    ) {
         super(new TournamentState(({})));
     }
 
@@ -38,7 +44,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
-        await this.getAllTournaments(0, Constants.tournament_limit);
+        await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
     }
 
     async unregisterToTournament(id: number, userId: number): Promise<void> {
@@ -57,7 +63,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
-        await this.getAllTournaments(0, Constants.tournament_limit);
+        await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
     }
 
     async createTournament(name: string, maxPlayers: number, createdBy: number): Promise<void> {
@@ -77,15 +83,17 @@ export class TournamentBloc extends Cubit<TournamentState> {
                     this.emit(this.state.copyWith({status: TournamentStatus.Created, createdTournament: data}))
                 }
             });
-            await this.getAllTournaments(0, Constants.tournament_limit);
-        }
-        else {
-            this.emit(this.state.copyWith({status: TournamentStatus.ErrorCreate, errorMessage: "Please select tournament name"}))
+            await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
+        } else {
+            this.emit(this.state.copyWith({
+                status: TournamentStatus.ErrorCreate,
+                errorMessage: "Please select tournament name"
+            }))
         }
         AddTournament.isSendRequest = false;
     }
 
-    async getAllTournaments(offset: number, limit: number) {
+    async getAllTournaments(offset: number, limit: number, type: PaginationType) {
         this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
         const res = await this.tournamentRemoteRepository.getAllTournaments(offset, limit);
         res.when({
@@ -98,11 +106,23 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
             }, onSuccess: (data) => {
-                this.emit(this.state.copyWith({status: TournamentStatus.Success, results: data, offset: offset}))
+                if (type == PaginationType.none) {
+                    this.emit(this.state.copyWith({
+                        status: TournamentStatus.Success,
+                        results: data,
+                        pageResults: data,
+                        offset: offset
+                    }))
+                } else {
+                    this.emit(this.state.copyWith({
+                        status: TournamentStatus.Success,
+                        pageResults: data,
+                        offset: offset
+                    }))
+                }
             }
         });
     }
-
 
 
     async getOnlineState(id: number): Promise<void> {
@@ -124,7 +144,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                     this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}));
                 }
             })
-            await this.getAllTournaments(0, Constants.tournament_limit);
+            await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
         }
 
     }
@@ -142,7 +162,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
             }, onSuccess: (data) => {
-                const newParticipants: TournamentInfoEntity  = cloneDeep<TournamentInfoEntity>(this.state.results);
+                const newParticipants: TournamentInfoEntity = cloneDeep<TournamentInfoEntity>(this.state.results);
                 const participantsIndex = this.state.results.tournaments.findIndex((e, index) => e.id === id ? index : -1);
                 if (participantsIndex != -1) {
                     newParticipants.tournaments[participantsIndex] = {
@@ -160,7 +180,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.SuccessRelevant, results: newParticipants}))
             }
         });
-        await this.getAllTournaments(0, Constants.tournament_limit);
+        await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
         Bindings.isTournamentItemBounded = false;
     }
 
@@ -180,7 +200,7 @@ export class TournamentBloc extends Cubit<TournamentState> {
                 this.emit(this.state.copyWith({status: TournamentStatus.Success}))
             }
         });
-        await this.getAllTournaments(0, Constants.tournament_limit);
+        await this.getAllTournaments(0, Constants.tournament_limit, PaginationType.none);
         Bindings.isTournamentItemBounded = false;
     }
 

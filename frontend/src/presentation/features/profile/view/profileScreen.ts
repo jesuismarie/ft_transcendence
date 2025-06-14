@@ -229,6 +229,7 @@ export class ProfileScreenContentState extends State<ProfileScreenContent> {
                                         builder: (_, state) => new MatchHistory(this.widget.userId ? Number.parseInt(this.widget.userId) : undefined),
                                         parentId: 'match-history-details'
                                     }),
+
                                     new UpcomingTournamentsModal('tournament-modal'),
                                     new MatchHistoryModal('matches-modal'),
                                     new NavigationMenu('profile-navigation'),

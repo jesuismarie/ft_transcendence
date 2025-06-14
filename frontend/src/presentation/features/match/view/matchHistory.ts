@@ -57,7 +57,7 @@ export class MatchHistory extends StatelessWidget {
                 builder: (context, state) => new SubmitButton({
                     className: 'px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover',
                     id: 'match-list-btn',
-                    isHidden: state.results.totalCount <= 5,
+                    isHidden: state.results.totalCount <= Constants.match_limit,
                     label: 'View All Matches',
                     onClick: () => {
                         showModal(ModalConstants.matchesModalName)
