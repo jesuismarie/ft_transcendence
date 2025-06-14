@@ -25,7 +25,7 @@ export function handleDisconnection(
             :  disconnectedRole === 'player1' ? 'left' : 'right';
         
         //Sending report to the server
-        sendReportToServer(match_id, winner, matchState.score);
+        sendReportToServer(match_id, matchState, winner, matchState.score);
 
         console.log("Both are disconnected", matchState.viewers);
         
@@ -88,7 +88,7 @@ export function handleDisconnection(
             });
 
             //Sending report to the server
-            sendReportToServer(match_id, winner, matchState.score);
+            sendReportToServer(match_id, matchState, winner, matchState.score);
 
             activeMatches.delete(match_id);
 

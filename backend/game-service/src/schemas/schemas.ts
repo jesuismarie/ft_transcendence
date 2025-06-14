@@ -75,10 +75,10 @@ export const saveMatchResultSchema = {
     winner: { type: "number" },
     score: {
       type: "object",
-      required: ["score_1", "score_2"],
+      required: ["winner_score", "looser_score"],
       properties: {
-        score_1: { type: "number" },
-        score_2: { type: "number" },
+        winner_score: { type: "number" },
+        looser_score: { type: "number" },
       },
     },
   },

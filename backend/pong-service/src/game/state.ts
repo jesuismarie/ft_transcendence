@@ -33,7 +33,27 @@ export function isViewer(match_id: string, username: string) {
     return !!match && !(match.player1_id === username || match.player2_id === username);
 }
 
-export async function sendReportToServer(matchId: string, winner: 'left' | 'right', score: Score) {
+export async function sendReportToServer(matchId: string, matchState: MatchPlayers, winnerPositon: 'left' | 'right', score: Score) {
+
+    if( !matchState.player1Username || !matchState.player2Username ) return;
+
+    const result: {
+      match_id: number,
+      winner: number,
+      score: {
+        winner_score: number,
+        looser_score: number
+      }
+    } = {
+      match_id: parseInt(matchId),
+      winner: winnerPositon == 'left' ? parseInt(matchState.player1Username) :  parseInt(matchState.player2Username),
+      score: {
+        winner_score : winnerPositon == 'left' ? score.left : score.right,
+        looser_score : winnerPositon == 'left' ? score.right : score.left
+      }
+    }
+
+
     try {
       const response = await fetch('http://game-service:5001/report-match', { // TODO move to secrets
         method: 'POST',
@@ -41,12 +61,7 @@ export async function sendReportToServer(matchId: string, winner: 'left' | 'righ
           'Content-Type': 'application/json',
           'Authorization': 'Bearer C8yJqmt8flJlPqTUy6ESf4EemfrSSGJPFa2GPnLmjas=', // TODO change using proxy service
         },
-        body: JSON.stringify({
-          match_id: matchId,
-          winner,
-          score,
-          timestamp: new Date().toISOString()
-        })
+        body: JSON.stringify(result)
       });
   
       if (!response.ok) {
