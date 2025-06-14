@@ -8,8 +8,8 @@ interface SaveMatchResultBody {
   match_id: number;
   winner: number;
   score: {
-    score_1: number;
-    score_2: number;
+    winner_score: number;
+    looser_score: number;
   };
 }
 
@@ -31,8 +31,8 @@ export default async function saveMatchResultRoute(app: FastifyInstance) {
       !match_id ||
       !winner ||
       !score ||
-      score.score_1 < 0 ||
-      score.score_2 < 0
+      score.winner_score < 0 ||
+      score.looser_score < 0
     ) {
       return reply.sendError({ statusCode: 400, message: "Invalid input parameters" });
     }
@@ -58,8 +58,13 @@ export default async function saveMatchResultRoute(app: FastifyInstance) {
     const db = app.db;
 
     const tx = db.transaction((txn) => {
+      const scoreData = {
+        score_1: winner === match.player_1 ? score.winner_score : score.looser_score,
+        score_2: winner === match.player_1 ? score.looser_score : score.winner_score,
+      }
+
       // Update match result
-      matchRepo.updateMatchResult(match_id, winner, score, txn);
+      matchRepo.updateMatchResult(match_id, winner, scoreData, txn);
 
       // Update player stats
       tournamentPlayerRepo.incrementWins(winner, match.tournament_id, txn);
