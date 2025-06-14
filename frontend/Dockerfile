@@ -8,17 +8,6 @@ RUN npm install && npm run build:prod
 
 FROM nginx:alpine AS production
 
-RUN apk update && \
-    apk upgrade && \
-    apk add --no-cache nginx openssl
-
-RUN mkdir -p /etc/nginx/ssl && \
-    openssl req -newkey rsa:4096 -x509 -sha256 \
-    -days 365 -nodes \
-    -out /etc/nginx/ssl/gehovhan.42.fr.pem \
-    -keyout /etc/nginx/ssl/gehovhan.42.fr.key \
-    -subj "/C=AM/ST=Yerevan/L=Yerevan/O=42Yerevan/OU=IT/CN=localhost"
-
 WORKDIR /usr/share/nginx/html
 
 RUN rm -rf ./*

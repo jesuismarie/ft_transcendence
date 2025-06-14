@@ -1,4 +1,15 @@
 services:
+    ssl-generator:
+      container_name: ssl-generator
+      build:
+        context: .
+        dockerfile: ssl-generator/Dockerfile
+      networks:
+        - bridge-network
+      volumes:
+        - ssl-certs:/etc/ssl
+      restart: "no"
+
     auth-service:
       container_name: auth-service
       build:
@@ -15,6 +26,7 @@ services:
       volumes:
         - auth-service-db-data:/app/backend/auth-service/prisma
         - auth-service-logs-data:/var/log/app
+        - ssl-certs:/etc/ssl
       restart: always
 
     game-service:
@@ -33,6 +45,7 @@ services:
       volumes:
         - game-service-db-date:/app/data
         - game-service-logs-data:/var/log/app
+        - ssl-certs:/etc/ssl
       restart: always
 
     user-service:
@@ -51,6 +64,7 @@ services:
       volumes:
         - user-service-db-date:/app/data
         - user-service-logs-data:/var/log/app
+        - ssl-certs:/etc/ssl
       restart: always
 
     proxy-service:
@@ -69,6 +83,7 @@ services:
       volumes:
         - proxy-service-db-date:/example/path
         - proxy-service-logs-data:/var/log/app
+        - ssl-certs:/etc/ssl
       depends_on:
         - auth-service
         - user-service
@@ -91,6 +106,7 @@ services:
       volumes:
         - pong-service-db-date:/example/path
         - pong-service-logs-data:/var/log/app
+        - ssl-certs:/etc/ssl
       restart: always
 
     frontend:
@@ -105,11 +121,13 @@ services:
           - bridge-network
         volumes:
           - frontend-nginx-logs:/var/log/nginx
+          - ssl-certs:/etc/ssl
         depends_on:
           - proxy-service
         restart: always
 
 volumes:
+  ssl-certs:
   auth-service-db-data:
   game-service-db-date:
   user-service-db-date:
