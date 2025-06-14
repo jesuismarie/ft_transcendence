@@ -61,4 +61,15 @@ export class FriendRepo implements FriendRepoInterface {
         );
         return !!stmt.get(userId, friendId, friendId, userId);
     }
+
+    getTotalFriends(userId: number, q?: string) : number {
+        const stmt = this.app.db.prepare(`
+            SELECT COUNT(*) as total
+            FROM friends f
+            JOIN users u ON f.friendId = u.id
+            WHERE f.userId = ?
+            AND u.username LIKE ? COLLATE NOCASE`);
+        const result = stmt.get(userId, `%${q ?? ''}%`) as { total: number };
+        return result ? result.total : 0;
+    }
 }
