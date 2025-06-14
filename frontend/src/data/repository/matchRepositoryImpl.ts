@@ -82,4 +82,31 @@ export class MatchRepositoryImpl implements MatchRepository {
         }
     }
 
+    async getNextMatch(tournamentId: number): Promise<Either<GeneralException, ActiveMatchEntity>> {
+        try {
+            const res = await this.apiClient.axiosClient().post(`${ApiConstants.tournamentNextStep}`, {
+                id: tournamentId
+            });
+            if (res.status >= 200 && res.status < 400) {
+                const match: ActiveMatchEntity = {
+                    matchId: res.data.match_id,
+                    tournamentId: tournamentId,
+                    status: res.data.status,
+                    player1Id: res.data.player_1,
+                    player2Id: res.data.player_2,
+                    participants: res.data.participants
+                };
+                return new Right(match);
+            }
+            return new Left(new GeneralException());
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
 }

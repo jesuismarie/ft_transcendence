@@ -60,6 +60,28 @@ export class MatchBloc extends Cubit<MatchState> {
         }
     }
 
+    async getNextMatch(tournamentId: number): Promise<void> {
+        this.emit(this.state.copyWith({status: MatchStatus.Loading}))
+        const res = await this.matchRepository.getNextMatch(tournamentId);
+        res.when({
+            onError: (err: any) => {
+                let errorMessage: string | undefined;
+                if (err instanceof ApiException) {
+                    errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                }
+                this.emit(this.state.copyWith({status: MatchStatus.Error, errorMessage: errorMessage}));
+            },
+            onSuccess: (data) => {
+                if (data.status == 'ended') {
+                    this.emit(this.state.copyWith({status: MatchStatus.Ended, nextMatch: undefined}));
+                }
+                else {
+                    this.emit(this.state.copyWith({status: MatchStatus.Success, nextMatch: data}));
+                }
+            }
+        });
+    }
+
     async getMatchHistory(userId: number, offset: number, limit: number): Promise<void> {
         this.emit(this.state.copyWith({status: MatchStatus.Loading}))
         const res = await this.matchRepository.fetchMatchList(userId, offset, limit);

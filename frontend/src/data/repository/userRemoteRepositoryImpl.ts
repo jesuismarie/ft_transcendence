@@ -91,7 +91,7 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
     async updateProfile(id: number, username: string, email: string): Promise<Either<GeneralException, void>> {
         try {
             const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/${id}`, {
-                data: {username: username, email: email}
+                username: username, email: email
             });
 
             if (response.status >= 200 && response.status < 400) {
@@ -111,9 +111,8 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
 
     async updatePassword(id: number, oldPassword: string, newPassword: string): Promise<Either<GeneralException, void>> {
         try {
-            const data = {currentPwd: oldPassword, newPwd: newPassword};
-            const response = await this.apiClient.put(`${ApiConstants.users}/${id}${ApiConstants.updatePassword}`,
-                JSON.stringify(data),
+            const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/${id}${ApiConstants.updatePassword}`,
+                {currentPwd: oldPassword, newPwd: newPassword}
             );
 
             if (response.status >= 200 && response.status < 400) {
@@ -122,7 +121,6 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
                 return new Left(new GeneralException());
             }
         } catch (e) {
-            alert(e)
             if (e instanceof AxiosError) {
                 const error: ApiError = e.response?.data
                 return new Left(new ApiException(500, error.message, error));

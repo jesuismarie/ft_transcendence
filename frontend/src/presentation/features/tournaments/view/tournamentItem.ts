@@ -146,7 +146,7 @@ export class TournamentItem extends StatelessWidget {
                                 }
 
                             },
-                            isHidden: this.tournamentItem.id != this.currentId,
+                            isHidden: this.tournamentItem.id != this.currentId || this.tournamentItem.status != 'in_progress',
                         })
                     },
                     parentId: `join-tournament-btn-content-${this.tournamentItem.id}`

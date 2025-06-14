@@ -7,24 +7,18 @@ import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
 import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import {BlocListener} from "@/core/framework/bloc/blocListener";
-import {clearErrors, showError} from "@/utils/error_messages";
 import {State, StatefulWidget} from "@/core/framework/widgets/statefulWidget";
-import {Navigator} from "@/core/framework/widgets/navigator";
-import {AppRoutes} from "@/core/constants/appRoutes";
 import {FriendBloc} from "@/presentation/features/friend/logic/friendBloc";
 import {FriendState, FriendStatus} from "@/presentation/features/friend/logic/friendState";
 import {SubmitButton} from "@/presentation/common/widget/submitButton";
 import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
-import {BlocProvider} from "@/core/framework/bloc/blocProvider";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {AvatarContent} from "@/presentation/features/profile/view/avatar-content";
 import type {AuthState} from "@/presentation/features/auth/logic/auth_state";
 import {Bindings} from "@/presentation/features/bindings";
-import {Status} from "@/core/models/status";
-import {OnlineBloc} from "@/presentation/features/online/onlineBloc";
-import {FriendsView} from "@/presentation/features/friend/view/friends_view";
 import {FriendList} from "@/presentation/features/friend/view/friendList";
 import {showFlushBar} from "@/presentation/common/widget/flushBar";
+import {showError} from "@/utils/error_messages";
 
 
 export class ProfileInfo extends StatefulWidget {
@@ -71,6 +65,10 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         showFlushBar({message: profileState.errorMessage?.toString() ?? 'Unknown error'});
                         profileBloc.resetStatus().then();
                     }
+                    if (profileState.status == ProfileStatus.ErrorSubmit) {
+                        showError('new_password', profileState.errorMessage ?? "Unknown error");
+                        profileBloc.resetStatus().then();
+                    }
                     if (profileState.status == ProfileStatus.Uploaded) {
                         // clearErrors();
                         profileBloc.resetStatus().then();
@@ -96,6 +94,9 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         <!-- Player Username -->
                     </h2>
                     <div id="username-container" class="flex items-center justify-center mt-2">
+                        <!-- Online Status -->
+                    </div>
+                     <div id="email-container" class="flex items-center justify-center mt-2">
                         <!-- Online Status -->
                     </div>
                 </div>
@@ -227,6 +228,12 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
                             builder: (context, state) => new HtmlWidget(`<p class="text-gray-600">${state.profile?.username}</p>`),
                             parentId: 'username-container'
+                        }),
+                        new BlocBuilder<ProfileBloc, ProfileState>({
+                            blocType: ProfileBloc,
+                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                            builder: (context, state) => new HtmlWidget(`<p class="text-gray-600">${state.profile?.email}</p>`),
+                            parentId: 'email-container'
                         }),
                         new BlocBuilder<ProfileBloc, ProfileState>({
                             blocType: ProfileBloc,

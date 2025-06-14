@@ -91,52 +91,62 @@ export class ProfileBloc extends Cubit<ProfileState> {
 
 
     async onSaveProfile({username, email, password, newPassword, confirmPassword}: ProfileValueObject) {
-        if (!this.validateForm({username, email, password, newPassword, confirmPassword})) {
-            this.emit(this.state.copyWith({isValid: false}));
-        } else if (!this.state.profile?.id) {
+        const isValid = this.validateForm({username, email, password, newPassword, confirmPassword});
+
+        if (!this.state.profile?.id) {
+            console.log("ERRRRRRRRRRRRRRRRRRRRRRRRRR")
             this.emit(this.state.copyWith({
                 status: ProfileStatus.Error,
                 errorMessage: 'User is not Authenticated',
                 isValid: false
             }))
-        } else {
+        } else if (isValid && this.state.profile) {
             const currentUser = this.state.profile;
-            if (currentUser && username !== currentUser.username || email !== currentUser.email && password != newPassword) {
                 this.emit(this.state.copyWith({status: ProfileStatus.Loading}));
-                const res = await this.userRemoteRepository.updateProfile(this.state.profile?.id, username, email);
-                await res.when({
-                    onError: async (e) => {
+                if (username && email) {
+                    const res = await this.userRemoteRepository.updateProfile(currentUser!.id, username, email);
+                     res.when({
+                        onError: (e) => {
+                            let errorMsg: string | null;
+                            if (e instanceof AxiosError) {
+                                errorMsg = e.message;
+                            } else {
+                                errorMsg = e?.toString()
+                            }
+                            this.emit(this.state.copyWith({status: ProfileStatus.ErrorSubmit, errorMessage: errorMsg}));
+                        }, onSuccess:  () => {
+                            this.emit(this.state.copyWith({status: ProfileStatus.Success}));
+                        }
+                    });
+                }
+            if (newPassword && newPassword.length > 0) {
+                const pwd = password && password.length > 0 ? password : newPassword;
+                const res = await this.userRemoteRepository.updatePassword(this.state.profile!.id, pwd, newPassword);
+                res.when({
+                    onError: (e) => {
                         let errorMsg: string | null;
-                        if (e instanceof AxiosError) {
+                        if (e instanceof ApiException) {
                             errorMsg = e.message;
                         } else {
                             errorMsg = e?.toString()
                         }
-                        this.emit(this.state.copyWith({status: ProfileStatus.Error, errorMessage: errorMsg}));
-                    }, onSuccess: async () => {
-
-
-                        const res = await this.userRemoteRepository.updatePassword(this.state.profile!.id, password, newPassword);
-                        res.when({
-                            onError: (e) => {
-                                let errorMsg: string | null;
-                                if (e instanceof ApiException) {
-                                    errorMsg = e.message;
-                                } else {
-                                    errorMsg = e?.toString()
-                                }
-                                this.emit(this.state.copyWith({status: ProfileStatus.Error, errorMessage: errorMsg}));
-                            }, onSuccess: () => {
-                                this.emit(this.state.copyWith({
-                                    status: ProfileStatus.Success,
-                                    errorMessage: undefined
-                                }));
-                            }
-                        })
+                        this.emit(this.state.copyWith({
+                            status: ProfileStatus.ErrorSubmit,
+                            errorMessage: errorMsg
+                        }));
+                    }, onSuccess: () => {
+                        this.emit(this.state.copyWith({
+                            status: ProfileStatus.Success,
+                            errorMessage: undefined
+                        }));
                     }
-                });
-                await this.getUserProfile(currentUser.id.toString());
+                })
             }
+            await this.getUserProfile(currentUser.id.toString());
+
+        }
+        else {
+            this.emit(this.state.copyWith({isValid: false}));
         }
     }
 
@@ -145,30 +155,24 @@ export class ProfileBloc extends Cubit<ProfileState> {
 
         let hasError = false;
 
-        if (!username) {
-            showError("edit_username", "Username is required.");
-            hasError = true;
-        }
-
-        if (!email) {
-            showError("edit_email", "Email is required.");
-            hasError = true;
-        } else if (!Validator.isValidEmail(email)) {
+        if (email && !Validator.isValidEmail(email)) {
             showError("edit_email", "Invalid email.");
             hasError = true;
         }
+        if (username && username.length < 8) {
+            showError("edit_username", "Username must be at least 8 characters.");
+            hasError = true;
+        }
 
-        if (password && !newPassword) {
+        if (password && password.length > 0 && (!newPassword || newPassword.length == 0)) {
             showError("new_password", "New password is required.");
             hasError = true;
-            alert(`1 ${hasError}`)
-        } else if (!password && newPassword) {
-            showError("old_password", "Old password is required.");
-            hasError = true;
-        } else if (password && password === newPassword) {
+        }
+        if (password && password.length > 0 && password === newPassword) {
             showError("new_password", "New password can't be the same as old password.");
             hasError = true;
-        } else if (newPassword || confirmPassword) {
+        }
+        if (newPassword || confirmPassword) {
             if (!Validator.isValidPassword(newPassword)) {
                 showError("new_password", "Password must be at least 8 characters, include a capital letter and a symbol.");
                 hasError = true;
@@ -178,6 +182,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
                 hasError = true;
             }
         }
+        console.log(`HHHH:::: ${hasError}`)
 
         return !hasError;
     }

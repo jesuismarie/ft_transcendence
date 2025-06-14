@@ -4,4 +4,5 @@ export interface ActiveMatchEntity {
     player1Id: number;
     player2Id: number;
     status: string;
+    participants?: number[];
 }
