@@ -5,10 +5,14 @@ import type {MatchRepository} from "@/domain/respository/matchRepository";
 import {ApiException} from "@/core/exception/exception";
 import {type OnlineEntity, OnlineStatuses} from "@/domain/entity/onlineStatus";
 import type {TournamentRemoteRepository} from "@/domain/respository/tournamentRemoteRepository";
+import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
+import type {MatchHistoryItem} from "@/domain/entity/matchHistoryItem";
+import type {MatchHistory} from "@/domain/entity/matchHistory";
 
 export class MatchBloc extends Cubit<MatchState> {
     constructor(@inject('MatchRepository') private readonly matchRepository: MatchRepository,
                 @inject('TournamentRepository') private readonly tournamentRepository: TournamentRemoteRepository,
+                @inject('UserRepository') private readonly userRepository: UserRemoteRepository,
                 ) {
         super(new MatchState({}));
     }
@@ -85,17 +89,57 @@ export class MatchBloc extends Cubit<MatchState> {
     async getMatchHistory(userId: number, offset: number, limit: number): Promise<void> {
         this.emit(this.state.copyWith({status: MatchStatus.Loading}))
         const res = await this.matchRepository.fetchMatchList(userId, offset, limit);
-        res.when({
-            onError: (err: any) => {
+        await res.when({
+            onError: async (err: any) => {
                 let errorMessage: string | undefined;
                 if (err instanceof ApiException) {
                     errorMessage = err.message.removeBefore('body/').capitalizeFirst()
                 }
+                console.log(`ERRRRRRRRRRRRRRRRRRRRR::::: ${JSON.stringify(err)}`)
                 this.emit(this.state.copyWith({status: MatchStatus.Error, errorMessage: errorMessage}));
             },
-            onSuccess: (data) => {
-                const newState = this.state.copyWith({status: MatchStatus.Success, results: data});
-                this.emit(newState);
+            onSuccess: async (data) => {
+
+                const userIds: number[] = data.matches.map((e) => e.opponent);
+                const response = await this.userRepository.getUserNames(userIds);
+                console.log(`AAAAAAAAAAAAAAAA::::: ${JSON.stringify(response)}`)
+
+                response.when({
+                    onError: (err) => {
+                        console.log(`IIIIIIIIIIIIIIII::::: ${JSON.stringify(err)}`)
+
+                        // this.emit(this.state.copyWith({status: MatchStatus.Error}));
+                        const newState = this.state.copyWith({status: MatchStatus.Success, results: data});
+                        this.emit(newState);
+                    },
+                    onSuccess: (userNames) => {
+                        const newRes = data.matches.map((e, index) => {
+                            console.log(`DDDDDDDDDDDDDDDDDDDDDD::::: ${userNames[index]}`)
+
+                            const match: MatchHistoryItem = {
+                                id: e.id,
+                                opponent: e.opponent,
+                                opponentName: userNames[index],
+                                status: e.status,
+                                is_won: e.is_won,
+                                score: {
+                                    user: e.score.user,
+                                    opponent: e.score.opponent,
+                                    opponentName: userNames[index],
+                                },
+                                date: e.date,
+                            }
+                            return match;
+                        });
+                        const res: MatchHistory = {
+                            totalCount: data.totalCount,
+                            matches: newRes,
+                        }
+
+                        this.emit(this.state.copyWith({status: MatchStatus.Success, results: res}));
+                    }
+                })
+
             }
         });
     }

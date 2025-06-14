@@ -1,6 +1,7 @@
 export interface MatchHistoryItem {
     "id": number,
     "opponent":  number,
+    "opponentName": string,
     "status": string,
     "is_won": boolean,
     "score": MatchScore,
@@ -10,4 +11,5 @@ export interface MatchHistoryItem {
 export interface MatchScore {
     user: number,
     opponent: number,
+    opponentName: string,
 }

@@ -10,5 +10,6 @@ export interface UserRemoteRepository {
     updateAvatar(id: number, data: FormData): Promise<Either<GeneralException, void>>;
     updateProfile(id: number, username: string, email: string): Promise<Either<GeneralException, void>>;
     updatePassword(id: number, oldPassword: string, newPassword: string): Promise<Either<GeneralException, void>>;
-    getOnlineStatuses(users: number[]): Promise<Either<GeneralException, OnlineEntity>>
+    getOnlineStatuses(users: number[]): Promise<Either<GeneralException, OnlineEntity>>;
+    getUserNames(userIds: number[]): Promise<Either<GeneralException, string[]>>;
 }

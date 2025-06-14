@@ -149,4 +149,29 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
             }
         }
     }
+
+
+    async getUserNames(userIds: number[]): Promise<Either<GeneralException, string[]>> {
+        try {
+            const response = await this.apiClient.axiosClient().post(`${ApiConstants.getUserNames}`, {userIds: userIds});
+
+            if (response.status >= 200 && response.status < 400) {
+                const userNames: string[] = Object.values(response.data)
+                console.log("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
+                return new Right(userNames);
+            } else {
+
+                return new Left(new GeneralException());
+            }
+
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
 }

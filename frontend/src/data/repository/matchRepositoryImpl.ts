@@ -9,6 +9,8 @@ import {inject, injectable} from "tsyringe";
 import  {type ApiClient} from "@/core/network/apiClient";
 import type {MatchValueObject} from "@/domain/value_objects/match_value_object";
 import type {ActiveMatchEntity} from "@/domain/entity/activeMatchEntity";
+import {isArray} from "lodash";
+import type {MatchHistoryItem} from "@/domain/entity/matchHistoryItem";
 
 @injectable()
 export class MatchRepositoryImpl implements MatchRepository {
@@ -21,9 +23,29 @@ export class MatchRepositoryImpl implements MatchRepository {
             if (res.status >= 200 && res.status < 400) {
                 const match: MatchHistory = {
                     totalCount: res.data.totalCount,
-                    matches: res.data.matches
-                }
+                    matches: res.data.matches && isArray(res.data.matches)  ?
+                        res.data.matches.map((e: MatchHistoryItem) => {
+                            const match:  MatchHistoryItem = {
+                                id: e.id,
+                                opponent: e.opponent,
+                                opponentName: '',
+                                status: e.status,
+                                is_won: e.is_won,
+                                score: {
+                                    opponent: e.score.opponent,
+                                    user: e.score.user,
+                                    opponentName: ''
+                                },
+                                date: e.date,
+                            };
+                            return match;
+                            }
+                        ) : []
+                };
+
+
                 return new Right(match);
+
             }
             return new Left(new GeneralException());
         } catch (e) {

@@ -10,6 +10,7 @@ import {ApiConstants} from "@/core/constants/apiConstants";
 import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
 import type {TournamentParticipantsEntity} from "@/domain/entity/tournamentParticipantsEntity";
 import type {MatchEntity} from "@/domain/entity/matchEntity";
+import type {TournamentInfoDetailsEntity} from "@/domain/entity/tournamentInfoDetailsEntity";
 
 
 @injectable()
@@ -113,9 +114,25 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
         try {
             const res = await this.apiClient.axiosClient().get(`${ApiConstants.getTournamentInfo}?offset=${offset}&limit=${limit}`);
             if (res.status >= 200 && res.status < 400) {
+
+
+                const tournaments = res.data.tournaments.map((e: TournamentInfoDetailsEntity) => {
+                    const tournament: TournamentInfoDetailsEntity = {
+                        id: e.id,
+                        name: e.name,
+                        created_by: e.created_by,
+                        createdName: '',
+                        max_players_count: e.current_players_count,
+                        current_players_count: e.current_players_count,
+                        status: e.status,
+                        participants: e.participants,
+                        activeMatch: e.activeMatch
+                    };
+                    return tournament;
+                });
                 const entity: TournamentInfoEntity = {
                     totalCount: res.data.totalCount,
-                    tournaments: res.data.tournaments,
+                    tournaments: tournaments,
                 }
                 return new Right(entity);
             } else {

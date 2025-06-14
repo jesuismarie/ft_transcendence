@@ -5,6 +5,7 @@ export interface TournamentInfoDetailsEntity {
     id:						number;
     name:					string;
     created_by:				number;
+    createdName:            string;
     max_players_count:		number;
     current_players_count:	number;
     status:					string;

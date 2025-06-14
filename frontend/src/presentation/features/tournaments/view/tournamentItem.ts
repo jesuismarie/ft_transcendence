@@ -39,7 +39,7 @@ export class TournamentItem extends StatelessWidget {
 						Players: ${this.tournamentItem.current_players_count}/${this.tournamentItem.max_players_count}
 					</p>
 					<p class="mt-1 text-sm text-gray-500">
-						Created by: ${this.tournamentItem.created_by}
+						Created by: ${this.tournamentItem.createdName}
 					</p>
 				</div>
 				<div align="right" class="mt-2 sm:mt-0 flex flex-col sm:flex-row gap-2 items-end sm:items-start">
@@ -95,7 +95,7 @@ export class TournamentItem extends StatelessWidget {
                                 }
 
                             },
-                            isHidden: state.profile && state.profile.id != this.tournamentItem.created_by,
+                            isHidden: state.profile && (state.profile.id != this.tournamentItem.created_by || this.tournamentItem.status === 'ended'),
                         }),
                         parentId: `start-tournament-btn-content-${this.tournamentItem.id}`
                     })
@@ -119,7 +119,7 @@ export class TournamentItem extends StatelessWidget {
                                 }
                             },
                             disabled: this.tournamentItem.status != "created",
-                            isHidden: state.profile && state.profile.id != this.tournamentItem.created_by,
+                            isHidden: state.profile && (state.profile.id != this.tournamentItem.created_by ||this.tournamentItem.status === 'ended'),
                         })
                     },
                     parentId: `delete-tournament-btn-content-${this.tournamentItem.id}`
@@ -146,7 +146,7 @@ export class TournamentItem extends StatelessWidget {
                                 }
 
                             },
-                            isHidden: this.tournamentItem.id != this.currentId || this.tournamentItem.status != 'in_progress',
+                            isHidden: this.tournamentItem.id != this.currentId || (this.tournamentItem.status != 'in_progress' && this.tournamentItem.status === 'ended'),
                         })
                     },
                     parentId: `join-tournament-btn-content-${this.tournamentItem.id}`
@@ -170,7 +170,7 @@ export class TournamentItem extends StatelessWidget {
                                     Bindings.isTournamentItemBounded = true;
                                 }
                             },
-                            isHidden: state.profile && (state.profile.id == this.tournamentItem.created_by || !!this.currentId || this.currentId == this.tournamentItem.id),
+                            isHidden: state.profile && (state.profile.id == this.tournamentItem.created_by || !!this.currentId || this.currentId == this.tournamentItem.id || this.tournamentItem.status === 'ended'),
                         })
                     },
                     parentId: `register-tournament-btn-content-${this.tournamentItem.id}`
@@ -194,7 +194,7 @@ export class TournamentItem extends StatelessWidget {
                                     Bindings.isTournamentItemBounded = true;
                                 }
                             },
-                            isHidden: state.profile && (state.profile.id == this.tournamentItem.created_by || !this.currentId || (this.tournamentItem.id != this.currentId!)),
+                            isHidden: state.profile && (state.profile.id == this.tournamentItem.created_by || !this.currentId || (this.tournamentItem.id != this.currentId!) || this.tournamentItem.status === 'ended'),
                         })
                     },
                     parentId: `unregister-tournament-btn-content-${this.tournamentItem.id}`

@@ -24,7 +24,9 @@ export class PongGameScreen extends StatelessWidget {
                 new BlocProvider({
                     create: () => new MatchBloc(
                         Resolver.matchRepository(),
-                        Resolver.tournamentRepository())
+                        Resolver.tournamentRepository(),
+                        Resolver.userRepository()
+                    )
                 })
             ],
             child: new PongGameScreenContent()

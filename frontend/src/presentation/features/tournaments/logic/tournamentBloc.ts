@@ -125,37 +125,54 @@ export class TournamentBloc extends Cubit<TournamentState> {
                     })
                 })
                 const matches = await Promise.all(matchesResponse);
-                const tournaments = data.tournaments.map((e) => {
-                    const tournament: TournamentInfoDetailsEntity = {
-                        id: e.id,
-                        name: e.name,
-                        created_by: e.created_by,
-                        max_players_count: e.max_players_count,
-                        current_players_count: e.current_players_count,
-                        status: e.status,
-                        participants: e.participants,
-                        activeMatch: matches.find((match) => (match && match.tournamentId == e.id) ? match : undefined)
-                    };
-                    return tournament;
-                });
-                const tournamentInfo: TournamentInfoEntity = {
-                    totalCount: data.totalCount,
-                    tournaments: tournaments,
-                }
-                if (type == PaginationType.none) {
-                    this.emit(this.state.copyWith({
-                        status: TournamentStatus.Success,
-                        results: tournamentInfo,
-                        pageResults: tournamentInfo,
-                        offset: offset
-                    }))
-                } else {
-                    this.emit(this.state.copyWith({
-                        status: TournamentStatus.Success,
-                        pageResults: tournamentInfo,
-                        offset: offset
-                    }))
-                }
+                const res = await this.userRepository.getUserNames(data.tournaments.map((e) => e.created_by));
+                res.when({
+                    onSuccess: (names) => {
+                        const tournaments = data.tournaments.map((e, index) => {
+                            const tournament: TournamentInfoDetailsEntity = {
+                                id: e.id,
+                                name: e.name,
+                                created_by: e.created_by,
+                                createdName: names[index],
+                                max_players_count: e.max_players_count,
+                                current_players_count: e.current_players_count,
+                                status: e.status,
+                                participants: e.participants,
+                                activeMatch: matches.find((match) => (match && match.tournamentId == e.id) ? match : undefined)
+                            };
+                            return tournament;
+                        });
+                        const tournamentInfo: TournamentInfoEntity = {
+                            totalCount: data.totalCount,
+                            tournaments: tournaments,
+                        }
+                        if (type == PaginationType.none) {
+                            this.emit(this.state.copyWith({
+                                status: TournamentStatus.Success,
+                                results: tournamentInfo,
+                                pageResults: tournamentInfo,
+                                offset: offset
+                            }))
+                        } else {
+                            this.emit(this.state.copyWith({
+                                status: TournamentStatus.Success,
+                                pageResults: tournamentInfo,
+                                offset: offset
+                            }))
+                        }
+                    },
+                    onError: (e) => {
+                        let errorMessage: string | undefined;
+                        if (e instanceof ApiException) {
+                            errorMessage = e.message;
+                        } else {
+                            errorMessage = e.toString();
+                        }
+                        this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
+                    }
+                })
+
+
             }
         });
     }
@@ -188,8 +205,8 @@ export class TournamentBloc extends Cubit<TournamentState> {
     async getRelevantParticipants(id: number): Promise<void> {
         this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
         const res = await this.tournamentRemoteRepository.getRelevantParticipants(id);
-        res.when({
-            onError: (e) => {
+       await res.when({
+            onError: async (e) => {
                 let errorMessage: string | undefined;
                 if (e instanceof ApiException) {
                     errorMessage = e.message;
@@ -197,19 +214,38 @@ export class TournamentBloc extends Cubit<TournamentState> {
                     errorMessage = e.toString();
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
-            }, onSuccess: (data) => {
+            }, onSuccess: async (data) => {
                 const newParticipants: TournamentInfoEntity = cloneDeep<TournamentInfoEntity>(this.state.results);
                 const participantsIndex = this.state.results.tournaments.findIndex((e, index) => e.id === id ? index : -1);
                 if (participantsIndex != -1) {
-                    newParticipants.tournaments[participantsIndex] = {
-                        current_players_count: data.currentPlayersCount,
-                        max_players_count: data.maxPlayersCount,
-                        participants: data.participants,
-                        id: newParticipants.tournaments[participantsIndex].id,
-                        name: newParticipants.tournaments[participantsIndex].name,
-                        status: newParticipants.tournaments[participantsIndex].status,
-                        created_by: newParticipants.tournaments[participantsIndex].created_by,
-                    };
+                    const createdByResponse = await this.userRepository.getUserNames([newParticipants.tournaments[participantsIndex].created_by]);
+                    createdByResponse.when({
+                        onError: (e) => {
+                            newParticipants.tournaments[participantsIndex] = {
+                                current_players_count: data.currentPlayersCount,
+                                max_players_count: data.maxPlayersCount,
+                                createdName: '',
+                                participants: data.participants,
+                                id: newParticipants.tournaments[participantsIndex].id,
+                                name: newParticipants.tournaments[participantsIndex].name,
+                                status: newParticipants.tournaments[participantsIndex].status,
+                                created_by: newParticipants.tournaments[participantsIndex].created_by,
+                            };
+                        },
+                        onSuccess: (name) => {
+                            newParticipants.tournaments[participantsIndex] = {
+                                current_players_count: data.currentPlayersCount,
+                                max_players_count: data.maxPlayersCount,
+                                createdName: name[0],
+                                participants: data.participants,
+                                id: newParticipants.tournaments[participantsIndex].id,
+                                name: newParticipants.tournaments[participantsIndex].name,
+                                status: newParticipants.tournaments[participantsIndex].status,
+                                created_by: newParticipants.tournaments[participantsIndex].created_by,
+                            };
+                        }
+                    })
+
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.SuccessRelevant, results: newParticipants}))
             }
