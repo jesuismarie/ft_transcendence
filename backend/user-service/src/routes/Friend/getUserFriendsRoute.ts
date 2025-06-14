@@ -26,7 +26,8 @@ export default async function getUserFriendsRoute(app: FastifyInstance, userRepo
 				return reply.sendError({ statusCode: 404, message: 'User not found' });
 			}
 			const friends = friendRepo.list(userId, { offset, limit, q });
-			reply.send({total: friends.length, friends: friends});
+			const friendsTotal = friendRepo.getTotalFriends(userId, q);
+			reply.send({total: friendsTotal, friends: friends});
 		}
 	);
 }

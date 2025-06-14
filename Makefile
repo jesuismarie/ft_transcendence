@@ -38,7 +38,7 @@ mfclean:
 
 # TODO: Add dependency from (net, mup, init) dont push secrets on repo set rull (init).
 up: net
-	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans
+	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans && @docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) rm -f ssl-generator
 
 # TODO: Add dependency from (mdown).
 down:

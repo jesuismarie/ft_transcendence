@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import fs from "fs";
 import monitorningRoutes from "./routes/monitoring/routes";
 import errorEnvelope from "./plugins/errorEnvelope";
 import cors from "@fastify/cors";
@@ -6,7 +7,13 @@ import httpProxy from "@fastify/http-proxy";
 import { services } from "./config";
 import authMiddleware from "./plugins/authMiddleware";
 
-const app = Fastify({ logger: true });
+const app = Fastify({
+  logger: true,
+  https: {
+    key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
+    cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+  },
+});
 
 app.register(cors, {
   origin: '*',

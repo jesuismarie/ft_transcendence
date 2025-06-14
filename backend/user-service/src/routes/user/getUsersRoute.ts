@@ -15,8 +15,8 @@ export default async function getUsersRoute(app:FastifyInstance, userRepo:UserRe
 			const {offset = 0, limit = 20, q} = req.query as UserTypes.PaginationQuery;
 			const users = userRepo.findAll({offset, limit, q});
 			const views = users.map(user => userRepo.toQuickView(user));
-			// TODO: Ask win/loss from game service
-			return {total: views.length, users: views};
+			const usersTotal = userRepo.getUsersTotalCount(q);
+			return {total: usersTotal, users: views};
 		}
 	);
 }

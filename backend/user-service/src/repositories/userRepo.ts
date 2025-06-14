@@ -81,6 +81,15 @@ export class UserRepo implements UserRepoInterface {
 			LIMIT ? OFFSET ?`);
 		return stmt.all(`%${q ?? ''}%`, limit, offset) as User[];
 	}
+
+	getUsersTotalCount(q?: string): number {
+		const stmt = this.app.db.prepare(`
+			SELECT COUNT(*) as count
+			FROM users
+			WHERE username LIKE ? COLLATE NOCASE`);
+		const result = stmt.get(`%${q ?? ''}%`) as { count: number };
+		return result.count;
+	}
 	
 	update(
 		id: number,
