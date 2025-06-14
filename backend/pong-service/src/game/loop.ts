@@ -44,7 +44,7 @@ export function startGameLoop(match_id: string, matchState: MatchPlayers, active
         });
 
         //Sending game final state to the external api
-        sendReportToServer(match_id, hasWinner, score);
+        sendReportToServer(match_id, matchState, hasWinner, score);
 
         activeMatches.delete(match_id);
         return;
