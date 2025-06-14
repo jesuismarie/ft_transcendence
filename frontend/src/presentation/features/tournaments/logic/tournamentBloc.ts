@@ -10,6 +10,10 @@ import {cloneDeep} from "lodash";
 import type {TournamentInfoEntity} from "@/domain/entity/tournamentInfoEntity";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
 import {Constants} from "@/core/constants/constants";
+import type {MatchRepository} from "@/domain/respository/matchRepository";
+import type {TournamentInfoDetailsEntity} from "@/domain/entity/tournamentInfoDetailsEntity";
+import type {MatchEntity} from "@/domain/entity/matchEntity";
+import type {ActiveMatchEntity} from "@/domain/entity/activeMatchEntity";
 
 export enum PaginationType {
     none = "none",
@@ -19,7 +23,8 @@ export enum PaginationType {
 
 export class TournamentBloc extends Cubit<TournamentState> {
     constructor(@inject('TournamentRepository') private tournamentRemoteRepository: TournamentRemoteRepository,
-                @inject('UserRepository') private userRepository: UserRemoteRepository
+                @inject('UserRepository') private userRepository: UserRemoteRepository,
+                @inject('MatchRepository') private matchRepository: MatchRepository
     ) {
         super(new TournamentState(({})));
     }
@@ -96,8 +101,8 @@ export class TournamentBloc extends Cubit<TournamentState> {
     async getAllTournaments(offset: number, limit: number, type: PaginationType) {
         this.emit(this.state.copyWith({status: TournamentStatus.Loading}))
         const res = await this.tournamentRemoteRepository.getAllTournaments(offset, limit);
-        res.when({
-            onError: (e) => {
+        await res.when({
+            onError: async (e) => {
                 let errorMessage: string | undefined;
                 if (e instanceof ApiException) {
                     errorMessage = e.message;
@@ -105,18 +110,49 @@ export class TournamentBloc extends Cubit<TournamentState> {
                     errorMessage = e.toString();
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
-            }, onSuccess: (data) => {
+            }, onSuccess: async (data) => {
+                const matchesResponse = data.tournaments.map(async (e) => {
+                    const response = await this.matchRepository.getActiveMatch(e.id);
+                    return response.when({
+                        onError: () => {
+                            console.log("TOURNAMENT:::: No any match")
+
+                            return undefined;
+                        },
+                        onSuccess: (match) => {
+                            return match;
+                        }
+                    })
+                })
+                const matches = await Promise.all(matchesResponse);
+                const tournaments = data.tournaments.map((e) => {
+                    const tournament: TournamentInfoDetailsEntity = {
+                        id: e.id,
+                        name: e.name,
+                        created_by: e.created_by,
+                        max_players_count: e.max_players_count,
+                        current_players_count: e.current_players_count,
+                        status: e.status,
+                        participants: e.participants,
+                        activeMatch: matches.find((match) => (match && match.tournamentId == e.id) ? match : undefined)
+                    };
+                    return tournament;
+                });
+                const tournamentInfo: TournamentInfoEntity = {
+                    totalCount: data.totalCount,
+                    tournaments: tournaments,
+                }
                 if (type == PaginationType.none) {
                     this.emit(this.state.copyWith({
                         status: TournamentStatus.Success,
-                        results: data,
-                        pageResults: data,
+                        results: tournamentInfo,
+                        pageResults: tournamentInfo,
                         offset: offset
                     }))
                 } else {
                     this.emit(this.state.copyWith({
                         status: TournamentStatus.Success,
-                        pageResults: data,
+                        pageResults: tournamentInfo,
                         offset: offset
                     }))
                 }
@@ -173,8 +209,6 @@ export class TournamentBloc extends Cubit<TournamentState> {
                         name: newParticipants.tournaments[participantsIndex].name,
                         status: newParticipants.tournaments[participantsIndex].status,
                         created_by: newParticipants.tournaments[participantsIndex].created_by,
-
-
                     };
                 }
                 this.emit(this.state.copyWith({status: TournamentStatus.SuccessRelevant, results: newParticipants}))

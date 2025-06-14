@@ -61,7 +61,8 @@ export class ProfileScreen extends StatelessWidget {
                 new BlocProvider({
                     create: () => new TournamentBloc(
                         Resolver.tournamentRepository(),
-                        Resolver.userRepository()
+                        Resolver.userRepository(),
+                        Resolver.matchRepository()
                     ),
                 }),
                 new BlocProvider({

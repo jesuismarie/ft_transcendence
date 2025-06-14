@@ -228,11 +228,11 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                             builder: (context, state) => new HtmlWidget(`<p class="text-gray-600">${state.profile?.username}</p>`),
                             parentId: 'username-container'
                         }),
-                        new HtmlWidget(`<p class="text-gray-600">${context.read(OnlineBloc).getCurrentStatus() == Status.Online ? "Online" : "Offline"}</p>`, 'online-status'),
-
-                        // new FriendsView('friends-preview')
-
-
+                        new BlocBuilder<ProfileBloc, ProfileState>({
+                            blocType: ProfileBloc,
+                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                            builder: (context, state) =>
+                                new HtmlWidget(`<p class="text-gray-600">${state.profile?.online ? "Online" : "Offline"}</p>`, 'online-status')}),
                     ],
                 }, )
 

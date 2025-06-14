@@ -1,12 +1,14 @@
 export abstract class ApiConstants {
     // static baseUrl: string = import.meta.env.VITE_API_URL;
     static baseUrlDev: string = "http://localhost:5003";
+    static gameWebsocketBaseUrl: string = "ws://localhost:5005";
     static websocketUrl = "ws://localhost:5002/users/ws";
     static authBaseUrl = `/auth-service`
     static userBaseUrl = `/user-service`
     static gameBaseUrl = `/game-service`
     static pongBaseUrl = `/pong-service`
-    static claim: string = `${ApiConstants.authBaseUrl}/auth/oauth/google/claim`
+    static claim: string = `${ApiConstants.authBaseUrl}/auth/oauth/google/claim`;
+    static activeMatch: string = `${ApiConstants.gameBaseUrl}/get-tournament-active-match`;
     static auth: string = `${ApiConstants.baseUrlDev}${ApiConstants.authBaseUrl}/auth/oauth/google`;
     static register: string = `${ApiConstants.authBaseUrl}/auth/register`;
     static friends: string = `${ApiConstants.userBaseUrl}/friends`;

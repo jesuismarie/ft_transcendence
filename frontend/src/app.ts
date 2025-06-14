@@ -34,7 +34,7 @@ export const routes: { [key: string]: string } = {
     '/profile': AppRoutes.profile,
     '/profile/:id': AppRoutes.profile,
     '/register': AppRoutes.register,
-    '/game/:id': AppRoutes.game,
+    '/game/:id/:username': AppRoutes.game,
     '/404': AppRoutes.notFound,
     '/oauth/complete': AppRoutes.authRedirect
 }
@@ -89,7 +89,7 @@ export class App extends StatelessWidget {
                                 '/profile': (context) => new ProfileScreen(),
                                 '/profile/:id': (context, params) => new ProfileScreen(params?.id),
                                 '/register': (context) => new RegisterScreen(),
-                                '/game/:id': (context) => new PongGameScreen(),
+                                '/game/:id/:username': (context) => new PongGameScreen(),
                                 '/404': (context) => new NotFoundWidget(),
                             }
                         }

@@ -7,9 +7,8 @@ import {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {SearchEntity} from "@/domain/entity/searchEntity";
-import {data} from "autoprefixer";
-import {type OnlineEntity, OnlineStatuses} from "@/domain/entity/onlineStatus";
-import type {User} from "@/domain/entity/user";
+import {type OnlineEntity} from "@/domain/entity/onlineStatus";
+import {type User} from "@/domain/entity/user";
 
 @injectable()
 export class UserRemoteRepositoryImpl implements UserRemoteRepository {
@@ -17,11 +16,12 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
     constructor(@inject('ApiClient') private apiClient: ApiClient) {
     }
 
-    async getProfile(id: string): Promise<Either<GeneralException, UserView>> {
+    async getProfile(id: string): Promise<Either<GeneralException, User>> {
         try {
             const res = await this.apiClient.axiosClient().get(`${ApiConstants.users}/${id}`);
             if (res.status >= 200 && res.status < 400) {
                 const user: User = {
+                    online: res.data.online,
                     id: res.data.id,
                     username: res.data.username,
                     email: res.data.email,

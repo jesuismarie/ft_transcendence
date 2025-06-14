@@ -136,10 +136,10 @@ export class TournamentItem extends StatelessWidget {
                             id: 'join-tournament-btn',
                             label: 'Join',
                             onClick: () => {
-                                const matchId = context.read(MatchBloc).state.currentMatch?.matchId;
+                                const matchId = this.tournamentItem.activeMatch?.matchId;
                                 console.log(`MATCHHHHHHH ${matchId}`);
                                 if (matchId && state.profile && this.tournamentItem.participants.includes(state.profile!.id) && this.tournamentItem.status == 'in_progress') {
-                                    Navigator.of(context).pushNamed(`/game/${matchId}`);
+                                    Navigator.of(context).pushNamed(`/game/${matchId}/${state.profile.username}`);
                                 }
                                 else if (this.tournamentItem.status != 'in_progress') {
                                     showFlushBar({message: 'Tournament not started yet'});
