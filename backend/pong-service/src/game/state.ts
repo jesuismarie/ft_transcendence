@@ -57,7 +57,7 @@ export async function sendReportToServer(matchId: string, matchState: MatchPlaye
 
     try {
         const axiosClient: AxiosInstance = axios.create({
-            baseURL: 'http://game-service:5001/',
+            baseURL: process.env.GAME_SERVICE_URL,
             headers: {
                 'Content-Type': 'application/json',
             },

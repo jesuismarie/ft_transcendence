@@ -1,8 +1,7 @@
 export abstract class ApiConstants {
-    // static baseUrl: string = import.meta.env.VITE_API_URL;
-    static baseUrlDev: string = "https://localhost:5003";
-    static gameWebsocketBaseUrl: string = "ws://localhost:5005";
-    static websocketUrl = "ws://localhost:5002/users/ws";
+    static baseUrlDev: string = import.meta.env.VITE_BASE_URL_DEV;
+    static gameWebsocketBaseUrl: string = import.meta.env.VITE_WS_GAME_URL;
+    static websocketUrl = import.meta.env.VITE_WS_ONLINE_URL;
     static authBaseUrl = `/auth-service`
     static userBaseUrl = `/user-service`
     static gameBaseUrl = `/game-service`

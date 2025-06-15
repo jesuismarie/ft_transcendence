@@ -6,9 +6,15 @@ import tournamentRoutes from "./routes/tournament/routes";
 import internalRoutes from "./routes/internal/routes";
 import monitoringRoutes from "./routes/monitoring/routes";
 import errorEnvelope from "./plugins/errorEnvelope";
+import fs from 'fs';
 
-const app = Fastify({ logger: true });
-
+const app = Fastify({
+    logger: true,
+    https: {
+        key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
+        cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+    },
+});
 // app.register(cors, {
 //     origin: true, // or (origin, cb) => cb(null, true)
 //     credentials: true

@@ -11,7 +11,6 @@ class WebSocketWrapper {
 
     const url = `${ApiConstants.gameWebsocketBaseUrl}/${matchId}/${username}`;
     this.ws = new WebSocket(url);
-    console.log(`URLLLLLLLLLL::::: ${url}`)
     this.ws.onopen = () => {
       console.log("WebSocket GAME  opened");
 

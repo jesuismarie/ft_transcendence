@@ -69,6 +69,10 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         showError('new_password', profileState.errorMessage ?? "Unknown error");
                         profileBloc.resetStatus().then();
                     }
+                    if (profileState.status == ProfileStatus.ErrorUpload) {
+                        showFlushBar({message: profileState.errorMessage?.toString() ?? 'Unknown error'});
+                        profileBloc.resetStatus().then();
+                    }
                     if (profileState.status == ProfileStatus.Uploaded) {
                         // clearErrors();
                         profileBloc.resetStatus().then();

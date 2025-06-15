@@ -6,31 +6,8 @@ import {runApp} from "@/core/framework/core/runApp";
 import {configureDependencies} from "@/di/service_locator";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {WidgetsBinding} from "@/core/framework/core/widgetBinding";
-import type {RouteBuilder} from "@/core/framework/widgets/navigator";
-import {PersistenceServiceImpl} from "@/core/services/persistance_service_impl";
-import {ApiConstants} from "@/core/constants/apiConstants";
-import {AuthBloc} from "@/presentation/features/auth/logic/authBloc";
-import {Resolver} from "@/di/resolver";
-//
-// import '../index.css';
-// import {
-//     handleRouting,
-//     loadGamePage,
-//     loadHomePage,
-//     loadProfilePage,
-//     loadSignInForm,
-//     loadSignUpForm
-// } from "./presentation/templates/templates";
-//
-//
 
-// window.addEventListener("DOMContentLoaded", handleRouting);
-// window.addEventListener("hashchange", handleRouting);
-// (window as any).loadSignInForm = loadSignInForm;
-// (window as any).loadSignUpForm = loadSignUpForm;
-// (window as any).loadProfilePage = loadProfilePage;
-// (window as any).loadHomePage = loadHomePage;
-// (window as any).loadGamePage = loadGamePage;
+console.log("WS_ONLINE_URL:", import.meta.env.VITE_BASE_URL_DEV);
 
 
 function waitForNavigatorReady(callback: () => void) {
@@ -44,8 +21,6 @@ function waitForNavigatorReady(callback: () => void) {
     };
     requestAnimationFrame(check);
 }
-
-
 
 async function bootstrap() {
     WidgetsBinding.ensureInitialized();
@@ -61,7 +36,5 @@ async function bootstrap() {
         }
     });
 }
-
-
 
 bootstrap().then(() => {})

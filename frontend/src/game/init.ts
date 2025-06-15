@@ -28,7 +28,6 @@ export const init = async (gameCanvas: CanvasPongContext, context: BuildContext)
     let playerId: "left" | "right" | null = null;
 
     const [, , matchId, username] = window.location.pathname.split('/');
-    console.log(`URLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL:::: ${window.location.pathname.split('/')} ${matchId}, ${username}`);
     const socket = connectSocket(matchId, username);
 
     socket.on("viewer:joined", () => {

@@ -20,10 +20,19 @@ import healthRoute from "./routes/health";
 import registerRoutes from "./routes/register";
 import authRoutes from "./routes/auth/routes";
 import monitoringRoutes from "./routes/monitoring/routes";
+import fs from 'fs';
+
 
 // Build the Fastify server
 const buildServer = () => {
-  const app: FastifyInstance = Fastify({ logger: true });
+
+  const app = Fastify({
+    logger: true,
+    https: {
+      key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
+      cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+    },
+  });
 
   // app.register(cors, {
   //   origin: true, // or (origin, cb) => cb(null, true)

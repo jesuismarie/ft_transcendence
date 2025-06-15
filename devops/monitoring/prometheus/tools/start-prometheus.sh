@@ -4,4 +4,4 @@ exec /bin/prometheus \
   --storage.tsdb.retention.time=30d \
   --storage.tsdb.retention.size=10GB \
   --storage.tsdb.path=/prometheus \
-  --storage.tsdb.wal-compression        # Compress WAL to save disk
+  --storage.tsdb.wal-compression

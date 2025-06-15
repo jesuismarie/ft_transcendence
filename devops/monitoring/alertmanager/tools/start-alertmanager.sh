@@ -7,3 +7,4 @@ cat "/etc/alertmanager/config/slack-alertmenager.tmp" > "/etc/alertmanager/confi
 rm -rf "/etc/alertmanager/config/slack-alertmenager.tmp"
 
 exec "/bin/alertmanager" "--config.file=/etc/alertmanager/config/slack-alertmenager.yml"
+

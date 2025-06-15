@@ -46,7 +46,10 @@ export class PongGameScreenContent extends StatelessWidget {
         return new HtmlWidget(`
     <div class="w-[100dvw] h-[100dvh] flex flex-col justify-center items-center">
       <h1 class="overflow-hidden text-[1rem] sm:text-[2rem] md:text-[3rem] font-bold select-none text-primary"> Score </h1>
-      <div class="container bg-black border-5 border-solid border-white" id="gamecontainer"></div>
+     <div class="flex items-center justify-center min-h-screen bg-gray-900">
+  <div class="bg-black border-4 border-white" id="gamecontainer">
+  </div>
+</div>
     </div>`);
     }
 }

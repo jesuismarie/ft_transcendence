@@ -3,6 +3,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY ./frontend .
+COPY secrets/frontend/frontend-secrets.txt ./.env
 
 RUN npm install && npm run build:prod
 

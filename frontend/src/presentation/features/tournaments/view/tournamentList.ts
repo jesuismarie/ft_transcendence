@@ -19,7 +19,7 @@ export class TournamentList extends StatelessWidget {
         const currentTournamentID = this.tournaments.tournaments.find((e) => {
             const currentId = context.read(ProfileBloc).state.profile?.id;
             if (!currentId) return undefined;
-            return e.participants.includes(currentId) ? e : undefined
+            return e.participants.includes(currentId) && e.status != 'ended' ? e : undefined
         })
 
         console.log(`KKKKK::::: ${currentTournamentID?.id}`)

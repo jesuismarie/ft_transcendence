@@ -10,7 +10,7 @@ const activeMatches = new Map<string, MatchPlayers>();
 
 export function handleSocketConnection(ws: WebSocket, req: IncomingMessage){
     try {
-        const url = new URL(req.url!, `http://${req.headers.host}`);
+        const url = new URL(req.url!, `https://${req.headers.host}`);
         const segments = url.pathname.split('/');
         if (segments.length < 3) {
             (ws as any).isRejected = true;

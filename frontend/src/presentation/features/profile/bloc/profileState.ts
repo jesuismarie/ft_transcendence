@@ -10,6 +10,7 @@ export enum ProfileStatus {
     Uploaded = 'uploaded',
     Success = 'success',
     Error = 'error',
+    ErrorUpload = 'error_uploaded',
     ErrorSubmit = 'ErrorSubmit',
 }
 

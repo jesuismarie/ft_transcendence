@@ -126,6 +126,8 @@ services:
         volumes:
           - frontend-nginx-logs:/var/log/nginx
           - ssl-certs:/etc/ssl
+        env_file:
+          - secrets/frontend/frontend-secrets.txt
         depends_on:
           - proxy-service
           - ssl-generator

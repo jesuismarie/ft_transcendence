@@ -9,4 +9,5 @@ RUN mkdir -p /etc/ssl && \
       -days 365 -nodes \
       -out /etc/ssl/gehovhan.42.fr.pem \
       -keyout /etc/ssl/gehovhan.42.fr.key \
-      -subj "/C=AM/ST=Yerevan/L=Yerevan/O=42Yerevan/OU=IT/CN=localhost"
+      -subj "/C=AM/ST=Yerevan/L=Yerevan/O=42Yerevan/OU=IT/CN=10.19.213.156" \
+      -addext "subjectAltName=IP:10.19.213.156"

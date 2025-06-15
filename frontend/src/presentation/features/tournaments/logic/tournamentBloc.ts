@@ -125,54 +125,58 @@ export class TournamentBloc extends Cubit<TournamentState> {
                     })
                 })
                 const matches = await Promise.all(matchesResponse);
-                const res = await this.userRepository.getUserNames(data.tournaments.map((e) => e.created_by));
-                res.when({
-                    onSuccess: (names) => {
-                        const tournaments = data.tournaments.map((e, index) => {
-                            const tournament: TournamentInfoDetailsEntity = {
-                                id: e.id,
-                                name: e.name,
-                                created_by: e.created_by,
-                                createdName: names[index],
-                                max_players_count: e.max_players_count,
-                                current_players_count: e.current_players_count,
-                                status: e.status,
-                                participants: e.participants,
-                                activeMatch: matches.find((match) => (match && match.tournamentId == e.id) ? match : undefined)
-                            };
-                            return tournament;
-                        });
-                        const tournamentInfo: TournamentInfoEntity = {
-                            totalCount: data.totalCount,
-                            tournaments: tournaments,
+                const created = data.tournaments.map((e) => e.created_by);
+                if (created && created.length > 0) {
+                    const res = await this.userRepository.getUserNames(created);
+                    res.when({
+                        onSuccess: (names) => {
+                            const tournaments = data.tournaments.map((e, index) => {
+                                const tournament: TournamentInfoDetailsEntity = {
+                                    id: e.id,
+                                    name: e.name,
+                                    created_by: e.created_by,
+                                    createdName: names[index],
+                                    max_players_count: e.max_players_count,
+                                    current_players_count: e.current_players_count,
+                                    status: e.status,
+                                    participants: e.participants,
+                                    activeMatch: matches.find((match) => (match && match.tournamentId == e.id) ? match : undefined)
+                                };
+                                return tournament;
+                            });
+                            const tournamentInfo: TournamentInfoEntity = {
+                                totalCount: data.totalCount,
+                                tournaments: tournaments,
+                            }
+                            if (type == PaginationType.none) {
+                                this.emit(this.state.copyWith({
+                                    status: TournamentStatus.Success,
+                                    results: tournamentInfo,
+                                    pageResults: tournamentInfo,
+                                    offset: offset
+                                }))
+                            } else {
+                                this.emit(this.state.copyWith({
+                                    status: TournamentStatus.Success,
+                                    pageResults: tournamentInfo,
+                                    offset: offset
+                                }))
+                            }
+                        },
+                        onError: (e) => {
+                            let errorMessage: string | undefined;
+                            if (e instanceof ApiException) {
+                                errorMessage = e.message;
+                            } else {
+                                errorMessage = e.toString();
+                            }
+                            this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
                         }
-                        if (type == PaginationType.none) {
-                            this.emit(this.state.copyWith({
-                                status: TournamentStatus.Success,
-                                results: tournamentInfo,
-                                pageResults: tournamentInfo,
-                                offset: offset
-                            }))
-                        } else {
-                            this.emit(this.state.copyWith({
-                                status: TournamentStatus.Success,
-                                pageResults: tournamentInfo,
-                                offset: offset
-                            }))
-                        }
-                    },
-                    onError: (e) => {
-                        let errorMessage: string | undefined;
-                        if (e instanceof ApiException) {
-                            errorMessage = e.message;
-                        } else {
-                            errorMessage = e.toString();
-                        }
-                        this.emit(this.state.copyWith({status: TournamentStatus.Error, errorMessage: errorMessage}))
-                    }
-                })
-
-
+                    })
+                }
+                else {
+                    this.emit(this.state.copyWith({status: TournamentStatus.Success}))
+                }
             }
         });
     }

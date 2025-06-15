@@ -13,24 +13,24 @@ import type {BuildContext} from "@/core/framework/core/buildContext";
 export function initPongGame(context: BuildContext) {
         const container = document.getElementById('gamecontainer');
         if (container) {
-                const aspectRatio = 16 / 9;
-                const width = container.clientWidth;
-                const height = width / aspectRatio;
+                // const aspectRatio = 16 / 9;
+                // const width = container.clientWidth;
+                // const height = width / aspectRatio;
 
-                const canvas = CanvasRender(width, height, container);
+                const canvas = CanvasRender(640, 480, container);
                 init(canvas, context).then(() => {});
 
-                window.addEventListener('resize', () => {
-                        const canvasElement = canvas.getContext().canvas;
-                        const newWidth = container.clientWidth;
-                        const newHeight = newWidth / aspectRatio;
-
-                        canvasElement.width = newWidth;
-                        canvasElement.height = newHeight;
-
-                        canvasElement.style.width = `${newWidth}px`;
-                        canvasElement.style.height = `${newHeight}px`;
-                });
+                // window.addEventListener('resize', () => {
+                //         const canvasElement = canvas.getContext().canvas;
+                //         const newWidth = container.clientWidth;
+                //         const newHeight = newWidth / aspectRatio;
+                //
+                //         canvasElement.width = newWidth;
+                //         canvasElement.height = newHeight;
+                //
+                //         canvasElement.style.width = `${newWidth}px`;
+                //         canvasElement.style.height = `${newHeight}px`;
+                // });
         }
 }
 

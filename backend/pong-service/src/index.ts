@@ -1,4 +1,4 @@
-import { createServer } from "http";
+import { createServer } from "https";
 import path from "path";
 import WebSocket from "ws";
 import cors from '@fastify/cors';
@@ -8,8 +8,15 @@ import { handleSocketConnection } from "./socket";
 import monitoringRoutes from "./monitoring/routes";
 import healthRoute from "./routes/health";
 import createMatchRoute from "./routes/createMatchRoute";
+import fs from 'fs';
 
-const app = Fastify();
+const app = Fastify({
+    logger: true,
+    https: {
+        key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
+        cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+    },
+});
 
 // app.register(cors, {
 //     origin: true, // or (origin, cb) => cb(null, true)
@@ -19,9 +26,19 @@ const app = Fastify();
 // Step 4: Wait for Fastify to initialize
 app.ready().then((server) => {});
 
-const httpServer = createServer((req, res) => {
-  app.routing(req, res);
+// const httpServer = createServer((req, res) => {
+//   app.routing(req, res);
+// });
+
+const httpsOptions = {
+    key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
+    cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+};
+
+const httpServer = createServer(httpsOptions, (req, res) => {
+    app.routing(req, res);
 });
+
 const wss = new WebSocket.Server({ server: httpServer });
 
 wss.on("connection", handleSocketConnection);

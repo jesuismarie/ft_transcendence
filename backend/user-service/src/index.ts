@@ -21,7 +21,14 @@ import liveSessionManagementPlugin from './plugins/live-session-management/plugi
 // Routes
 import routes from './routes/routes';
 
-const app = Fastify({ logger: true });
+const app = Fastify({
+	logger: true,
+	https: {
+		key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
+		cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+	},
+});
+
 
 // app.register(cors, {
 //     origin: true, // or (origin, cb) => cb(null, true)

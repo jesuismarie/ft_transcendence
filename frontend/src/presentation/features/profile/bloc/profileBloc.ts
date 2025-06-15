@@ -48,7 +48,7 @@ export class ProfileBloc extends Cubit<ProfileState> {
                     } else {
                         errorMsg = error?.toString()
                     }
-                    this.emit(this.state.copyWith({status: ProfileStatus.Error, errorMessage: errorMsg}));
+                    this.emit(this.state.copyWith({status: ProfileStatus.ErrorUpload, errorMessage: errorMsg}));
                 }, onSuccess: (data) => {
 
                     this.emit(this.state.copyWith({status: ProfileStatus.Uploaded, errorMessage: undefined}));
