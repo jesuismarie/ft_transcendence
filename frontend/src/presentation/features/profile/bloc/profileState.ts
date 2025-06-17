@@ -1,8 +1,8 @@
 // Define possible statuses as enum
-import type {UserView} from "@/utils/types";
 import type {Equatable} from "@/core/framework/core/equatable";
 import {isEqual} from "lodash";
 import {type User, userFromJson, userToJson} from "@/domain/entity/user";
+import { base64ToFile, fileToBase64 } from "@/presentation/utils/encoding";
 
 export enum ProfileStatus {
     Initial = 'initial',
@@ -55,8 +55,6 @@ export class ProfileState implements Equatable<ProfileState>{
         }
     }
 
-
-
     copyWith(params: Partial<{
         status: ProfileStatus;
         profile?: User;
@@ -108,27 +106,4 @@ export class ProfileState implements Equatable<ProfileState>{
         });
     }
 
-}
-
-function base64ToFile(base64: string, filename: string): File {
-    const arr = base64.split(',');
-    const mime = arr[0].match(/:(.*?);/)![1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-
-    while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-    }
-
-    return new File([u8arr], filename, { type: mime });
-}
-
-export async function fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    });
 }

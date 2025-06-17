@@ -1,15 +1,14 @@
 import {inject, injectable} from "tsyringe";
 import type {UserRemoteRepository} from "@/domain/respository/userRemoteRepository";
-import {BlocBase} from "@/core/framework/bloc/blocBase";
-import {fileToBase64, ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
-import {readImageFile, validateImageFile} from "@/profile/avatar";
+import {ProfileState, ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import {showError} from "@/utils/error_messages";
 import {Validator} from "@/utils/validation";
 import type {ProfileValueObject} from "@/domain/value_objects/profile_value_object";
 import {AxiosError} from "axios";
 import {ApiException} from "@/core/exception/exception";
 import {Cubit} from "@/core/framework/bloc/cubit";
-import {AuthState} from "@/presentation/features/auth/logic/auth_state";
+import {fileToBase64} from "@/presentation/utils/encoding";
+import {Constants} from "@/core/constants/constants";
 
 
 @injectable()
@@ -20,8 +19,8 @@ export class ProfileBloc extends Cubit<ProfileState> {
     }
 
     async selectAvatar(file: File): Promise<void> {
-        const validate = validateImageFile(file);
-        const imageDataUrl = await readImageFile(file);
+        const validate = this.validateImageFile(file);
+        const imageDataUrl = await this.readImageFile(file);
         const base64 = await fileToBase64(file);
 
         this.emit(this.state.copyWith({
@@ -57,7 +56,36 @@ export class ProfileBloc extends Cubit<ProfileState> {
             await this.getUserProfile(this.state.profile.id.toString());
         }
     }
-
+    
+    validateImageFile(file: File): string | null {
+        if (file.size > Constants.max_file_size)
+            return "Image file size must be less than 5MB.";
+        return null;
+    }
+    
+    async readImageFile(file: File): Promise<string | null> {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            
+            reader.onload = () => {
+                const result = reader.result as string;
+                if (!Validator.isValidAvatar(result)) {
+                    showError("avatar", "Please select a valid image file (JPEG, PNG, GIF, or WebP).");
+                    resolve(null);
+                    return;
+                }
+                resolve(result);
+            };
+            
+            reader.onerror = () => {
+                showError("avatar", "Failed to read image file.");
+                resolve(null);
+            };
+            
+            reader.readAsDataURL(file);
+        });
+    }
+    
     async getUserProfile(id: string): Promise<void> {
 
         this.emit(this.state.copyWith({status: ProfileStatus.Loading}))
