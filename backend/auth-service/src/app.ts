@@ -27,8 +27,8 @@ const buildServer = () => {
   const app = Fastify({
     logger: true,
     https: {
-      key: fs.readFileSync(process.env.TLS_CERT_KEY),
-      cert: fs.readFileSync(process.env.TLS_CERT_PEM),
+      key: fs.readFileSync(process.env.TLS_CERT_KEY || "default_cert.key"),
+      cert: fs.readFileSync(process.env.TLS_CERT_PEM || "default_cert.pem"),
     },
   });
 
