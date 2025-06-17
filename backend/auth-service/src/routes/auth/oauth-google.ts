@@ -47,42 +47,4 @@ export default async function googleOauthRoutes(app: FastifyInstance) {
 			throw apiError('OAUTH_FAILED', 'Google OAuthTypes failed', 500);
 		}
 	});
-	
-	// OAuth Claim endpoint
-	app.post<{
-			Body: { loginTicket: string };
-			Reply: AuthTypes.LoginSuccess | CommonTypes.ApiError;
-		}>(
-		'/auth/oauth/google/claim',
-		{
-			schema: {
-				body: { type: 'object', properties: { loginTicket: { type: 'string' } }, required: ['loginTicket'] },
-				response: {
-					200: { $ref: 'auth.loginSuccess#' },
-					401: { $ref: 'api.error#' }
-				},
-			},
-		},
-		async (req, reply) => {
-			const { loginTicket } = req.body;
-			// Find the login ticket
-			const ticket = await app.prisma.loginTicket.findUnique({ where: { id: loginTicket} });
-			if (!ticket || ticket.expiresAt < new Date() || ticket.used) {
-				throw apiError('INVALID_LOGIN_TICKET', 'Login ticket invalid or expired', 401);
-			}
-			// Mark the ticket as used
-			await app.prisma.loginTicket.update({
-				where: { id: loginTicket },
-				data: { used: true }
-			});
-			// Issue tokens for the user
-			try {
-				const tokens = await issueTokenPair(app, ticket.userId);
-				reply.send(tokens);
-			}
-			catch (err) {
-				throw apiError('CLAIM_FAILED', 'Failed to claim tokens', 501);
-			}
-		}
-	);
 }
