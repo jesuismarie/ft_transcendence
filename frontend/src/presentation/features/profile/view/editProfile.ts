@@ -18,6 +18,7 @@ import type {OTPState} from "@/presentation/features/otp/logic/otpState";
 import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite";
 import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
+import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
 
 
 export class EditProfile extends StatelessWidget {
@@ -112,7 +113,7 @@ export class EditProfileContent extends StatelessWidget {
         // return new HtmlWidget('');
         return new DependComposite({
             dependWidgets: [new HtmlWidget(`
-        <div class="w-full max-w-lg bg-white rounded-md shadow-xl overflow-hidden transform transition-all">
+        <div class="w-full max-h-[80vh] overflow-y-auto max-w-lg bg-white rounded-md shadow-xl overflow-x-hidden transform transition-all">
 			<div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
 				<h3 class="text-lg font-medium">
 					Edit Profile
@@ -155,7 +156,11 @@ export class EditProfileContent extends StatelessWidget {
 			</div>
 		</div>
         `, this.parentId)],
-            children: [new OtpScreen('twofa-container')]
+            children: [  new BlocBuilder<OTPBloc, OTPState>({
+                blocType: OTPBloc,
+                parentId: 'twofa-container',
+                buildWhen: (oldState: OTPState, newState: OTPState) => !oldState.equals(newState),
+                builder: (context, state) => state.isInitialized ? new OtpScreen() : new EmptyWidget()})]
         });
     }
 

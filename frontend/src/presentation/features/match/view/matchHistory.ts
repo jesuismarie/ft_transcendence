@@ -25,13 +25,13 @@ export class MatchHistory extends StatelessWidget {
         super.didMounted(context);
 
         const matchBloc = context.read(MatchBloc);
-        if (!Bindings.isMatchRequest) {
+        // if (!Bindings.isMatchRequest) {
             if (this.userId) {
                 matchBloc.getMatchHistory(this.userId, 0, Constants.match_limit).then(history => {
                 });
             }
-            Bindings.isMatchRequest = true;
-        }
+            // Bindings.isMatchRequest = true;
+        // }
 
     }
 
