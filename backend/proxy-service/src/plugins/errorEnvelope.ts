@@ -1,5 +1,6 @@
 import fp from "fastify-plugin";
-import { FastifyInstance, FastifyReply } from "fastify";
+import { FastifyInstance } from "fastify";
+import { FastifyReply } from "fastify";
 
 export default fp(async function errorEnvelope(app: FastifyInstance) {
   app.decorateReply(
