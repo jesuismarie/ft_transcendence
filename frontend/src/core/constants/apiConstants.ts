@@ -6,7 +6,7 @@ export abstract class ApiConstants {
     static userBaseUrl = `/user-service`
     static gameBaseUrl = `/game-service`
     static pongBaseUrl = `/pong-service`
-    static claim: string = `${ApiConstants.authBaseUrl}/auth/oauth/google/claim`;
+    static claim: string = `${ApiConstants.authBaseUrl}/auth/login/claim`;
     static getUserNames: string = `${ApiConstants.userBaseUrl}/users/usernames`;
     static activeMatch: string = `${ApiConstants.gameBaseUrl}/get-tournament-active-match`;
     static auth: string = `${ApiConstants.baseUrlDev}${ApiConstants.authBaseUrl}/auth/oauth/google`;

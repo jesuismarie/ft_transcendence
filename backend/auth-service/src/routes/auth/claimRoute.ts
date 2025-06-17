@@ -4,7 +4,7 @@ import { apiError } from '../../lib/error';
 import { issueTokenPair, hashRefresh } from '../../lib/token';
 import crypto from 'node:crypto';
 
-export deafault async function claimRoute(app: FastifyInstance) {
+export default async function claimRoute(app: FastifyInstance) {
 	// OAuth Claim endpoint
 	app.post<{
 		Body: { loginTicket: string };
