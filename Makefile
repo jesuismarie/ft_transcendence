@@ -5,29 +5,17 @@ init:
 
 .DEFAULT_GOAL := up
 
-mup:
-	@$(MAKE) --no-print-directory -C devops/monitoring up
-
-mdown:
-	@$(MAKE) --no-print-directory -C devops/monitoring down
-
-mfclean:
-	@$(MAKE) --no-print-directory -C devops/monitoring fclean
-
-up-userservice:
-	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans user-service
-
-up: # mup
+up:
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) up -d --remove-orphans
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) rm -f ssl-generator
 
-clean: # mclean
-	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --rmi local --remove-orphans
-
-down: # mdown
+down:
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --remove-orphans
 
-fclean: # mfclean
+clean:
+	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --rmi local --remove-orphans
+
+fclean:
 	@docker-compose -f $(TRANSCENDENCE_TOP_LEVEL_COMPOSE) --project-name $(PROJECT_NAME) down --volumes --rmi all --remove-orphans
 
 build:
@@ -38,4 +26,4 @@ push:
 
 re: fclean up
 
-.PHONY: re net rmnet mup mdown mfclean up down fclean build push
+.PHONY: up clean down fclean build push re init

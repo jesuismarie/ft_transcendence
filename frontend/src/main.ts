@@ -1,13 +1,12 @@
 import "reflect-metadata";
 
-// import {configureDependencies} from "@/di/service_locator.ts";
 import {App, navigatorKey, routes} from "@/app";
 import {runApp} from "@/core/framework/core/runApp";
 import {configureDependencies} from "@/di/service_locator";
 import {AuthGuard} from "@/presentation/features/auth/view/authGuard";
 import {WidgetsBinding} from "@/core/framework/core/widgetBinding";
 
-console.log("WS_ONLINE_URL:", import.meta.env.VITE_BASE_URL_DEV);
+console.log("WS_ONLINE_URL:", import.meta.env.VITE_WS_ONLINE_URL);
 
 
 function waitForNavigatorReady(callback: () => void) {

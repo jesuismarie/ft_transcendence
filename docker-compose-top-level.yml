@@ -24,7 +24,6 @@ services:
         - secrets/backend/common/common-secrets.txt
       volumes:
         - auth-service-db-data:/app/backend/auth-service/prisma
-        - auth-service-logs-data:/var/log/app
         - ssl-certs:/etc/ssl
       depends_on:
         - ssl-generator
@@ -43,8 +42,7 @@ services:
         - secrets/backend/game-service/game-service-secrets.txt
         - secrets/backend/common/common-secrets.txt
       volumes:
-        - game-service-db-date:/app/data
-        - game-service-logs-data:/var/log/app
+        - game-service-db-data:/app/data
         - ssl-certs:/etc/ssl
       depends_on:
         - ssl-generator
@@ -63,8 +61,7 @@ services:
         - secrets/backend/user-service/user-service-secrets.txt
         - secrets/backend/common/common-secrets.txt
       volumes:
-        - user-service-db-date:/app/data
-        - user-service-logs-data:/var/log/app
+        - user-service-db-data:/app/data
         - ssl-certs:/etc/ssl
       depends_on:
         - ssl-generator
@@ -83,8 +80,7 @@ services:
         - secrets/backend/proxy-service/proxy-service-secrets.txt
         - secrets/backend/common/common-secrets.txt
       volumes:
-        - proxy-service-db-date:/example/path
-        - proxy-service-logs-data:/var/log/app
+        - proxy-service-db-data:/example/path
         - ssl-certs:/etc/ssl
       depends_on:
         - auth-service
@@ -106,8 +102,7 @@ services:
         - secrets/backend/pong-service/pong-service-secrets.txt
         - secrets/backend/common/common-secrets.txt
       volumes:
-        - pong-service-db-date:/example/path
-        - pong-service-logs-data:/var/log/app
+        - pong-service-db-data:/example/path
         - ssl-certs:/etc/ssl
       depends_on:
         - ssl-generator
@@ -136,18 +131,12 @@ services:
 volumes:
   ssl-certs:
   auth-service-db-data:
-  game-service-db-date:
-  user-service-db-date:
-  pong-service-db-date:
-  proxy-service-db-date:
-  pong-service-logs-data:
-  user-service-logs-data:
-  auth-service-logs-data:
-  game-service-logs-data:
-  proxy-service-logs-data:
+  game-service-db-data:
+  user-service-db-data:
+  pong-service-db-data:
+  proxy-service-db-data:
   frontend-nginx-logs:
 
 networks:
   bridge-network:
     name: transcendence_bridge-network
-    external: true
