@@ -131,22 +131,22 @@ export class ProfileBloc extends Cubit<ProfileState> {
         } else if (isValid && this.state.profile) {
             const currentUser = this.state.profile;
                 this.emit(this.state.copyWith({status: ProfileStatus.Loading}));
-                if (username && email) {
-                    const res = await this.userRemoteRepository.updateProfile(currentUser!.id, username, email);
-                     res.when({
-                        onError: (e) => {
-                            let errorMsg: string | null;
-                            if (e instanceof AxiosError) {
-                                errorMsg = e.message;
-                            } else {
-                                errorMsg = e?.toString()
-                            }
-                            this.emit(this.state.copyWith({status: ProfileStatus.ErrorSubmit, errorMessage: errorMsg}));
-                        }, onSuccess:  () => {
-                            this.emit(this.state.copyWith({status: ProfileStatus.Success}));
+                console.log("SAVING PROFILE::::::", username, email, password, newPassword, confirmPassword);
+                const res = await this.userRemoteRepository.updateProfile(currentUser!.id, username, email);
+                res.when({
+                    onError: (e) => {
+                        let errorMsg: string | null;
+                        if (e instanceof AxiosError) {
+                            errorMsg = e.message;
+                        } else {
+                            errorMsg = e?.toString()
                         }
-                    });
-                }
+                        this.emit(this.state.copyWith({status: ProfileStatus.ErrorSubmit, errorMessage: errorMsg}));
+                    },
+                    onSuccess:  () => {
+                        this.emit(this.state.copyWith({status: ProfileStatus.Success}));
+                    }
+                });
             if (newPassword && newPassword.length > 0) {
                 const pwd = password && password.length > 0 ? password : newPassword;
                 const res = await this.userRemoteRepository.updatePassword(this.state.profile!.id, pwd, newPassword);
