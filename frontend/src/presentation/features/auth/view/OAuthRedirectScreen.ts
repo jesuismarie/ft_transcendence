@@ -23,9 +23,9 @@ export class OAuthRedirectScreen extends StatelessWidget {
                 window.location.reload();
             }
             if(state.status == AuthStatus.Error) {
-                showFlushBar({message: "OAuth failed"});
                 Navigator.of(context).pushNamed('/');
                 window.location.reload();
+                showFlushBar({message: "OAuth failed"});
             }
         })
     }
