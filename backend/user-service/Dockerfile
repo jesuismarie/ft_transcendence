@@ -9,6 +9,8 @@ RUN npm install && npm run build:prod
 
 FROM node:20-alpine
 
+RUN apk add --no-cache openssl vips-dev
+
 WORKDIR /app
 
 COPY --from=build /app/node_modules ./node_modules
