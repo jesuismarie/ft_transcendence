@@ -13,8 +13,8 @@ import { services } from "./config";
 const app = Fastify({
   logger: true,
   https: {
-    key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
-    cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+    key: fs.readFileSync(process.env.TLS_CERT_KEY),
+    cert: fs.readFileSync(process.env.TLS_CERT_PEM),
   },
 });
 

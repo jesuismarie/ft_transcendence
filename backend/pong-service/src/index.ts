@@ -13,8 +13,8 @@ import fs from 'fs';
 const app = Fastify({
     logger: true,
     https: {
-        key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
-        cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+        key: fs.readFileSync(process.env.TLS_CERT_KEY),
+        cert: fs.readFileSync(process.env.TLS_CERT_PEM),
     },
 });
 
@@ -31,8 +31,8 @@ app.ready().then((server) => {});
 // });
 
 const httpsOptions = {
-    key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
-    cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+    key: fs.readFileSync(process.env.TLS_CERT_KEY),
+    cert: fs.readFileSync(process.env.TLS_CERT_PEM),
 };
 
 const httpServer = createServer(httpsOptions, (req, res) => {
