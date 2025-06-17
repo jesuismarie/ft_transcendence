@@ -20,7 +20,6 @@ import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
 
-
 export class EditProfile extends StatelessWidget {
     constructor(public parentId?: string) {
         super();

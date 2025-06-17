@@ -90,9 +90,15 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
 
     async updateProfile(id: number, username: string, email: string): Promise<Either<GeneralException, void>> {
         try {
-            const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/${id}`, {
-                username: username, email: email
-            });
+            // Construct the request body
+            let requestBody = {};
+            if (username) {
+                requestBody = {...requestBody, username: username};
+            }
+            if (email) {
+                requestBody = {...requestBody, email: email};
+            }
+            const response = await this.apiClient.axiosClient().put(`${ApiConstants.users}/${id}`, requestBody);
 
             if (response.status >= 200 && response.status < 400) {
                 return new Right(undefined);
