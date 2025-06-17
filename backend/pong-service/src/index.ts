@@ -2,7 +2,6 @@ import { createServer } from "https";
 import WebSocket from "ws";
 import Fastify from "fastify";
 import { handleSocketConnection } from "./socket";
-import monitoringRoutes from "./monitoring/routes";
 import healthRoute from "./routes/health";
 import createMatchRoute from "./routes/createMatchRoute";
 import fs from 'fs';
@@ -32,7 +31,6 @@ const wss = new WebSocket.Server({ server: httpServer });
 wss.on("connection", handleSocketConnection);
 app.register(healthRoute);
 app.register(createMatchRoute);
-app.register(monitoringRoutes);
 
 httpServer.listen(
   process.env.PORT ? Number(process.env.PORT) : 3000,

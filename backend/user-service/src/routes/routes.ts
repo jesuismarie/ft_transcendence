@@ -10,7 +10,6 @@ import internalRoutes from "./internal/routes";
 // Repositories
 import { UserRepo } from "../repositories/userRepo";
 import { FriendRepo } from "../repositories/friendRepo";
-import monitoringRoutes from "./monitoring/routes";
 
 export default async function routes(app: FastifyInstance) {
   const userRepo = new UserRepo(app);
@@ -18,14 +17,10 @@ export default async function routes(app: FastifyInstance) {
 
   // Health check route
   await healthRoute(app);
-
   // User routes
   await userRoutes(app, userRepo);
-  
   // Internal routes
     await internalRoutes(app, userRepo);
-
   // Friend routes
   await friendRoutes(app, userRepo, friendRepo);
-  await monitoringRoutes(app);
 }
