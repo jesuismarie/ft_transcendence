@@ -47,7 +47,6 @@ export class LoginScreen extends StatelessWidget {
         });
     }
 
-
     build(context: BuildContext): Widget {
         return new BlocListener<AuthBloc, AuthState>({
             blocType: AuthBloc,

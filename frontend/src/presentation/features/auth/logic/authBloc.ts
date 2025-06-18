@@ -23,7 +23,6 @@ export class AuthBloc extends Cubit<AuthState> {
         super(new AuthState({}));
     }
 
-
     validateLoginForm(email: string, password: string): boolean {
         let hasError = false;
         clearErrors();
@@ -212,11 +211,9 @@ export class AuthBloc extends Cubit<AuthState> {
         window.location.href = ApiConstants.auth;
     }
 
-
     async handleRedirection(ticket?: string): Promise<void> {
-
         if (ticket) {
-            const res: Either<GeneralException, UserEntity> = await this.authRepository.oauth(ticket);
+            const res: Either<GeneralException, UserEntity> = await this.authRepository.claim(ticket);
             res.when({
                 onError: (err: any) => {
                     console.log('Error:', err)
