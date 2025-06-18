@@ -13,6 +13,7 @@ import {jwtDecode} from "jwt-decode";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {Validator} from "@/utils/validation";
+import type {LoginTicketResponse} from "@/domain/entity/loginTicketResponse";
 
 
 @injectable()
@@ -137,7 +138,7 @@ export class AuthBloc extends Cubit<AuthState> {
     }): Promise<void> {
         const hasError = this.validateLoginForm(email, password);
         if (!hasError) {
-            const res: Either<GeneralException, UserEntity> = await this.authRepository.login({email, password});
+            const res: Either<GeneralException, LoginTicketResponse> = await this.authRepository.login({email, password});
             res.when({
                 onError: (err: any) => {
 
@@ -147,10 +148,14 @@ export class AuthBloc extends Cubit<AuthState> {
                     }
                     this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
                 },
-                onSuccess: (user) => {
-                    this.preferenceService.setToken(user.accessToken);
-                    this.preferenceService.setRefreshToken(user.refreshToken);
-                    this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
+                onSuccess: (ticket) => {
+                    // Hardcode for now, more graceful approach later
+                    if (!ticket.requires2fa) {
+                        // Claim the ticket
+                        this.claimTicket(ticket.loginTicket ?? undefined).then();
+                    }
+                    else
+                        this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "We don't support 2FA yet."}));
                 }
             });
         }
@@ -211,7 +216,7 @@ export class AuthBloc extends Cubit<AuthState> {
         window.location.href = ApiConstants.auth;
     }
 
-    async handleRedirection(ticket?: string): Promise<void> {
+    async claimTicket(ticket?: string): Promise<void> {
         if (ticket) {
             const res: Either<GeneralException, UserEntity> = await this.authRepository.claim(ticket);
             res.when({

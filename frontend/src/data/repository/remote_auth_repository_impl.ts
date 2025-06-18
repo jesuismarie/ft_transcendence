@@ -1,6 +1,6 @@
 import {ApiException, GeneralException} from "@/core/exception/exception";
-import {UserEntity} from "@/domain/entity/user_entity";
-import {LoginTicketResponse} from "@/domain/entity/loginTicketResponse";
+import type {UserEntity} from "@/domain/entity/user_entity";
+import type {LoginTicketResponse} from "@/domain/entity/loginTicketResponse";
 import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
 import {type Either, Left, Right} from "@/core/models/either";
 import {inject, injectable} from "tsyringe";
