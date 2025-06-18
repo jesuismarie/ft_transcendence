@@ -124,8 +124,24 @@ export class UserRepo implements UserRepoInterface {
 	toView(user: User): UserView {
 		// avatarURL is domain name + user.avatarPath
 		// Assuming the avatarPath is a relative path, we can construct the full URL.
-		// TODO: Now its hardcoded, but it should be dynamic based on the environment.
 		const avatarURL = user.avatarPath ? `${process.env.PROXY_SERVICE_URL}/user-service${user.avatarPath}` : null;
+		const online = this.app.is.isOnline(user.id);
+		try {
+			console.log('Reached game service to get gamestats for user', view.id);
+			const res = await app.gameService.getGamestats({ Params: { user: view.id.toString() } });
+			view.wins = res.wins;
+			view.losses = res.losses;
+		}
+		catch (err) {
+			console.error('Error fetching gamestats for user:', view.username, err);
+			view.wins = 0;
+			view.losses = 0;
+		}
+		try {
+			console.log(`Is user ${view.id} online?`, app.isUserOnline(view.id));
+			view.online = app.isUserOnline(view.id);
+		}
+		catch (err) { console.error(err) }
 		return {
 			id: user.id,
 			email: user.email,
@@ -133,7 +149,7 @@ export class UserRepo implements UserRepoInterface {
 			avatarPath: avatarURL,
 			wins: 0,
 			losses: 0,
-			online: false
+			online: `${online}`
 		};
 	}
 	toQuickView(user: User): UserTypes.QuickUserResponse {
