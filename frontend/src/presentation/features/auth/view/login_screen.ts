@@ -52,9 +52,25 @@ export class LoginScreen extends StatelessWidget {
             blocType: AuthBloc,
             listener: (context, state) => {
                 this.setup(context)
+                if (state.status == AuthStatus.Initial) {
+                    // Initial state, make sure to enable the Sign-In button
+                    const loginButton = document.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+                    if (loginButton) {
+                        loginButton.disabled = false;
+                        loginButton.textContent = 'Sign In';
+                    }
+                }
                 if (state.status == AuthStatus.Success) {
                     context.read(AuthBloc).resetState().then();
                     Navigator.of(context).pushNamed('/profile')
+                }
+                if (state.status == AuthStatus.Loading) {
+                    // Disable Sign-In button
+                    const loginButton = document.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+                    if (loginButton) {
+                        loginButton.disabled = true;
+                        loginButton.textContent = 'Signing In...';
+                    }
                 }
                 if (state.status == AuthStatus.Error) {
                     console.error('Login failed:', state.errorMessage);

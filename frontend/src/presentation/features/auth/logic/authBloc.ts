@@ -136,6 +136,7 @@ export class AuthBloc extends Cubit<AuthState> {
         email: string;
         password: string
     }): Promise<void> {
+        this.emit(this.state.copyWith({status: AuthStatus.Loading}));
         const hasError = this.validateLoginForm(email, password);
         if (!hasError) {
             const res: Either<GeneralException, LoginTicketResponse> = await this.authRepository.login({email, password});

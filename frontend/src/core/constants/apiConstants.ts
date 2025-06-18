@@ -10,7 +10,7 @@ export abstract class ApiConstants {
     // Auth endpoints
     static login: string = `${ApiConstants.authBaseUrl}/auth/login`;
     static claim: string = `${ApiConstants.authBaseUrl}/auth/login/claim`;
-    static twoFA:string = `${ApiConstants.authBaseUrl}/login/2fa`;
+    static twoFA: string = `${ApiConstants.authBaseUrl}/auth/login/2fa`;
     static twoFAEnable: string = `${ApiConstants.authBaseUrl}/auth/2fa/enable`;
     static twoFAVerify: string = `${ApiConstants.authBaseUrl}/auth/2fa/verify`;
     static logout: string = `${ApiConstants.authBaseUrl}/logout`;
