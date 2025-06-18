@@ -1,5 +1,6 @@
 import {ApiException, GeneralException} from "@/core/exception/exception";
-import type {UserEntity} from "@/domain/entity/user_entity";
+import {UserEntity} from "@/domain/entity/user_entity";
+import {LoginTicketResponse} from "@/domain/entity/loginTicketResponse";
 import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
 import {type Either, Left, Right} from "@/core/models/either";
 import {inject, injectable} from "tsyringe";
@@ -7,8 +8,6 @@ import {type ApiClient} from "@/core/network/apiClient";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {AxiosError} from "axios";
 import type {ApiError} from "@/utils/types";
-import {PreferenceKeys} from "@/core/services/preferenceKeys";
- import {data} from "autoprefixer";
 
 
 @injectable()
@@ -46,14 +45,13 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
     async login({email, password}: {
         email: string,
         password: string
-    }): Promise<Either<GeneralException, UserEntity>> {
+    }): Promise<Either<GeneralException, LoginTicketResponse>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.login, {email, password});
             if (res.status >= 200 && res.status < 400) {
-                const user: UserEntity = {
-                    userId: res.data.userId,
-                    accessToken: res.data.accessToken,
-                    refreshToken: res.data.refreshToken,
+                const user: LoginTicketResponse = {
+                    requires2fa: res.data.requires2fa,
+                    loginTicket: res.data.loginTicket,
                 }
                 return new Right(user);
             }
@@ -68,8 +66,8 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
             }
         }
     }
-
-    async oauth(ticket: string): Promise<Either<GeneralException, UserEntity>> {
+    
+   async claim(ticket: string): Promise<Either<GeneralException, UserEntity>> {
         try {
             const response = await this.apiClient.axiosClient().post(`${ApiConstants.claim}`, {
                 loginTicket: ticket
