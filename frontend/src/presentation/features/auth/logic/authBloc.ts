@@ -28,7 +28,7 @@ export class AuthBloc extends Cubit<AuthState> {
         let hasError = false;
         clearErrors();
 
-        if (!email) {
+        if (!email || email.length === 0) {
             showError('login_email', 'Email is required.');
             hasError = true;
         } else if (!Validator.isValidEmail(email)) {
@@ -36,7 +36,7 @@ export class AuthBloc extends Cubit<AuthState> {
             hasError = true;
         }
 
-        if (!password) {
+        if (!password || password.length === 0) {
             showError('login_password', 'Password is required.');
             hasError = true;
         }

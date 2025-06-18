@@ -11,8 +11,14 @@ import {BlocListener} from "@/core/framework/bloc/blocListener";
 import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import {Navigator} from "@/core/framework/widgets/navigator";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
+import {TextController} from "@/core/framework/controllers/textController";
 
 export class LoginWidget extends StatelessWidget {
+	
+	
+	emailController: TextController = new TextController();
+	passwordController: TextController = new TextController();
+	
 	didMounted(context: BuildContext) {
 		super.didMounted(context);
 		// Whatever setup you need to do after the widget is mounted
@@ -22,19 +28,32 @@ export class LoginWidget extends StatelessWidget {
 		googleLoginButton.addEventListener('click', async () => {
 			context.read(AuthBloc).oauth();
 		});
+		
+		const emailInput = document.getElementById('login-email-input') as HTMLInputElement;
+		const passwordInput = document.getElementById('login-password-input') as HTMLInputElement;
+		if (emailInput) {
+			this.emailController.bindInput(emailInput);
+		}
+		if (passwordInput) {
+			this.passwordController.bindInput(passwordInput);
+		}
+		
+		
 	}
 	
 	constructor(public parentId?: string) {
 		super();
 	}
+	
 	build(context: BuildContext): Widget {
 		return new BlocListener<AuthBloc, AuthState>({
 			blocType: AuthBloc,
 			listener: (context, state) => {
+				console.log("AuthBloc state changed:", JSON.stringify(state));
 				if (state.status == AuthStatus.Error) {
 					console.error('Login failed:', state.errorMessage);
 					showError('login_password', state.errorMessage ?? "UNKNOWN ERROR");
-					context.read(AuthBloc).resetState().then();
+					// context.read(AuthBloc).resetState().then();
 				}
 				if (state.status == AuthStatus.Success) {
 					context.read(AuthBloc).resetState().then();
@@ -42,7 +61,7 @@ export class LoginWidget extends StatelessWidget {
 				}
 			},
 			child: new DependComposite({
-				dependWidgets:[ new HtmlWidget(`<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
+					dependWidgets: [new HtmlWidget(`<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
   				<div class="w-[400px] h-[500px]">
     				<button id="close-btn-login" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-neon">
       					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
@@ -55,45 +74,42 @@ export class LoginWidget extends StatelessWidget {
         					<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
       					</a>
 					<span>or use your email password</span>
-      				<input type="text" name="login_email" placeholder="Email" />
+      				<input id="login-email-input" type="text" name="login_email" placeholder="Email" />
       				<p class="error-msg text-red-500 text-sm" data-error-for="login_email"></p>
-      				<input type="password" name="login_password" placeholder="Password" />
+      				<input id="login-password-input" type="password" name="login_password" placeholder="Password" />
       				<p class="error-msg text-red-500 text-sm" data-error-for="login_password"></p>
-      				<div id="submit-btn-content">
-      				</div>
+      				<div id="submit-btn-content"></div>
     				</form>
   				</div>
 			</div>`,
-					this.parentId),
-				],
-				children: [
-					// Submit Button
-					new BlocBuilder<AuthBloc, AuthState>({
-						blocType: AuthBloc,
-						buildWhen: (oldState, newState) => !oldState.equals(newState),
-						builder: (context, state) => new SubmitButton({
-							id: 'login-btn',
-							parentId: 'submit-btn-content',
-							disabled: state.status == AuthStatus.Loading,
-							isHidden: false,
-							label: 'Sign In',
-							onClick: async (loginForm) => {
-								clearErrors();
-								
-								const formData = new FormData(loginForm as HTMLFormElement);
-								const email = (formData.get('login_email') as string)?.trim();
-								const password = (formData.get('login_password') as string)?.trim();
-								
-								const authBloc = context.read(AuthBloc)
-								if (email && password) {
+						this.parentId),
+					],
+					children: [
+						// new HtmlWidget(`<div class="w-[100dvw] h-[100dvh]">Hello</div>`, 'submit-btn-content')
+						//Submit Button
+						new BlocBuilder<AuthBloc, AuthState>({
+							blocType: AuthBloc,
+							buildWhen: (oldState, newState) => !oldState.equals(newState),
+							builder: (context, state) => new SubmitButton({
+								id: 'login-btn',
+								disabled: state.status == AuthStatus.Loading,
+								isHidden: false,
+								onClick: async () => {
+									clearErrors();
+									
+									const email = this.emailController.text.trim();
+									const password = this.passwordController.text.trim();
+									
+									const authBloc = context.read(AuthBloc)
 									await authBloc.login({email, password});
-								}
-							}
-						}),
-					})
-					
-					// TODO: OTP Modal
-				]}
+								},
+								label: 'Sign In',
+							}),
+							parentId: 'submit-btn-content',
+						})
+						// TODO: OTP Modal
+					]
+				}
 			)
 		})
 	}
