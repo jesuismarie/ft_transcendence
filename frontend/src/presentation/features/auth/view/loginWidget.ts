@@ -12,6 +12,8 @@ import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_sta
 import {Navigator} from "@/core/framework/widgets/navigator";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
 import {TextController} from "@/core/framework/controllers/textController";
+import {hideModal} from "@/utils/modal_utils";
+import {ModalConstants} from "@/core/constants/modalConstants";
 
 export class LoginWidget extends StatelessWidget {
 	
@@ -63,12 +65,9 @@ export class LoginWidget extends StatelessWidget {
 			child: new DependComposite({
 					dependWidgets: [new HtmlWidget(`<div class="w-[100dvw] h-[100dvh] flex justify-center items-center">
   				<div class="w-[400px] h-[500px]">
-    				<button id="close-btn-login" class="absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-neon">
-      					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-        					<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-      					</svg>
-    				</button>
-    				<form id="loginForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-div-glow">
+  				<!-- Close Button -->
+  				<div id="close-btn-content"> </div>
+   				<form id="loginForm" class="bg-white p-[7%] flex flex-col items-center justify-around w-full h-full border rounded-[20px] shadow-div-glow">
       					<h1>Sign In</h1>
       					<a id="google-login-btn" href="#" class="w-9 h-9 grid place-items-center p-1 border border-gray-300 rounded-full hover:shadow-neon">
         					<img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="google">
@@ -106,6 +105,20 @@ export class LoginWidget extends StatelessWidget {
 								label: 'Sign In',
 							}),
 							parentId: 'submit-btn-content',
+						}),
+						// Close Button
+						new SubmitButton({
+							id: 'close-btn-login',
+							className: "absolute w-[30px] h-[30px] mt-8 ml-8 p-2 rounded-full hover:shadow-neon",
+							label:
+								`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+									<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+	  							</svg>`,
+							onClick: (e) => {
+								Navigator.of(context).pop();
+							},
+							parentId: 'close-btn-content',
+							isHidden: false
 						})
 						// TODO: OTP Modal
 					]
