@@ -18,6 +18,7 @@ export class OTPState implements Equatable<OTPState>{
     readonly status: OTPStatus;
     readonly otp?: OtpEntity;
     readonly isValid: boolean;
+    readonly otpText: string;
     readonly isInitialized: boolean;
     readonly verified?: VerifiedEntity;
     readonly errorMessage?: string;
@@ -26,6 +27,7 @@ export class OTPState implements Equatable<OTPState>{
         status?: OTPStatus;
         verified?: VerifiedEntity;
         otp?: OtpEntity;
+        otpText?: string;
         isInitialized?: boolean;
         isValid?: boolean
         errorMessage?: string;
@@ -33,6 +35,7 @@ export class OTPState implements Equatable<OTPState>{
         this.status = params.status ?? OTPStatus.Initial;
         this.verified = params.verified;
         this.otp = params.otp;
+        this.otpText = params.otpText ?? "";
         this.isInitialized = params.isInitialized ?? false
         this.isValid = params.isValid ?? true
         this.errorMessage = params.errorMessage;
@@ -42,6 +45,7 @@ export class OTPState implements Equatable<OTPState>{
     copyWith(params: Partial<{
         status: OTPStatus;
         otp?: OtpEntity;
+        otpText?: string;
         isInitialized?: boolean;
         isValid?: boolean
         verified?: VerifiedEntity;
@@ -51,6 +55,7 @@ export class OTPState implements Equatable<OTPState>{
             status: params.status ?? this.status,
             verified: params.verified ?? this.verified,
             otp: params.otp ?? this.otp,
+            otpText: params.otpText ?? this.otpText,
             isInitialized: params.isInitialized ?? this.isInitialized,
             isValid: params.isValid ?? this.isValid,
             errorMessage: params.errorMessage ?? this.errorMessage,

@@ -44,7 +44,7 @@ export class TwoFARepositoryImpl implements TwoFARepository {
 
     async verify2FA(otp: string): Promise<Either<GeneralException, VerifiedEntity>> {
         try {
-            const res = await this.apiClient.axiosClient().post(ApiConstants.twoFAEnable);
+            const res = await this.apiClient.axiosClient().post(ApiConstants.twoFAVerify, {otp: otp});
             if (res.status >= 200 && res.status < 400) {
                 const verified: VerifiedEntity = {
                     verified: res.data.verified,

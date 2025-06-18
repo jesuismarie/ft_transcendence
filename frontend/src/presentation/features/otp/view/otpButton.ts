@@ -3,9 +3,10 @@ import  {type BuildContext} from "@/core/framework/core/buildContext";
 import type {Widget} from "@/core/framework/core/base";
 import {HtmlWidget} from "@/core/framework/widgets/htmlWidget";
 import {OTPBloc} from "@/presentation/features/otp/logic/otpBloc";
+import type {TextController} from "@/core/framework/controllers/textController";
 
 export class OtpButton extends StatelessWidget {
-    constructor(private token: string) {
+    constructor(private tokenController: TextController) {
         super();
     }
     didMounted(context: BuildContext) {
@@ -13,8 +14,8 @@ export class OtpButton extends StatelessWidget {
         const verifyBtn = document.getElementById("verify-2fa-btn");
         const otpBloc = context.read(OTPBloc);
         verifyBtn?.addEventListener("click", async () => {
-            otpBloc.validateToken(this.token)
-            otpBloc.otpVerify(this.token).then()
+            otpBloc.validateToken(this.tokenController.text)
+            otpBloc.otpVerify(this.tokenController.text).then()
         });
     }
 
