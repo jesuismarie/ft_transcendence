@@ -19,6 +19,8 @@ import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite"
 import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
+import {SubmitButton} from "@/presentation/common/widget/submitButton";
+import type {ProfileState} from "@/presentation/features/profile/bloc/profileState";
 
 export class EditProfile extends StatelessWidget {
     constructor(public parentId?: string) {
@@ -141,7 +143,8 @@ export class EditProfileContent extends StatelessWidget {
 					</div>
 					<div>
 					    <div id="enable-2fa-content"></div>
-						<button id="enable-2fs-btn" type="button" class="bg-hover hover:shadow-neon text-white w-full py-2 px-4 rounded-md">Enable 2FA</button>
+					    <div id="tfa-enable-btn-content"></div>
+<!--						<button id="enable-2fs-btn" type="button" class="bg-hover hover:shadow-neon text-white w-full py-2 px-4 rounded-md">Enable 2FA</button>-->
 						<div id="twofa-container" class="mt-4"></div>
 					</div>
 				</div>
@@ -158,6 +161,22 @@ export class EditProfileContent extends StatelessWidget {
                 buildWhen: (oldState: OTPState, newState: OTPState) => !oldState.equals(newState),
                 builder: (context, state) => state.isInitialized ? new OtpScreen({showQR: true}) : new HtmlWidget(``)
             }),
+                new BlocBuilder<ProfileBloc, ProfileState>({
+                    blocType: ProfileBloc,
+                    buildWhen: (oldState, newState) => !oldState.equals(newState),
+                    builder: (context, state) => new SubmitButton({
+                        id: "enable-2fs-btn",
+                        className: "bg-hover hover:shadow-neon text-white w-full py-2 px-4 rounded-md",
+                        label: "Enable 2FA",
+                        onClick: () => {
+                            context.read(OTPBloc).initializeOtp();
+                            context.read(OTPBloc).enableOTP().then()
+                        },
+                        isHidden: state.profile?.is2FaEnabled ?? false
+                    }),
+                    parentId: "tfa-enable-btn-content",
+                })
+
 
             ]
         });
