@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { UserTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 import {UserView} from "@KarenDanielyan/ft-transcendence-api-types/dist/user-types";
+import { request } from 'undici';
 
 
 // This is not a view model, but a repository interface for user data.
@@ -31,7 +32,7 @@ interface UserRepoInterface {
 		},
 	): boolean
 	delete(id: number): number;
-	toView(user: User): UserTypes.UserView;
+	toView(user: User): Promise<UserTypes.UserView>;
 }
 
 export class UserRepo implements UserRepoInterface {
@@ -121,19 +122,54 @@ export class UserRepo implements UserRepoInterface {
 		return this.app.db.prepare('DELETE FROM users WHERE id = ?').run(id).changes;
 	}
 	
-	toView(user: User): UserView {
+	async toView(user: User): Promise<UserView> {
 		// avatarURL is domain name + user.avatarPath
 		// Assuming the avatarPath is a relative path, we can construct the full URL.
-		// TODO: Now its hardcoded, but it should be dynamic based on the environment.
+		let wins = 0, losses = 0, online = false, twofaEnabled = false;
+		// Hardcoded route to auth-service to get 2FA status
+		try {
+			console.log('Reached auth service to get 2FA status for user', user.id);
+			// THere is no authservice client, so we use undici to make a request
+			// GET /internal/tokens/2fa/status/:userId -> 	Reply: { twofaEnabled: boolean }
+			const res = await request(`${process.env.PROXY_SERVICE_URL}/auth-service/internal/tokens/2fa/status/${user.id}`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
+			twofaEnabled = res.statusCode === 200 ? (await res.body.json() as {twofaEnabled: boolean}).twofaEnabled : false;
+		}
+		catch (err) {
+			console.error('Error fetching 2FA status for user:', user.username, err);
+			twofaEnabled = false;
+		}
+		try {
+			console.log('Reached game service to get gamestats for user', user.id);
+			const res = await this.app.gameService.getGamestats({ Params: { user: user.id.toString() } });
+			wins = res.wins;
+			losses = res.losses;
+		}
+		catch (err) {
+			console.error('Error fetching gamestats for user:', user.username, err);
+			wins = 0;
+			losses = 0;
+		}
+		try {
+			console.log(`Is user ${user.id} online?`, this.app.isUserOnline(user.id));
+			online = this.app.isUserOnline(user.id);
+		}
+		catch (err) { console.error(err) }
 		const avatarURL = user.avatarPath ? `${process.env.PROXY_SERVICE_URL}/user-service${user.avatarPath}` : null;
 		return {
 			id: user.id,
 			email: user.email,
 			username: user.username,
 			avatarPath: avatarURL,
-			wins: 0,
-			losses: 0,
-			online: false
+			wins,
+			losses,
+			online,
+			twofaEnabled,
 		};
 	}
 	toQuickView(user: User): UserTypes.QuickUserResponse {
