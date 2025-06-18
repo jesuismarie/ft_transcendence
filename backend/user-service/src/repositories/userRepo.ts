@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { UserTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 import {UserView} from "@KarenDanielyan/ft-transcendence-api-types/dist/user-types";
+import { request } from 'undici';
 
 
 // This is not a view model, but a repository interface for user data.
@@ -125,6 +126,24 @@ export class UserRepo implements UserRepoInterface {
 		// avatarURL is domain name + user.avatarPath
 		// Assuming the avatarPath is a relative path, we can construct the full URL.
 		let wins = 0, losses = 0, online = false, twofaEnabled = false;
+		// Hardcoded route to auth-service to get 2FA status
+		try {
+			console.log('Reached auth service to get 2FA status for user', user.id);
+			// THere is no authservice client, so we use undici to make a request
+			// GET /internal/tokens/2fa/status/:userId -> 	Reply: { twofaEnabled: boolean }
+			const res = await request(`${process.env.PROXY_SERVICE_URL}/auth-service/internal/tokens/2fa/status/${user.id}`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
+			twofaEnabled = res.statusCode === 200 ? (await res.body.json() as {twofaEnabled: boolean}).twofaEnabled : false;
+		}
+		catch (err) {
+			console.error('Error fetching 2FA status for user:', user.username, err);
+			twofaEnabled = false;
+		}
 		try {
 			console.log('Reached game service to get gamestats for user', user.id);
 			const res = await this.app.gameService.getGamestats({ Params: { user: user.id.toString() } });
