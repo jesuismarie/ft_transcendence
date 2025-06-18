@@ -36,7 +36,7 @@ export class SearchItem extends StatelessWidget {
     build(context: BuildContext): Widget {
         return new HtmlWidget(`
     <div id="search-item-${this.user.id}" class="px-4 py-3 hover:bg-gray-50 flex items-center gap-3 cursor-pointer">
-        <img src="${this.user.avatarPath ?? "/images/background1.jpg"}" onerror="this.onerror=null; this.src='/images/background1.jpg';" alt="${this.user.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
+        <img src="${this.user.avatarPath ?? "/images/background1.jpg"}" crossOrigin="anonymous" onerror="this.onerror=null; this.src='/images/background1.jpg';" alt="${this.user.username}'s avatar" class="w-10 h-10 rounded-full object-cover" />
         <span>${this.user.username}</span>
     </div>`)
         }

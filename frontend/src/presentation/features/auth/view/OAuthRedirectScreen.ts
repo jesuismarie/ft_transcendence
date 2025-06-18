@@ -15,7 +15,7 @@ export class OAuthRedirectScreen extends StatelessWidget {
     didMounted(context: BuildContext) {
         super.didMounted(context);
         const authBloc = context.read(AuthBloc);
-        authBloc.handleRedirection(this.ticketId ?? undefined).then(() => {
+        authBloc.claimTicket(this.ticketId ?? undefined).then(() => {
         });
         authBloc.stream.subscribe((state) => {
             if (state.status == AuthStatus.Success) {

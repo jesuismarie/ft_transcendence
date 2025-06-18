@@ -13,6 +13,7 @@ import {jwtDecode} from "jwt-decode";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {Validator} from "@/utils/validation";
+import type {LoginTicketEntity} from "@/domain/entity/loginTicketEntity";
 
 
 @injectable()
@@ -23,12 +24,11 @@ export class AuthBloc extends Cubit<AuthState> {
         super(new AuthState({}));
     }
 
-
     validateLoginForm(email: string, password: string): boolean {
         let hasError = false;
         clearErrors();
 
-        if (!email) {
+        if (!email || email.length === 0) {
             showError('login_email', 'Email is required.');
             hasError = true;
         } else if (!Validator.isValidEmail(email)) {
@@ -36,7 +36,7 @@ export class AuthBloc extends Cubit<AuthState> {
             hasError = true;
         }
 
-        if (!password) {
+        if (!password || password.length === 0) {
             showError('login_password', 'Password is required.');
             hasError = true;
         }
@@ -136,9 +136,33 @@ export class AuthBloc extends Cubit<AuthState> {
         email: string;
         password: string
     }): Promise<void> {
+        this.emit(this.state.copyWith({status: AuthStatus.Loading}));
         const hasError = this.validateLoginForm(email, password);
         if (!hasError) {
-            const res: Either<GeneralException, UserEntity> = await this.authRepository.login({email, password});
+            const res: Either<GeneralException, LoginTicketEntity> = await this.authRepository.login({email, password});
+            res.when({
+                onError:  (err: any) => {
+
+                    let errorMessage: string | undefined;
+                    if (err instanceof ApiException) {
+                        errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    }
+                    this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                },
+                onSuccess:  (ticket) => {
+                    this.emit(this.state.copyWith({status: AuthStatus.SuccessTFA, loginTicket: ticket}));
+                }
+            });
+        }
+        else {
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Failed to Login."}));
+        }
+    }
+
+    async loginTwoFa(ticketId: string, otp: string, isValid: boolean): Promise<void> {
+        if (isValid) {
+            this.emit(this.state.copyWith({status: AuthStatus.Loading}));
+            const res: Either<GeneralException, UserEntity> = await this.authRepository.loginTwoFa(ticketId, otp);
             res.when({
                 onError: (err: any) => {
 
@@ -156,7 +180,7 @@ export class AuthBloc extends Cubit<AuthState> {
             });
         }
         else {
-            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Failed to Login."}));
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Invalid OTP."}));
         }
     }
 
@@ -212,11 +236,9 @@ export class AuthBloc extends Cubit<AuthState> {
         window.location.href = ApiConstants.auth;
     }
 
-
-    async handleRedirection(ticket?: string): Promise<void> {
-
+    async claimTicket(ticket?: string): Promise<void> {
         if (ticket) {
-            const res: Either<GeneralException, UserEntity> = await this.authRepository.oauth(ticket);
+            const res: Either<GeneralException, UserEntity> = await this.authRepository.claim(ticket);
             res.when({
                 onError: (err: any) => {
                     console.log('Error:', err)

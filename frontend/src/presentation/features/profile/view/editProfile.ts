@@ -19,6 +19,8 @@ import {MountAwareComposite} from "@/core/framework/widgets/mountAwareComposite"
 import {BuilderWidget} from "@/core/framework/widgets/builderWidget";
 import {DependComposite} from "@/core/framework/widgets/dependComposite";
 import {EmptyWidget} from "@/core/framework/widgets/emptyWidget";
+import {SubmitButton} from "@/presentation/common/widget/submitButton";
+import type {ProfileState} from "@/presentation/features/profile/bloc/profileState";
 
 export class EditProfile extends StatelessWidget {
     constructor(public parentId?: string) {
@@ -26,14 +28,8 @@ export class EditProfile extends StatelessWidget {
     }
 
     build(context: BuildContext): Widget {
-        return new BlocProvider(
-            {
-                create: () => new OTPBloc(
-                    Resolver.twoFaRepository()
-                ),
-                child: new BuilderWidget((context) => new EditProfileContent(this.parentId))
-            }
-        );
+        return new BuilderWidget((context) => new EditProfileContent(this.parentId))
+
     }
 
 }
@@ -66,7 +62,7 @@ export class EditProfileContent extends StatelessWidget {
         const closeBtn = document.getElementById('close-edit-modal');
         const saveBtn = document.getElementById('save-profile-btn');
         const enable2faBtn = document.getElementById("enable-2fs-btn") as HTMLButtonElement | null;
-        const twoFaContainer = document.getElementById("twofa-container") as HTMLElement | null;
+        // const twoFaContainer = document.getElementById("twofa-container") as HTMLElement | null;
 
         closeBtn?.addEventListener('click', () => {
             hideModal(ModalConstants.editProfileModalName)
@@ -110,6 +106,8 @@ export class EditProfileContent extends StatelessWidget {
 
     build(context: BuildContext): Widget {
         // return new HtmlWidget('');
+
+
         return new DependComposite({
             dependWidgets: [new HtmlWidget(`
         <div class="w-full max-h-[80vh] overflow-y-auto max-w-lg bg-white rounded-md shadow-xl overflow-x-hidden transform transition-all">
@@ -144,7 +142,9 @@ export class EditProfileContent extends StatelessWidget {
 						<p class="error-msg text-red-500 text-sm" data-error-for="confirm_password"></p>
 					</div>
 					<div>
-						<button id="enable-2fs-btn" type="button" class="bg-hover hover:shadow-neon text-white w-full py-2 px-4 rounded-md">Enable 2FA</button>
+					    <div id="enable-2fa-content"></div>
+					    <div id="tfa-enable-btn-content"></div>
+<!--						<button id="enable-2fs-btn" type="button" class="bg-hover hover:shadow-neon text-white w-full py-2 px-4 rounded-md">Enable 2FA</button>-->
 						<div id="twofa-container" class="mt-4"></div>
 					</div>
 				</div>
@@ -159,7 +159,26 @@ export class EditProfileContent extends StatelessWidget {
                 blocType: OTPBloc,
                 parentId: 'twofa-container',
                 buildWhen: (oldState: OTPState, newState: OTPState) => !oldState.equals(newState),
-                builder: (context, state) => state.isInitialized ? new OtpScreen() : new EmptyWidget()})]
+                builder: (context, state) => state.isInitialized ? new OtpScreen({showQR: true}) : new HtmlWidget(``)
+            }),
+                new BlocBuilder<ProfileBloc, ProfileState>({
+                    blocType: ProfileBloc,
+                    buildWhen: (oldState, newState) => !oldState.equals(newState),
+                    builder: (context, state) => new SubmitButton({
+                        id: "enable-2fs-btn",
+                        className: "bg-hover hover:shadow-neon text-white w-full py-2 px-4 rounded-md",
+                        label: "Enable 2FA",
+                        onClick: () => {
+                            context.read(OTPBloc).initializeOtp();
+                            context.read(OTPBloc).enableOTP().then()
+                        },
+                        isHidden: state.profile?.is2FaEnabled ?? false
+                    }),
+                    parentId: "tfa-enable-btn-content",
+                })
+
+
+            ]
         });
     }
 

@@ -25,6 +25,8 @@ import {ProfileBloc} from "@/presentation/features/profile/bloc/profileBloc";
 import {AuthStatus} from "@/presentation/features/auth/logic/auth_state";
 import {ProfileStatus} from "@/presentation/features/profile/bloc/profileState";
 import {OAuthRedirectScreen} from "@/presentation/features/auth/view/OAuthRedirectScreen";
+import {OtpScreen} from "@/presentation/features/otp/view/otpScreen";
+import {TwoFaScreen} from "@/presentation/features/auth/view/twoFaScreen";
 
 export const navigatorKey = new GlobalKey<Navigator>();
 
@@ -36,6 +38,7 @@ export const routes: { [key: string]: string } = {
     '/register': AppRoutes.register,
     '/game/:id/:username': AppRoutes.game,
     '/404': AppRoutes.notFound,
+    '/otp': AppRoutes.otp,
     '/oauth/complete': AppRoutes.authRedirect
 }
 
@@ -90,6 +93,7 @@ export class App extends StatelessWidget {
                                 '/profile/:id': (context, params) => new ProfileScreen(params?.id),
                                 '/register': (context) => new RegisterScreen(),
                                 '/game/:id/:username': (context) => new PongGameScreen(),
+                                '/otp': (context) => new TwoFaScreen(),
                                 '/404': (context) => new NotFoundWidget(),
                             }
                         }

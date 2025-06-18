@@ -23,6 +23,7 @@ export class UserRemoteRepositoryImpl implements UserRemoteRepository {
                 const user: User = {
                     online: res.data.online,
                     id: res.data.id,
+                    is2FaEnabled: res.data.twofaEnabled,
                     username: res.data.username,
                     email: res.data.email,
                     wins: res.data.wins,
