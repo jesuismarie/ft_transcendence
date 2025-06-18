@@ -60,7 +60,7 @@ function maybeScheduleOffline(userId: UserId) {
 			graceTimers.delete(userId);
 			const set = userConnections.get(userId);
 			if (!set || set.size === 0) onlineUsers.delete(userId);
-		}, 100)
+		}, 1)
 	);
 }
 
