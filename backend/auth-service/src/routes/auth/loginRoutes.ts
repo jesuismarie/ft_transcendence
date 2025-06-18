@@ -1,18 +1,18 @@
 import { FastifyInstance } from 'fastify';
-import { AuthTypes, CommonTypes } from '@KarenDanielyan/ft-transcendence-api-types';
+import { AuthTypes } from '@KarenDanielyan/ft-transcendence-api-types';
 import { apiError } from '../../lib/error';
 import { issueTokenPair, hashRefresh } from '../../lib/token';
 import crypto from 'node:crypto';
 
 export default async function loginRoutes(app: FastifyInstance) {
 	// Login route
-	app.post<{ Body: AuthTypes.LoginRequest; Reply: AuthTypes.LoginResponse }>(
+	app.post<{ Body: AuthTypes.LoginRequest; Reply: AuthTypes.Login2FARequired }>(
 		'/auth/login',
 		{
 			schema: {
 				body: { $ref: 'auth.loginRequest#' },
 				response: {
-					200: { $ref: 'auth.loginSuccess#' },
+					200: { $ref: 'auth.2faRequired#' },
 					401: { $ref: 'api.error#' }
 				}
 			}
@@ -22,17 +22,21 @@ export default async function loginRoutes(app: FastifyInstance) {
 			const userId = await app.userService.verifyPassword(req.body).catch(() => {
 				throw apiError('INVALID_CREDENTIALS', 'Email or password incorrect', 401);
 			});
-			// Check if the user has 2FA enabled
+			// Open a login ticket
+			const loginTicket = crypto.randomUUID();
+			let requires2fa = false;
+			await app.prisma.loginTicket.create({
+				data: { id: loginTicket, userId, expiresAt: new Date(Date.now() + 5 * 60 * 1000) }
+			});
 			const totp = await app.prisma.totpSecret.findUnique({ where: { userId } });
-			if (totp && totp.verified) {
-				const loginTicket = crypto.randomUUID();
-				await app.prisma.loginTicket.create({
-					data: { id: loginTicket, userId, expiresAt: new Date(Date.now() + 5 * 60 * 1000) }
-				});
-				return reply.send({ requires2fa: true, loginTicket } satisfies AuthTypes.Login2FARequired);
-			}
-			const tokens = await issueTokenPair(app, userId);
-			return reply.send({ ...tokens, userId } satisfies AuthTypes.LoginSuccess);
+			// Check if the user has 2FA enabled
+			if (totp && totp.verified)
+				requires2fa = true;
+			// Return response { loginTicket, require2fa }
+			return reply.send({
+				loginTicket,
+				requires2fa
+			} as AuthTypes.Login2FARequired);
 		}
 	);
 	// Refresh route
