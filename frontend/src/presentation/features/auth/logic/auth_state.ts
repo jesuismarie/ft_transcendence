@@ -6,30 +6,32 @@ export enum AuthStatus {
     Initial = 'initial',
     Loading = 'loading',
     Success = 'success',
+    SuccessTFA = 'successTFA',
     Authenticated = 'authenticated',
     Error = 'error',
 }
 
 // Your user type
 import type { UserEntity } from "@/domain/entity/user_entity";
+import type {LoginTicketEntity} from "@/domain/entity/loginTicketEntity";
 
 export class AuthState implements Equatable<AuthState>{
     readonly status: AuthStatus;
     readonly  isRefresh: boolean;
     readonly user?: UserEntity;
-    readonly showTWoFA?: boolean;
+    readonly loginTicket?: LoginTicketEntity;
     readonly errorMessage?: string;
 
     constructor(params: {
         status?: AuthStatus;
-        showTWoFA?: boolean;
+        loginTicket?: LoginTicketEntity;
         user?: UserEntity;
         isRefresh?: boolean;
         errorMessage?: string;
     }) {
         this.status = params.status ?? AuthStatus.Initial;
         this.user = params.user;
-        this.showTWoFA = params.showTWoFA ?? false;
+        this.loginTicket = params.loginTicket;
         this.isRefresh = params.isRefresh ?? false;
         this.errorMessage = params.errorMessage;
     }
@@ -37,14 +39,14 @@ export class AuthState implements Equatable<AuthState>{
     copyWith(params: Partial<{
         status: AuthStatus;
         user?: UserEntity;
-        showTWoFA?: boolean;
+        loginTicket?: LoginTicketEntity;
         isRefresh?: boolean;
         errorMessage?: string;
     }>): AuthState {
         return new AuthState({
             status: params.status ?? this.status,
             user: params.user ?? this.user,
-            showTWoFA: params.showTWoFA ?? this.showTWoFA,
+            loginTicket: params.loginTicket ?? this.loginTicket,
             isRefresh: params.isRefresh ?? this.isRefresh,
             errorMessage: params.errorMessage ?? this.errorMessage,
         });
@@ -61,6 +63,7 @@ export class AuthState implements Equatable<AuthState>{
                 accessToken: this.user.accessToken,
                 refreshToken: this.user.refreshToken,
             } : null,
+            loginTicket: this.loginTicket ?? this.loginTicket,
             status: this.status,
             errorMessage: this.errorMessage
         };
@@ -74,7 +77,7 @@ export class AuthState implements Equatable<AuthState>{
                 refreshToken: json.user.refreshToken,
             } : undefined,
             status: json.status,
-            showTWoFA: json.showTWoFA,
+            loginTicket: json.loginTicket,
             errorMessage: json.errorMessage
         });
     }

@@ -39,7 +39,7 @@ export class RouteInformationParser {
 
 export abstract class AuthGuard {
     static navigationGuard(context: BuildContext, routes: { [key: string]: string }) {
-        const publicRoutes = ['/login', '/register', '/', '/oauth/complete'];
+        const publicRoutes = ['/login', '/register', '/', '/oauth/complete', '/otp', '/404'];
         const path = window.location.pathname;
         const preferenceService = Resolver.preferenceService();
         const token = preferenceService.getToken();

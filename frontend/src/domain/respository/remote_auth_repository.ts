@@ -1,7 +1,7 @@
 import type {GeneralException} from "@/core/exception/exception";
 import type {UserEntity} from "@/domain/entity/user_entity";
 import type {Either} from "@/core/models/either";
-import type {LoginTicketResponse} from "@/domain/entity/loginTicketResponse";
+import type {LoginTicketEntity} from "@/domain/entity/loginTicketEntity";
 
 
 
@@ -14,9 +14,11 @@ export interface RemoteAuthRepository {
     login({email, password}: {
         email: string,
         password: string
-    }): Promise<Either<GeneralException, LoginTicketResponse>>;
+    }): Promise<Either<GeneralException, LoginTicketEntity>>;
     
     claim(ticket: string): Promise<Either<GeneralException, UserEntity>>;
+
+    loginTwoFa(ticket: string, otp: string): Promise<Either<GeneralException, UserEntity>>;
 
     requestRefresh(accessToken: string): Promise<Either<GeneralException, UserEntity>>;
 }

@@ -12,8 +12,6 @@ import {AuthState, AuthStatus} from "@/presentation/features/auth/logic/auth_sta
 import {Navigator} from "@/core/framework/widgets/navigator";
 import {BlocBuilder} from "@/core/framework/bloc/blocBuilder";
 import {TextController} from "@/core/framework/controllers/textController";
-import {hideModal} from "@/utils/modal_utils";
-import {ModalConstants} from "@/core/constants/modalConstants";
 
 export class LoginWidget extends StatelessWidget {
 	
@@ -57,9 +55,17 @@ export class LoginWidget extends StatelessWidget {
 					showError('login_password', state.errorMessage ?? "UNKNOWN ERROR");
 					// context.read(AuthBloc).resetState().then();
 				}
+				if (state.status == AuthStatus.SuccessTFA) {
+					if (state.loginTicket!.requires2fa) {
+						Navigator.of(context).pushNamed('/otp');
+					}
+					else {
+						context.read(AuthBloc).claimTicket(state.loginTicket!.loginTicket).then(() => {});
+					}
+				}
 				if (state.status == AuthStatus.Success) {
-					context.read(AuthBloc).resetState().then();
 					Navigator.of(context).pushNamed('/profile');
+					context.read(AuthBloc).resetState().then();
 				}
 			},
 			child: new DependComposite({
@@ -84,7 +90,6 @@ export class LoginWidget extends StatelessWidget {
 						this.parentId),
 					],
 					children: [
-						// new HtmlWidget(`<div class="w-[100dvw] h-[100dvh]">Hello</div>`, 'submit-btn-content')
 						//Submit Button
 						new BlocBuilder<AuthBloc, AuthState>({
 							blocType: AuthBloc,

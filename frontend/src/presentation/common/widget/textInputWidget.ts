@@ -13,11 +13,18 @@ export interface TextInputWidgetProps {
     onChange?: (value: string) => void,
     controller: TextController,
     parentId?: string
+    props?: string,
+    useDocumentEvent?: boolean,
+    useChangeEvent?: boolean,
 }
 
 export class TextInputWidget extends StatefulWidget {
+    readonly useDocumentEvent: boolean;
+    readonly useChangeEvent: boolean;
     constructor(public props: TextInputWidgetProps) {
         super();
+        this.useDocumentEvent = this.props.useDocumentEvent ?? true;
+        this.useChangeEvent = this.props.useChangeEvent ?? true;
     }
     createState(): State<TextInputWidget> {
         return new TextInputWidgetState();
@@ -33,7 +40,7 @@ export class TextInputWidgetState extends State<TextInputWidget> {
         const elem = document.getElementById(`${this.widget.props.id}`) as HTMLInputElement;
 
         if(elem) {
-            this.widget.props.controller.bindInput(elem!, true,'change');
+            this.widget.props.controller.bindInput(elem!, this.widget.useDocumentEvent,this.widget.useChangeEvent ? 'change' : "input");
         }
         // elem?.addEventListener('input', (e) => {
         //     const target = e.target as HTMLInputElement;
@@ -43,7 +50,7 @@ export class TextInputWidgetState extends State<TextInputWidget> {
 
     build(context: BuildContext): Widget {
         return new HtmlWidget(`
-            <input type="${this.widget.props.type}" id="${this.widget.props.id}" value="${this.widget.props.name}" class="${this.widget.props.className}" />
+            <input type="${this.widget.props.type}" id="${this.widget.props.id}" value="${this.widget.props.name}" class="${this.widget.props.className}" ${this.widget.props.props ? this.widget.props.props : ""}>
         `, this.widget.props.parentId);
     }
 

@@ -1,5 +1,6 @@
 export abstract class ApiConstants {
     static baseUrlDev: string = import.meta.env.VITE_BASE_URL_DEV;
+    static baseUrlLocalDev: string = import.meta.env.VITE_BASE_URL_LOCAL_DEV;
     static gameWebsocketBaseUrl: string = import.meta.env.VITE_WS_GAME_URL;
     static websocketUrl = import.meta.env.VITE_WS_ONLINE_URL;
     static authBaseUrl = `/auth-service`
@@ -15,8 +16,9 @@ export abstract class ApiConstants {
     static twoFAVerify: string = `${ApiConstants.authBaseUrl}/auth/2fa/verify`;
     static logout: string = `${ApiConstants.authBaseUrl}/logout`;
     static refresh: string = `${ApiConstants.authBaseUrl}/auth/refresh`;
+    static loginTwoFa: string = `${ApiConstants.authBaseUrl}/auth/login/2fa`
     // OAuth endpoint
-    static auth: string = `${ApiConstants.baseUrlDev}${ApiConstants.authBaseUrl}/auth/oauth/google`;
+    static auth: string = `${ApiConstants.baseUrlLocalDev}${ApiConstants.authBaseUrl}/auth/oauth/google`;
     // User endpoints
     static getUserNames: string = `${ApiConstants.userBaseUrl}/users/usernames`;
     static activeMatch: string = `${ApiConstants.gameBaseUrl}/get-tournament-active-match`;

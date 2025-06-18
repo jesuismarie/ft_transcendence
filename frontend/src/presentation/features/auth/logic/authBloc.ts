@@ -13,7 +13,7 @@ import {jwtDecode} from "jwt-decode";
 import {ApiConstants} from "@/core/constants/apiConstants";
 import {clearErrors, showError} from "@/utils/error_messages";
 import {Validator} from "@/utils/validation";
-import type {LoginTicketResponse} from "@/domain/entity/loginTicketResponse";
+import type {LoginTicketEntity} from "@/domain/entity/loginTicketEntity";
 
 
 @injectable()
@@ -139,7 +139,30 @@ export class AuthBloc extends Cubit<AuthState> {
         this.emit(this.state.copyWith({status: AuthStatus.Loading}));
         const hasError = this.validateLoginForm(email, password);
         if (!hasError) {
-            const res: Either<GeneralException, LoginTicketResponse> = await this.authRepository.login({email, password});
+            const res: Either<GeneralException, LoginTicketEntity> = await this.authRepository.login({email, password});
+            res.when({
+                onError:  (err: any) => {
+
+                    let errorMessage: string | undefined;
+                    if (err instanceof ApiException) {
+                        errorMessage = err.message.removeBefore('body/').capitalizeFirst()
+                    }
+                    this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
+                },
+                onSuccess:  (ticket) => {
+                    this.emit(this.state.copyWith({status: AuthStatus.SuccessTFA, loginTicket: ticket}));
+                }
+            });
+        }
+        else {
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Failed to Login."}));
+        }
+    }
+
+    async loginTwoFa(ticketId: string, otp: string, isValid: boolean): Promise<void> {
+        if (isValid) {
+            this.emit(this.state.copyWith({status: AuthStatus.Loading}));
+            const res: Either<GeneralException, UserEntity> = await this.authRepository.loginTwoFa(ticketId, otp);
             res.when({
                 onError: (err: any) => {
 
@@ -149,19 +172,15 @@ export class AuthBloc extends Cubit<AuthState> {
                     }
                     this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: errorMessage}));
                 },
-                onSuccess: (ticket) => {
-                    // Hardcode for now, more graceful approach later
-                    if (!ticket.requires2fa) {
-                        // Claim the ticket
-                        this.claimTicket(ticket.loginTicket ?? undefined).then();
-                    }
-                    else
-                        this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "We don't support 2FA yet."}));
+                onSuccess: (user) => {
+                    this.preferenceService.setToken(user.accessToken);
+                    this.preferenceService.setRefreshToken(user.refreshToken);
+                    this.emit(this.state.copyWith({status: AuthStatus.Success, user: user}));
                 }
             });
         }
         else {
-            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Failed to Login."}));
+            this.emit(this.state.copyWith({status: AuthStatus.Error, errorMessage: "Invalid OTP."}));
         }
     }
 

@@ -1,6 +1,6 @@
 import {ApiException, GeneralException} from "@/core/exception/exception";
 import type {UserEntity} from "@/domain/entity/user_entity";
-import type {LoginTicketResponse} from "@/domain/entity/loginTicketResponse";
+import type {LoginTicketEntity} from "@/domain/entity/loginTicketEntity";
 import type {RemoteAuthRepository} from "@/domain/respository/remote_auth_repository";
 import {type Either, Left, Right} from "@/core/models/either";
 import {inject, injectable} from "tsyringe";
@@ -45,11 +45,11 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
     async login({email, password}: {
         email: string,
         password: string
-    }): Promise<Either<GeneralException, LoginTicketResponse>> {
+    }): Promise<Either<GeneralException, LoginTicketEntity>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.login, {email, password});
             if (res.status >= 200 && res.status < 400) {
-                const user: LoginTicketResponse = {
+                const user: LoginTicketEntity = {
                     requires2fa: res.data.requires2fa,
                     loginTicket: res.data.loginTicket,
                 }
@@ -97,6 +97,29 @@ export class RemoteAuthRepositoryImpl implements RemoteAuthRepository {
     async requestRefresh(accessToken: string): Promise<Either<GeneralException, UserEntity>> {
         try {
             const res = await this.apiClient.axiosClient().post(ApiConstants.refresh, {refreshToken: accessToken});
+            if (res.status >= 200 && res.status < 400) {
+                const user: UserEntity = {
+                    userId: res.data.userId,
+                    accessToken: res.data.accessToken,
+                    refreshToken: res.data.refreshToken,
+                }
+                return new Right(user);
+            }
+            return new Left(new GeneralException());
+        }
+        catch (e) {
+            if (e instanceof AxiosError) {
+                const error: ApiError = e.response?.data
+                return new Left(new ApiException(500, error.message, error));
+            } else {
+                return new Left(new ApiException(500, e?.toString()));
+            }
+        }
+    }
+
+    async loginTwoFa(ticket: string, otp: string): Promise<Either<GeneralException, UserEntity>> {
+        try {
+            const res = await this.apiClient.axiosClient().post(ApiConstants.loginTwoFa, {loginTicket: ticket, otp: otp});
             if (res.status >= 200 && res.status < 400) {
                 const user: UserEntity = {
                     userId: res.data.userId,

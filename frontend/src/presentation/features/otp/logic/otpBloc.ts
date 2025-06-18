@@ -32,10 +32,14 @@ export class OTPBloc extends Cubit<OTPState> {
         })
     }
 
+
+    resetValidating() {
+        this.emit(this.state.copyWith({isValidating: false}));
+    }
     validateToken(token: string): void {
         const isValid = Validator.isValidToken(token);
         console.log(`KKKKKKKKK::::: ${token} ${isValid}`)
-        this.emit(this.state.copyWith({isValid: isValid}))
+        this.emit(this.state.copyWith({isValid: isValid, isValidating: true}))
     }
 
     initializeOtp(): void {
