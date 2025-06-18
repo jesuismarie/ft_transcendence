@@ -19,7 +19,7 @@ const app = Fastify({
 });
 
 app.register(cors, {
-  origin: '*',
+  origin: ['https://localhost', "https://10.128.2.100"],
   	methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
 	allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
 });
