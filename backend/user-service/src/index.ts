@@ -4,13 +4,8 @@ import multipart from '@fastify/multipart';
 import fastifyHelmet from "@fastify/helmet";
 import websocket from '@fastify/websocket';
 import fastifyRateLimit from '@fastify/rate-limit'
-import cors from '@fastify/cors'
-import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-
-
-dotenv.config();
 
 // Plugins
 import dbPlugin from './plugins/db';
@@ -24,24 +19,10 @@ import routes from './routes/routes';
 const app = Fastify({
 	logger: true,
 	https: {
-		key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
-		cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+		key: fs.readFileSync(process.env.TLS_CERT_KEY || "default_cert.key"),
+		cert: fs.readFileSync(process.env.TLS_CERT_PEM || "default_cert.pem"),
 	},
 });
-
-
-// app.register(cors, {
-//     origin: true, // or (origin, cb) => cb(null, true)
-//     credentials: true,
-// 	methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
-// 	allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-// });
-
-// app.register(cors, {
-// 	origin: '*',
-// //   origin: true, // or (origin, cb) => cb(null, true)
-// //   credentials: true,
-// });
 
 // make sure public directory exists
 const publicDir = path.join(process.cwd(), 'public');

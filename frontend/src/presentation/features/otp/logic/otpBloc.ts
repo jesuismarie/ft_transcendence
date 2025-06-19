@@ -12,6 +12,8 @@ export class OTPBloc extends Cubit<OTPState> {
         super(new OTPState({}));
     }
 
+
+
     async enableOTP(): Promise<void> {
         this.emit(this.state.copyWith({status: OTPStatus.Loading}))
         const res = await this.twoFARepository.enable2FA();
@@ -30,9 +32,14 @@ export class OTPBloc extends Cubit<OTPState> {
         })
     }
 
+
+    resetValidating() {
+        this.emit(this.state.copyWith({isValidating: false}));
+    }
     validateToken(token: string): void {
-        const isValid = Validator.isValidToken(token)
-        this.emit(this.state.copyWith({isValid: isValid}))
+        const isValid = Validator.isValidToken(token);
+        console.log(`KKKKKKKKK::::: ${token} ${isValid}`)
+        this.emit(this.state.copyWith({isValid: isValid, isValidating: true}))
     }
 
     initializeOtp(): void {
@@ -40,7 +47,7 @@ export class OTPBloc extends Cubit<OTPState> {
     }
 
     resetOtp(): void {
-        this.emit(this.state.copyWith({isInitialized: false, status: OTPStatus.Initial, otp: undefined}))
+        this.emit(new OTPState({}))
     }
 
     async otpVerify(otp: string): Promise<void> {

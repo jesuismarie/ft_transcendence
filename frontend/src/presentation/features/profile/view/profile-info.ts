@@ -107,11 +107,11 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                 <div class="mt-6 grid grid-cols-2 gap-4 text-center">
                     <div>
                         <p class="text-gray-600">Wins</p>
-                        <p id="player-wins" class="text-black font-bold">0</p>
+                        <p id="player-wins" class="text-black font-bold"></p>
                     </div>
                     <div>
                         <p class="text-gray-600">Losses</p>
-                        <p id="player-losses" class="text-black font-bold">0</p>
+                        <p id="player-losses" class="text-black font-bold"></p>
                     </div>
                 </div>
                 <div id="friend-request-btn-container"></div>
@@ -131,46 +131,59 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         new BlocBuilder<AuthBloc, AuthState>({
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
                             blocType: AuthBloc,
-                        builder: (context, state) => new BlocBuilder<FriendBloc, FriendState>({
-                            blocType: FriendBloc,
-                            buildWhen: (oldState, newState) => !oldState.equals(newState),
-                            builder: (_, friendState) => {
-                                console.log(`IIIIIIIIII:::: ${friendState.isFriend}`)
+                            builder: (context, state) => new BlocBuilder<FriendBloc, FriendState>({
+                                blocType: FriendBloc,
+                                buildWhen: (oldState, newState) => !oldState.equals(newState),
+                                builder: (_, friendState) => {
+                                    console.log(`IIIIIIIIII:::: ${friendState.isFriend}`)
 
-                                let isHidden = !this.widget.userId;
-                                if (this.widget.userId && state.user?.userId) {
-                                    isHidden = state.user.userId == (this.widget.userId)
-                                }
-
-                                return new BlocBuilder<ProfileBloc, ProfileState>(
-                                    {
-                                        blocType: ProfileBloc,
-                                        buildWhen: (oldState, newState) => !oldState.equals(newState),
-                                        builder: (_, profileState) => {
-                                            return new SubmitButton({
-                                                onClick:  () => {
-
-                                                    if (friendState.status != FriendStatus.Loading) {
-                                                        const userId = context.read(AuthBloc).state.user?.userId;
-                                                        const friendBloc = context.read(FriendBloc)
-                                                        if (!Bindings.addFriendSimpleRequest && userId && profileState.profile && !friendBloc.isClosed && !localStorage.getItem(`friendId${this.widget.profileState.profile!.id}`)) {
-                                                            friendBloc.addFriend(userId, profileState.profile!.id).then(r => r);
-                                                            Bindings.addFriendSimpleRequest = true;
-                                                        }
-                                                    }
-                                                },
-                                                className: `mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]`,
-                                                id: "friend-request-btn",
-                                                isHidden: isHidden || friendState.isFriend,
-                                                label: "Add Friend",
-                                            })
-                                        }
+                                    let isHidden = !this.widget.userId;
+                                    if (this.widget.userId && state.user?.userId) {
+                                        isHidden = state.user.userId == (this.widget.userId)
                                     }
-                                )
-                            },
-                            parentId: "friend-request-btn-container",
 
-                        })}),
+                                    return new BlocBuilder<ProfileBloc, ProfileState>(
+                                        {
+                                            blocType: ProfileBloc,
+                                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                                            builder: (_, profileState) => {
+                                                return new SubmitButton({
+                                                    onClick: () => {
+
+                                                        if (friendState.status != FriendStatus.Loading) {
+                                                            const userId = context.read(AuthBloc).state.user?.userId;
+                                                            const friendBloc = context.read(FriendBloc)
+                                                            if (!Bindings.addFriendSimpleRequest && userId && profileState.profile && !friendBloc.isClosed && !localStorage.getItem(`friendId${this.widget.profileState.profile!.id}`)) {
+                                                                friendBloc.addFriend(userId, profileState.profile!.id).then(r => r);
+                                                                Bindings.addFriendSimpleRequest = true;
+                                                            }
+                                                        }
+                                                    },
+                                                    className: `mt-6 w-full bg-hover hover:shadow-neon text-white py-2 px-4 rounded-[20px]`,
+                                                    id: "friend-request-btn",
+                                                    isHidden: isHidden || friendState.isFriend,
+                                                    label: "Add Friend",
+                                                })
+                                            }
+                                        }
+                                    )
+                                },
+                                parentId: "friend-request-btn-container",
+
+                            })
+                        }),
+                        new BlocBuilder<ProfileBloc, ProfileState>({
+                            blocType: ProfileBloc,
+                            parentId: "player-losses",
+                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                            builder: (context, state) => new HtmlWidget(`${state.profile?.losses ?? "0"}`)
+                        }),
+                        new BlocBuilder<ProfileBloc, ProfileState>({
+                            blocType: ProfileBloc,
+                            parentId: "player-wins",
+                            buildWhen: (oldState, newState) => !oldState.equals(newState),
+                            builder: (context, state) => new HtmlWidget(`${state.profile?.wins ?? "0"}`)
+                        }),
                         new BlocBuilder<AuthBloc, AuthState>({
                             blocType: AuthBloc,
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
@@ -183,7 +196,7 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                 return new AvatarContent(!isHidden)
                             },
                             parentId: 'avatar-content-container'
-                        }, ),
+                        },),
                         new BlocBuilder<FriendBloc, FriendState>({
                             blocType: FriendBloc,
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
@@ -193,18 +206,20 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                                     className: "px-4 py-3 text-sm rounded-[20px] border border-hover hover:text-hover",
                                     id: "friend-list-btn",
                                     onClick: () => {
-                                      showModal(ModalConstants.friendsModalName);
+                                        showModal(ModalConstants.friendsModalName);
                                     },
                                     isHidden: !friendState.results.totalCount || friendState.results.totalCount <= 3,
                                     label: "All Friends",
-                                })},
+                                })
+                            },
                             parentId: "friend-list-btn-content",
 
                         }),
                         new BlocBuilder<FriendBloc, FriendState>({
                             blocType: FriendBloc,
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
-                            builder: (context, friendState) => new FriendList('friends-preview')}),
+                            builder: (context, friendState) => new FriendList('friends-preview')
+                        }),
                         new BlocBuilder<AuthBloc, AuthState>({
                             blocType: AuthBloc,
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
@@ -230,22 +245,26 @@ export class ProfileInfoContent extends State<ProfileInfo> {
                         new BlocBuilder<ProfileBloc, ProfileState>({
                             blocType: ProfileBloc,
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
-                            builder: (context, state) => new HtmlWidget(`<p class="text-gray-600">${state.profile?.username}</p>`),
+                            builder: (context, state) => state.status == ProfileStatus.Loading ? new HtmlWidget(`<p>username</p>`) : new HtmlWidget(`<p class="text-gray-600">${state.profile?.username}</p>`),
                             parentId: 'username-container'
                         }),
                         new BlocBuilder<ProfileBloc, ProfileState>({
                             blocType: ProfileBloc,
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
-                            builder: (context, state) => new HtmlWidget(`<p class="text-gray-600">${state.profile?.email}</p>`),
+                            builder: (context, state) => state.status == ProfileStatus.Loading ? new HtmlWidget(`<p>email</p>`) : new HtmlWidget(`<p class="text-gray-600">${state.profile?.email}</p>`),
                             parentId: 'email-container'
                         }),
                         new BlocBuilder<ProfileBloc, ProfileState>({
                             blocType: ProfileBloc,
+                            parentId: "online-status",
                             buildWhen: (oldState, newState) => !oldState.equals(newState),
                             builder: (context, state) =>
-                                new HtmlWidget(`<p class="text-gray-600">${state.profile?.online ? "Online" : "Offline"}</p>`, 'online-status')}),
+                                state.status == ProfileStatus.Loading ?
+                                    new HtmlWidget(`<p>Loading Profile</p>`) :
+                                    new HtmlWidget(`<p class="text-gray-600">${state.profile?.online ? "online" : "offline"}</p>`)
+                        }),
                     ],
-                }, )
+                },)
 
             })
     }

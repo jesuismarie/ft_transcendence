@@ -31,10 +31,15 @@ export default async function updateUserRoute(app: FastifyInstance, userRepo: Us
 			const user = userRepo.findById(id);
 			if (!user)
 				return reply.sendError({ statusCode: 404, code: 'USER_NOT_FOUND', message: 'User not found' });
-			
+			// duplicate-username guard
+			if (username && userRepo.findByUsername(username))
+				return reply.sendError({ statusCode: 409, code: 'USERNAME_EXISTS', message: 'Username already exists' });
 			// duplicate-email guard
 			if (email && userRepo.findByEmail(email))
 				return reply.sendError({ statusCode: 409, code: 'EMAIL_EXISTS', message: 'Email already registered' });
+			// Guard again OAuth2 user
+			if (email && user.authProvider == 'google')
+				return reply.sendError({ statusCode: 409, code: 'NO_UPDATE_OAUTH', message: 'Cannot update Google OAuth2 user email' });
 			
 			const updated = userRepo.update(id, {
 				username: username,

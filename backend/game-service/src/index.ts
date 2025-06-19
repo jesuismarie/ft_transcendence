@@ -1,24 +1,25 @@
+// Entry point for game-service
+// Core Imports
 import Fastify from "fastify";
+import fs from 'fs';
+
+// Plugins
+import errorEnvelope from "./plugins/errorEnvelope";
 import initDb from "./db/index";
-import cors from '@fastify/cors';
+
+// Routes
 import matchRoutes from "./routes/match/routes";
 import tournamentRoutes from "./routes/tournament/routes";
 import internalRoutes from "./routes/internal/routes";
-import monitoringRoutes from "./routes/monitoring/routes";
-import errorEnvelope from "./plugins/errorEnvelope";
-import fs from 'fs';
 
 const app = Fastify({
     logger: true,
     https: {
-        key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
-        cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+        key: fs.readFileSync(process.env.TLS_CERT_KEY || "default_cert.key"),
+        cert: fs.readFileSync(process.env.TLS_CERT_PEM || "default_cert.pem"),
     },
 });
-// app.register(cors, {
-//     origin: true, // or (origin, cb) => cb(null, true)
-//     credentials: true
-// });
+
 // Регистрируем базу данных как плагин
 app.register(initDb);
 app.register(errorEnvelope);
@@ -27,7 +28,6 @@ app.register(errorEnvelope);
 app.register(matchRoutes);
 app.register(tournamentRoutes);
 app.register(internalRoutes);
-app.register(monitoringRoutes);
 
 app.listen(
   {

@@ -122,7 +122,7 @@ export class TournamentRemoteRepositoryImpl implements TournamentRemoteRepositor
                         name: e.name,
                         created_by: e.created_by,
                         createdName: '',
-                        max_players_count: e.current_players_count,
+                        max_players_count: e.max_players_count,
                         current_players_count: e.current_players_count,
                         status: e.status,
                         participants: e.participants,

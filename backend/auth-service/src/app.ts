@@ -1,10 +1,9 @@
-// AuthService entry point
-
+// Entrypoint for auth-service
 // Core Imports
-import Fastify, { FastifyInstance } from "fastify";
-import cors from '@fastify/cors';
+import Fastify from "fastify";
 import rateLimit from "@fastify/rate-limit";
 import helmet from "@fastify/helmet";
+import fs from 'fs';
 
 // Plugins
 import envPlugin from "./plugins/env";
@@ -19,9 +18,6 @@ import oauthGoogle from "./plugins/oauth-google";
 import healthRoute from "./routes/health";
 import registerRoutes from "./routes/register";
 import authRoutes from "./routes/auth/routes";
-import monitoringRoutes from "./routes/monitoring/routes";
-import fs from 'fs';
-
 
 // Build the Fastify server
 const buildServer = () => {
@@ -29,15 +25,11 @@ const buildServer = () => {
   const app = Fastify({
     logger: true,
     https: {
-      key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
-      cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+      key: fs.readFileSync(process.env.TLS_CERT_KEY || "default_cert.key"),
+      cert: fs.readFileSync(process.env.TLS_CERT_PEM || "default_cert.pem"),
     },
   });
 
-  // app.register(cors, {
-  //   origin: true, // or (origin, cb) => cb(null, true)
-  //   credentials: true
-  // });
   // Register plugins
   app.register(envPlugin);
   app.register(errorEnvelope);
@@ -54,14 +46,12 @@ const buildServer = () => {
     max: 200,                     // Limit each IP to 200 requests per minute
     timeWindow: "1 minute",       // Time window for the limit
     ban: 10,                      // Ban IPs after 10 violations
-    keyGenerator: (req) => req.ip,
   });
 
   // Register routes
   app.register(healthRoute);
   app.register(registerRoutes);
   app.register(authRoutes);
-  app.register(monitoringRoutes);
 
   // Handle 404 Not Found
   app.setNotFoundHandler((_req, reply) =>

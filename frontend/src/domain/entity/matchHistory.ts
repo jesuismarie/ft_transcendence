@@ -4,4 +4,3 @@ export interface MatchHistory {
     "totalCount":  number,
     "matches": MatchHistoryItem[],
 }
-

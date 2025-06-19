@@ -1,30 +1,31 @@
+// Core Imports
 import Fastify from "fastify";
-import fs from "fs";
-import monitorningRoutes from "./routes/monitoring/routes";
-import errorEnvelope from "./plugins/errorEnvelope";
-import cors from "@fastify/cors";
 import httpProxy from "@fastify/http-proxy";
-import { services } from "./config";
+import cors from "@fastify/cors";
+import fs from "fs";
+
+// Plugins
 import authMiddleware from "./plugins/authMiddleware";
+import errorEnvelope from "./plugins/errorEnvelope";
+
+import { services } from "./config";
 
 const app = Fastify({
   logger: true,
   https: {
-    key: fs.readFileSync('/etc/ssl/gehovhan.42.fr.key'),
-    cert: fs.readFileSync('/etc/ssl/gehovhan.42.fr.pem'),
+    key: fs.readFileSync(process.env.TLS_CERT_KEY || "default_cert.key"),
+    cert: fs.readFileSync(process.env.TLS_CERT_PEM || "default_cert.pem"),
   },
 });
 
 app.register(cors, {
-  origin: '*',
-//   origin: true, // or (origin, cb) => cb(null, true)
-//   credentials: true,
+  origin: ['https://localhost', "https://10.128.2.100"],
   	methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
 	allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
 });
 
 app.register(errorEnvelope);
-authMiddleware(app);
+app.register(authMiddleware);
 
 // Регистрируем маршруты
 app.register(httpProxy,{
@@ -43,7 +44,6 @@ app.register(httpProxy, {
   upstream: services.pongService,
   prefix: "/pong-service",
 });
-app.register(monitorningRoutes);
 
 app.listen(
   {

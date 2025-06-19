@@ -3,7 +3,7 @@ const login2faRequiredSchema = {
 	type: 'object',
 	required: ['requires2fa', 'loginTicket'],
 	properties: {
-		requires2fa: { const: true },
+		requires2fa: { type: 'boolean' },
 		loginTicket: { type: 'string', format: 'uuid' }
 	},
 	additionalProperties: false
